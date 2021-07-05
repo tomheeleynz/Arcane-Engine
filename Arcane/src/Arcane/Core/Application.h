@@ -1,0 +1,43 @@
+#pragma once 
+
+#include <vulkan/vulkan.h>
+#include <string>
+#include <memory>
+#include <vector>
+
+#include "Window.h"
+#include "ImGui/ImGuiLayer.h"
+
+struct ApplicationSpecifications
+{
+	std::string Name;
+	uint32_t WindowWidth;
+	uint32_t WindowHeight;
+};
+
+class Application
+{
+public:
+	Application(ApplicationSpecifications& specifications);
+	~Application();
+
+	void Run();
+	
+	// Get Reference To Window
+	Window& GetWindow();
+
+	// Get Static Application Reference
+	static Application& Get();
+
+	// Push Layer
+	void PushLayer(Layer* _layer);
+
+	// ImGui
+	void RenderImGui();
+private:
+	Window* m_Window;
+	static Application* s_Instance;
+	std::vector<Layer*> m_LayerStack;
+	bool m_bIsRunning = true;
+	ImGuiLayer* m_ImGuiLayer;
+};

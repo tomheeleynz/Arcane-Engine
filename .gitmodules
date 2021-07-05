@@ -1,0 +1,9 @@
+[submodule "Arcane/vendor/glm"]
+	path = Arcane/vendor/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "Arcane/vendor/glfw"]
+	path = Arcane/vendor/glfw
+	url = https://github.com/tomheeleynz/glfw.git
+[submodule "Arcane/vendor/imgui"]
+	path = Arcane/vendor/imgui
+	url = https://github.com/tomheeleynz/imgui.git
