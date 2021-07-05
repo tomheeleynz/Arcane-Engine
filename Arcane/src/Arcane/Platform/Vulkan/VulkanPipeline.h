@@ -12,4 +12,5 @@ public:
 private:
 	VkPipelineLayout m_PipelineLayout;
 	VkPipeline m_Pipeline;
+	VkDescriptorSetLayout m_DescriptorLayout;
 };

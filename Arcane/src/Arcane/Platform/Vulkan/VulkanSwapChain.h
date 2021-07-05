@@ -15,7 +15,7 @@ public:
 
 	std::vector<VkCommandBuffer> GetCommandBuffers() { return m_CommandBuffers; }
 	std::vector<VkFramebuffer> GetSwapChainFramebuffers() { return m_SwapChainFramebuffers; }
-	VkCommandBuffer GetFrameCommandBuffer() { return m_CommandBuffers[m_CurrentFrameIndex]; }
+	uint32_t GetSwapChainImagesSize() { return m_SwapChainImages.size(); }
 
 	void SwapBuffers(); 
 private:

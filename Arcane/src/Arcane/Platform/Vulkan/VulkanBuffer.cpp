@@ -35,7 +35,6 @@ VulkanVertexBuffer::VulkanVertexBuffer(void* vertices, uint32_t size)
 	bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-
 	if (vkCreateBuffer(logicalDevice, &bufferInfo, nullptr, &m_VertexBuffer) != VK_SUCCESS) {
 		printf("Vertex Buffer Not Created\n");
 	}

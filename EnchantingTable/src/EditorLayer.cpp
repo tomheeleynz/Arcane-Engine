@@ -61,6 +61,8 @@ void EditorLayer::OnAttach()
 
 	// End a pass
 	Renderer::EndRenderPass(renderPass);
+
+	UniformBuffer* uniformBuffer = UniformBuffer::Create();
 }
 
 void EditorLayer::OnDetach()
