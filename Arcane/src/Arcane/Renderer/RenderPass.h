@@ -2,12 +2,14 @@
 
 #include <glm/glm.hpp>
 
-class RenderPass
-{
-public:
+namespace Arcane {
+	class RenderPass
+	{
+	public:
 
 
-	static RenderPass* Create();
-private:
+		static RenderPass* Create();
+	private:
 
-};
+	};
+}

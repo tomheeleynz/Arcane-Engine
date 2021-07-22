@@ -4,45 +4,48 @@
 #include <array>
 #include "VulkanDevice.h"
 
-class VulkanSwapChain
-{
-public:
-	VulkanSwapChain(VulkanDevice& _device, VkSurfaceKHR _surface);
+namespace Arcane {
 
-	VkExtent2D GetExtent() { return m_Extent; }
-	VkFormat GetFormat() { return m_Format; }
-	VkPresentModeKHR GetPresentMode() { return m_PresentMode; }
+	class VulkanSwapChain
+	{
+	public:
+		VulkanSwapChain(VulkanDevice& _device, VkSurfaceKHR _surface);
 
-	std::vector<VkCommandBuffer> GetCommandBuffers() { return m_CommandBuffers; }
-	std::vector<VkFramebuffer> GetSwapChainFramebuffers() { return m_SwapChainFramebuffers; }
-	uint32_t GetSwapChainImagesSize() { return m_SwapChainImages.size(); }
+		VkExtent2D GetExtent() { return m_Extent; }
+		VkFormat GetFormat() { return m_Format; }
+		VkPresentModeKHR GetPresentMode() { return m_PresentMode; }
 
-	void SwapBuffers(); 
-private:
-	VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
-	VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
-	VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
-private:
-	VkSwapchainKHR m_SwapChain;
+		std::vector<VkCommandBuffer> GetCommandBuffers() { return m_CommandBuffers; }
+		std::vector<VkFramebuffer> GetSwapChainFramebuffers() { return m_SwapChainFramebuffers; }
+		uint32_t GetSwapChainImagesSize() { return m_SwapChainImages.size(); }
 
-	std::vector<VkImage> m_SwapChainImages;
-	std::vector<VkImageView> m_SwapChainImageViews;
-	std::vector<VkFramebuffer> m_SwapChainFramebuffers;
-	std::vector<VkCommandBuffer> m_CommandBuffers;
+		void SwapBuffers();
+	private:
+		VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+		VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+		VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+	private:
+		VkSwapchainKHR m_SwapChain;
 
-	VkExtent2D m_Extent;
-	VkFormat m_Format;
-	VkPresentModeKHR m_PresentMode;
+		std::vector<VkImage> m_SwapChainImages;
+		std::vector<VkImageView> m_SwapChainImageViews;
+		std::vector<VkFramebuffer> m_SwapChainFramebuffers;
+		std::vector<VkCommandBuffer> m_CommandBuffers;
 
-	VkRenderPass m_RenderPass;
-	VkCommandPool m_CommandPool;
+		VkExtent2D m_Extent;
+		VkFormat m_Format;
+		VkPresentModeKHR m_PresentMode;
 
-	std::vector<VkSemaphore> m_ImageAvailableSemaphores;
-	std::vector<VkSemaphore> m_RenderFinishedSemaphores;
-	
-	std::vector<VkFence> m_InFlightFences;
-	std::vector<VkFence> m_ImagesInFlight;
+		VkRenderPass m_RenderPass;
+		VkCommandPool m_CommandPool;
 
-	int m_MaxFramesInFlight = 2;
-	size_t m_CurrentFrameIndex = 0;
-};
+		std::vector<VkSemaphore> m_ImageAvailableSemaphores;
+		std::vector<VkSemaphore> m_RenderFinishedSemaphores;
+
+		std::vector<VkFence> m_InFlightFences;
+		std::vector<VkFence> m_ImagesInFlight;
+
+		int m_MaxFramesInFlight = 2;
+		size_t m_CurrentFrameIndex = 0;
+	};
+}

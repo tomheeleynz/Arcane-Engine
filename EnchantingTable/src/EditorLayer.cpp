@@ -19,22 +19,23 @@ EditorLayer::EditorLayer()
 void EditorLayer::OnAttach()
 {
 	// Test Shader
-	Shader* shader = Shader::Create(".\\src\\Assets\\Shaders\\vert.spv", ".\\src\\Assets\\Shaders\\frag.spv");
-	RenderPass* renderPass = RenderPass::Create();
+	Arcane::Shader* shader = Arcane::Shader::Create(".\\src\\Assets\\Shaders\\vert.spv", ".\\src\\Assets\\Shaders\\frag.spv");
+	Arcane::RenderPass* renderPass = Arcane::RenderPass::Create();
 
 	// Test Vertex Descriptor
-	VertexDescriptor* vertexDescriptor = VertexDescriptor::Create({
-		VertexType::float3,
-		VertexType::float3
+	Arcane::VertexDescriptor* vertexDescriptor = Arcane::VertexDescriptor::Create({
+		Arcane::VertexType::float3,
+		Arcane::VertexType::float3
 	});
 
 	// Test Pipeline
-	PipelineSpecification spec;
+	Arcane::PipelineSpecification spec;
 	spec.descriptor = vertexDescriptor;
 	spec.renderPass = renderPass;
 	spec.shader = shader;
+	spec.uniformBuffer = Arcane::UniformBuffer::Create();
 
-	Pipeline* pipeline = Pipeline::Create(spec);
+	Arcane::Pipeline* pipeline = Arcane::Pipeline::Create(spec);
 
 	// Test Vertices
 	std::vector<TestVertex> vertices = { 
@@ -49,20 +50,18 @@ void EditorLayer::OnAttach()
 	};
 
 	// Test Vertex Buffer
-	VertexBuffer* vertexBuffer = VertexBuffer::Create(vertices.data(), sizeof(TestVertex) * vertices.size());
-	IndexBuffer* indexBuffer = IndexBuffer::Create(indices.data(), indices.size());
+	Arcane::VertexBuffer* vertexBuffer = Arcane::VertexBuffer::Create(vertices.data(), sizeof(TestVertex) * vertices.size());
+	Arcane::IndexBuffer* indexBuffer = Arcane::IndexBuffer::Create(indices.data(), indices.size());
 	vertexBuffer->AddIndexBuffer(indexBuffer);
 
 	// Begin a Render pass
-	Renderer::BeginRenderPass(renderPass);
+	Arcane::Renderer::BeginRenderPass(renderPass);
 
 	// Render Test Triangle
-	Renderer::RenderQuad(vertexBuffer, pipeline);
+	Arcane::Renderer::RenderQuad(vertexBuffer, pipeline);
 
 	// End a pass
-	Renderer::EndRenderPass(renderPass);
-
-	UniformBuffer* uniformBuffer = UniformBuffer::Create();
+	Arcane::Renderer::EndRenderPass(renderPass);
 }
 
 void EditorLayer::OnDetach()

@@ -2,7 +2,7 @@
 
 #include <Arcane.h>
 
-class EditorLayer : public Layer
+class EditorLayer : public Arcane::Layer
 {
 public:
 	EditorLayer();

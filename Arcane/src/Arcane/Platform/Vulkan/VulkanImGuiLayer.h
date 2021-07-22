@@ -5,15 +5,16 @@
 #include "backends/imgui_impl_vulkan.h"
 #include "backends/imgui_impl_glfw.h"
 
+namespace Arcane {
+	class VulkanImGuiLayer : public ImGuiLayer
+	{
+	public:
+		VulkanImGuiLayer();
 
-class VulkanImGuiLayer : public ImGuiLayer
-{
-public:
-	VulkanImGuiLayer();
+		void Begin() override;
+		void End() override;
 
-	void Begin() override;
-	void End() override;
-
-	void OnAttach() override;
-private:
-};
+		void OnAttach() override;
+	private:
+	};
+}

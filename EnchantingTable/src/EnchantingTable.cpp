@@ -3,10 +3,10 @@
 
 #include "EditorLayer.h"
 
-class EnchantingTableApplication : public Application
+class EnchantingTableApplication : public Arcane::Application
 {
 public:
-	EnchantingTableApplication(ApplicationSpecifications& specifications) : Application(specifications)
+	EnchantingTableApplication(Arcane::ApplicationSpecifications& specifications) : Arcane::Application(specifications)
 	{
 		PushLayer(new EditorLayer());
 	}
@@ -19,10 +19,10 @@ private:
 int main()
 {
 	// -- Set API to Vulkan
-	RendererAPI::SetAPI(RendererAPIType::Vulkan);
+	Arcane::RendererAPI::SetAPI(Arcane::RendererAPIType::Vulkan);
 
 	// Set Application Specifications
-	ApplicationSpecifications specs;
+	Arcane::ApplicationSpecifications specs;
 	specs.Name = "Arcane Engine";
 	specs.WindowWidth = 1600;
 	specs.WindowHeight = 1200;

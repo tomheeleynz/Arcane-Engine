@@ -1,15 +1,17 @@
 #pragma once
 
-class Layer
-{
-public:
-	Layer() {};
+namespace Arcane {
+	class Layer
+	{
+	public:
+		Layer() {};
 
-	virtual void OnAttach() {}
-	virtual void OnDetach() {}
+		virtual void OnAttach() {}
+		virtual void OnDetach() {}
 
-	virtual void OnUpdate(float deltaTime) {}
-	virtual void OnImGuiRender() {}
-private:
+		virtual void OnUpdate(float deltaTime) {}
+		virtual void OnImGuiRender() {}
+	private:
 
-};
+	};
+}

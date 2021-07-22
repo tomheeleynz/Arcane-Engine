@@ -1,6 +1,8 @@
 #include "VulkanFramebuffer.h"
 
-VulkanFramebuffer::VulkanFramebuffer(FramebufferSpecifications& specs)
-{
+namespace Arcane {
+	VulkanFramebuffer::VulkanFramebuffer(FramebufferSpecifications& specs)
+	{
 
+	}
 }

@@ -8,36 +8,40 @@
 #include "Window.h"
 #include "ImGui/ImGuiLayer.h"
 
-struct ApplicationSpecifications
-{
-	std::string Name;
-	uint32_t WindowWidth;
-	uint32_t WindowHeight;
-};
 
-class Application
-{
-public:
-	Application(ApplicationSpecifications& specifications);
-	~Application();
+namespace Arcane {
 
-	void Run();
-	
-	// Get Reference To Window
-	Window& GetWindow();
+	struct ApplicationSpecifications
+	{
+		std::string Name;
+		uint32_t WindowWidth;
+		uint32_t WindowHeight;
+	};
 
-	// Get Static Application Reference
-	static Application& Get();
+	class Application
+	{
+	public:
+		Application(ApplicationSpecifications& specifications);
+		~Application();
 
-	// Push Layer
-	void PushLayer(Layer* _layer);
+		void Run();
 
-	// ImGui
-	void RenderImGui();
-private:
-	Window* m_Window;
-	static Application* s_Instance;
-	std::vector<Layer*> m_LayerStack;
-	bool m_bIsRunning = true;
-	ImGuiLayer* m_ImGuiLayer;
-};
+		// Get Reference To Window
+		Window& GetWindow();
+
+		// Get Static Application Reference
+		static Application& Get();
+
+		// Push Layer
+		void PushLayer(Layer* _layer);
+
+		// ImGui
+		void RenderImGui();
+	private:
+		Window* m_Window;
+		static Application* s_Instance;
+		std::vector<Layer*> m_LayerStack;
+		bool m_bIsRunning = true;
+		ImGuiLayer* m_ImGuiLayer;
+	};
+}

@@ -4,11 +4,14 @@
 // -- Vulkan Context
 #include "Platform/Vulkan/VulkanContext.h"
 
-GraphicsContext* GraphicsContext::Create()
-{
-	switch(RendererAPI::Current())
+namespace Arcane {
+
+	GraphicsContext* GraphicsContext::Create()
 	{
-	case RendererAPIType::Vulkan: return new VulkanContext();
-	default: return nullptr;
+		switch (RendererAPI::Current())
+		{
+		case RendererAPIType::Vulkan: return new VulkanContext();
+		default: return nullptr;
+		}
 	}
 }

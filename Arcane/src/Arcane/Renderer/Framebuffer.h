@@ -2,17 +2,20 @@
 
 #include <iostream>
 
-struct FramebufferSpecifications
-{
-	uint32_t width = 0;
-	uint32_t height = 0;
-};
+namespace Arcane {
 
-class Framebuffer
-{
-public:
+	struct FramebufferSpecifications
+	{
+		uint32_t width = 0;
+		uint32_t height = 0;
+	};
 
-	static Framebuffer* Create(FramebufferSpecifications& specs);
-private:
+	class Framebuffer
+	{
+	public:
 
-};
+		static Framebuffer* Create(FramebufferSpecifications& specs);
+	private:
+
+	};
+}

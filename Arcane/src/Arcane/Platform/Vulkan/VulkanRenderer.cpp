@@ -6,143 +6,146 @@
 
 #include "Core/Application.h"
 
-VulkanRenderer::VulkanRenderer()
-{
-	Init();
-}
+namespace Arcane {
 
-void VulkanRenderer::Init()
-{
-	Application& app = Application::Get();
-	VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
-}
-
-void VulkanRenderer::Shutdown()
-{
-	Application& app = Application::Get();
-	VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
-	vkDeviceWaitIdle(_context->GetDevice().GetLogicalDevice());
-}
-
-void VulkanRenderer::BeginRenderPass(RenderPass* renderPass)
-{
-	Application& app = Application::Get();
-	VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
-	VulkanSwapChain& swapChain = _context->GetSwapChain();
-	VulkanRenderPass* vulkanRenderPass = static_cast<VulkanRenderPass*>(renderPass);
-
-	auto swapChainCommandBuffers = swapChain.GetCommandBuffers();
-	auto swapChainFramebuffers = swapChain.GetSwapChainFramebuffers();
-
-	for (size_t i = 0; i < swapChainCommandBuffers.size(); i++)
+	VulkanRenderer::VulkanRenderer()
 	{
-		VkCommandBufferBeginInfo beginInfo{};
-		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		beginInfo.flags = 0;
-		beginInfo.pInheritanceInfo = nullptr;
-
-		if (vkBeginCommandBuffer(swapChainCommandBuffers[i], &beginInfo) != VK_SUCCESS) {
-			printf("Command Buffer Not Began\n");
-		}
-		else {
-			printf("Command Buffer Began\n");
-		}
-
-		VkRenderPassBeginInfo renderPassInfo{};
-		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		renderPassInfo.renderPass = vulkanRenderPass->GetRenderPass();
-		renderPassInfo.framebuffer = swapChainFramebuffers[i];
-		renderPassInfo.renderArea.offset = { 0, 0 };
-		renderPassInfo.renderArea.extent = swapChain.GetExtent();
-
-		VkClearValue clearColor = { 0.2f, 0.3f, 0.3f, 1.0f };
-		renderPassInfo.clearValueCount = 1;
-		renderPassInfo.pClearValues = &clearColor;
-
-		vkCmdBeginRenderPass(swapChainCommandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+		Init();
 	}
-}
 
-void VulkanRenderer::EndRenderPass(RenderPass* renderPass)
-{
-	Application& app = Application::Get();
-	VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
-	VulkanSwapChain& swapChain = _context->GetSwapChain();
-	VulkanRenderPass* vulkanRenderPass = static_cast<VulkanRenderPass*>(renderPass);
-
-	auto swapChainCommandBuffers = swapChain.GetCommandBuffers();
-	auto swapChainFramebuffers = swapChain.GetSwapChainFramebuffers();
-
-	for (size_t i = 0; i < swapChainCommandBuffers.size(); i++)
+	void VulkanRenderer::Init()
 	{
-		vkCmdEndRenderPass(swapChainCommandBuffers[i]);
+		Application& app = Application::Get();
+		VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
+	}
 
-		if (vkEndCommandBuffer(swapChainCommandBuffers[i]) != VK_SUCCESS) {
-			printf("Command Buffer Failed\n");
-		}
-		else {
-			printf("Command Buffer Success\n");
+	void VulkanRenderer::Shutdown()
+	{
+		Application& app = Application::Get();
+		VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
+		vkDeviceWaitIdle(_context->GetDevice().GetLogicalDevice());
+	}
+
+	void VulkanRenderer::BeginRenderPass(RenderPass* renderPass)
+	{
+		Application& app = Application::Get();
+		VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
+		VulkanSwapChain& swapChain = _context->GetSwapChain();
+		VulkanRenderPass* vulkanRenderPass = static_cast<VulkanRenderPass*>(renderPass);
+
+		auto swapChainCommandBuffers = swapChain.GetCommandBuffers();
+		auto swapChainFramebuffers = swapChain.GetSwapChainFramebuffers();
+
+		for (size_t i = 0; i < swapChainCommandBuffers.size(); i++)
+		{
+			VkCommandBufferBeginInfo beginInfo{};
+			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+			beginInfo.flags = 0;
+			beginInfo.pInheritanceInfo = nullptr;
+
+			if (vkBeginCommandBuffer(swapChainCommandBuffers[i], &beginInfo) != VK_SUCCESS) {
+				printf("Command Buffer Not Began\n");
+			}
+			else {
+				printf("Command Buffer Began\n");
+			}
+
+			VkRenderPassBeginInfo renderPassInfo{};
+			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+			renderPassInfo.renderPass = vulkanRenderPass->GetRenderPass();
+			renderPassInfo.framebuffer = swapChainFramebuffers[i];
+			renderPassInfo.renderArea.offset = { 0, 0 };
+			renderPassInfo.renderArea.extent = swapChain.GetExtent();
+
+			VkClearValue clearColor = { 0.2f, 0.3f, 0.3f, 1.0f };
+			renderPassInfo.clearValueCount = 1;
+			renderPassInfo.pClearValues = &clearColor;
+
+			vkCmdBeginRenderPass(swapChainCommandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 		}
 	}
-}
 
-void VulkanRenderer::RenderTriangle(VertexBuffer* buffer, Pipeline* pipeline)
-{
-	Application& app = Application::Get();
-	
-	VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
-	VulkanSwapChain& swapChain = _context->GetSwapChain();
+	void VulkanRenderer::EndRenderPass(RenderPass* renderPass)
+	{
+		Application& app = Application::Get();
+		VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
+		VulkanSwapChain& swapChain = _context->GetSwapChain();
+		VulkanRenderPass* vulkanRenderPass = static_cast<VulkanRenderPass*>(renderPass);
 
-	// Bind Pipeline for triangle to use
-	VkPipeline vulkanPipeline = static_cast<VulkanPipeline*>(pipeline)->GetPipeline();
-	VkBuffer vulkanVertexBuffer = static_cast<VulkanVertexBuffer*>(buffer)->GetVertexBuffer();
-	std::vector<VkCommandBuffer> swapChainBuffers = swapChain.GetCommandBuffers();
+		auto swapChainCommandBuffers = swapChain.GetCommandBuffers();
+		auto swapChainFramebuffers = swapChain.GetSwapChainFramebuffers();
 
-	for (size_t i = 0; i < swapChainBuffers.size(); i++) {
-		// Bind Pipeline
-		vkCmdBindPipeline(swapChainBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline);
+		for (size_t i = 0; i < swapChainCommandBuffers.size(); i++)
+		{
+			vkCmdEndRenderPass(swapChainCommandBuffers[i]);
 
-		// Bind Vertex Buffer
-		VkBuffer vertexBuffers[] = {vulkanVertexBuffer};
-		VkDeviceSize offsets[] = {0};
-		vkCmdBindVertexBuffers(swapChainBuffers[i], 0, 1, vertexBuffers, offsets);
-
-		// Draw Vertices
-		vkCmdDraw(swapChainBuffers[i], 3, 1, 0, 0);
+			if (vkEndCommandBuffer(swapChainCommandBuffers[i]) != VK_SUCCESS) {
+				printf("Command Buffer Failed\n");
+			}
+			else {
+				printf("Command Buffer Success\n");
+			}
+		}
 	}
-}
 
-void VulkanRenderer::RenderQuad(VertexBuffer* buffer, Pipeline* pipeline)
-{
-	Application& app = Application::Get();
+	void VulkanRenderer::RenderTriangle(VertexBuffer* buffer, Pipeline* pipeline)
+	{
+		Application& app = Application::Get();
 
-	VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
-	VulkanSwapChain& swapChain = _context->GetSwapChain();
+		VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
+		VulkanSwapChain& swapChain = _context->GetSwapChain();
 
-	// Bind Pipeline for triangle to use
-	VkPipeline vulkanPipeline = static_cast<VulkanPipeline*>(pipeline)->GetPipeline();
-	VkBuffer vulkanVertexBuffer = static_cast<VulkanVertexBuffer*>(buffer)->GetVertexBuffer();
+		// Bind Pipeline for triangle to use
+		VkPipeline vulkanPipeline = static_cast<VulkanPipeline*>(pipeline)->GetPipeline();
+		VkBuffer vulkanVertexBuffer = static_cast<VulkanVertexBuffer*>(buffer)->GetVertexBuffer();
+		std::vector<VkCommandBuffer> swapChainBuffers = swapChain.GetCommandBuffers();
 
-	// Get Index Buffer and count from vertex buffer
-	IndexBuffer* indexBuffer = buffer->GetIndexBuffer();
-	uint32_t indiceCount = indexBuffer->GetCount();
-	VkBuffer vulkanIndexBuffer = static_cast<VulkanIndexBuffer*>(indexBuffer)->GetIndexBuffer();
+		for (size_t i = 0; i < swapChainBuffers.size(); i++) {
+			// Bind Pipeline
+			vkCmdBindPipeline(swapChainBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline);
 
-	std::vector<VkCommandBuffer> swapChainBuffers = swapChain.GetCommandBuffers();
+			// Bind Vertex Buffer
+			VkBuffer vertexBuffers[] = { vulkanVertexBuffer };
+			VkDeviceSize offsets[] = { 0 };
+			vkCmdBindVertexBuffers(swapChainBuffers[i], 0, 1, vertexBuffers, offsets);
 
-	for (size_t i = 0; i < swapChainBuffers.size(); i++) {
-		// Bind Pipeline
-		vkCmdBindPipeline(swapChainBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline);
+			// Draw Vertices
+			vkCmdDraw(swapChainBuffers[i], 3, 1, 0, 0);
+		}
+	}
 
-		// Bind Vertex Buffer
-		VkBuffer vertexBuffers[] = { vulkanVertexBuffer };
-		VkDeviceSize offsets[] = { 0 };
-		vkCmdBindVertexBuffers(swapChainBuffers[i], 0, 1, vertexBuffers, offsets);
+	void VulkanRenderer::RenderQuad(VertexBuffer* buffer, Pipeline* pipeline)
+	{
+		Application& app = Application::Get();
 
-		// Bind Index Buffer
-		vkCmdBindIndexBuffer(swapChainBuffers[i], vulkanIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+		VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
+		VulkanSwapChain& swapChain = _context->GetSwapChain();
 
-		// Draw Vertices
-		vkCmdDrawIndexed(swapChainBuffers[i], indiceCount, 1, 0, 0, 0);
+		// Bind Pipeline for triangle to use
+		VkPipeline vulkanPipeline = static_cast<VulkanPipeline*>(pipeline)->GetPipeline();
+		VkBuffer vulkanVertexBuffer = static_cast<VulkanVertexBuffer*>(buffer)->GetVertexBuffer();
+
+		// Get Index Buffer and count from vertex buffer
+		IndexBuffer* indexBuffer = buffer->GetIndexBuffer();
+		uint32_t indiceCount = indexBuffer->GetCount();
+		VkBuffer vulkanIndexBuffer = static_cast<VulkanIndexBuffer*>(indexBuffer)->GetIndexBuffer();
+
+		std::vector<VkCommandBuffer> swapChainBuffers = swapChain.GetCommandBuffers();
+
+		for (size_t i = 0; i < swapChainBuffers.size(); i++) {
+			// Bind Pipeline
+			vkCmdBindPipeline(swapChainBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline);
+
+			// Bind Vertex Buffer
+			VkBuffer vertexBuffers[] = { vulkanVertexBuffer };
+			VkDeviceSize offsets[] = { 0 };
+			vkCmdBindVertexBuffers(swapChainBuffers[i], 0, 1, vertexBuffers, offsets);
+
+			// Bind Index Buffer
+			vkCmdBindIndexBuffer(swapChainBuffers[i], vulkanIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+
+			// Draw Vertices
+			vkCmdDrawIndexed(swapChainBuffers[i], indiceCount, 1, 0, 0, 0);
+		}
 	}
 }

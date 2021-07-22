@@ -2,11 +2,13 @@
 
 #include <string>
 
-class Shader
-{
-public:
+namespace Arcane {
+	class Shader
+	{
+	public:
 
-	static Shader* Create(std::string vertexShader, std::string fragmentShader);
-private:
+		static Shader* Create(std::string vertexShader, std::string fragmentShader);
+	private:
 
-};
+	};
+}

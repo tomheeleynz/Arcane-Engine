@@ -5,59 +5,62 @@
 #include <optional>
 #include <set>
 
-struct QueueFamilyIndices {
-	std::optional<uint32_t> graphicsFamily;
-	std::optional<uint32_t> presentFamily;
+namespace Arcane {
 
-	bool IsComplete() {
-		return graphicsFamily.has_value() && presentFamily.has_value();
-	}
-};
+	struct QueueFamilyIndices {
+		std::optional<uint32_t> graphicsFamily;
+		std::optional<uint32_t> presentFamily;
 
-struct SwapChainSupportDetails {
-	VkSurfaceCapabilitiesKHR capabilities;
-	std::vector<VkSurfaceFormatKHR> formats;
-	std::vector<VkPresentModeKHR> presentModes;
-};
+		bool IsComplete() {
+			return graphicsFamily.has_value() && presentFamily.has_value();
+		}
+	};
 
-//////////////////////////////////////////////////////////////////////////////
-//// Vulkan Physical Device
-//////////////////////////////////////////////////////////////////////////////
-class VulkanPhysicalDevice
-{
-public:
-	VulkanPhysicalDevice() = default;
-	VulkanPhysicalDevice(VkSurfaceKHR _surface);
+	struct SwapChainSupportDetails {
+		VkSurfaceCapabilitiesKHR capabilities;
+		std::vector<VkSurfaceFormatKHR> formats;
+		std::vector<VkPresentModeKHR> presentModes;
+	};
 
-	VkPhysicalDevice GetPhysicalDevice();
-	QueueFamilyIndices& GetIndices();
-	SwapChainSupportDetails& GetSwapChainDetails() { return m_SwapChainDetails; }
-private:
-	VkPhysicalDevice m_PhysicalDevice;
-	QueueFamilyIndices m_Indices;
-	SwapChainSupportDetails m_SwapChainDetails;
-};
+	//////////////////////////////////////////////////////////////////////////////
+	//// Vulkan Physical Device
+	//////////////////////////////////////////////////////////////////////////////
+	class VulkanPhysicalDevice
+	{
+	public:
+		VulkanPhysicalDevice() = default;
+		VulkanPhysicalDevice(VkSurfaceKHR _surface);
 
-//////////////////////////////////////////////////////////////////////////////
-//// Vulkan Logical Device
-//////////////////////////////////////////////////////////////////////////////
-class VulkanDevice
-{
-public:
-	VulkanDevice() = default;
-	VulkanDevice(VulkanPhysicalDevice& _physicalDevice);
+		VkPhysicalDevice GetPhysicalDevice();
+		QueueFamilyIndices& GetIndices();
+		SwapChainSupportDetails& GetSwapChainDetails() { return m_SwapChainDetails; }
+	private:
+		VkPhysicalDevice m_PhysicalDevice;
+		QueueFamilyIndices m_Indices;
+		SwapChainSupportDetails m_SwapChainDetails;
+	};
 
-	VulkanPhysicalDevice& GetVulkanPhysicalDevice();
-	VkDevice& GetLogicalDevice();
+	//////////////////////////////////////////////////////////////////////////////
+	//// Vulkan Logical Device
+	//////////////////////////////////////////////////////////////////////////////
+	class VulkanDevice
+	{
+	public:
+		VulkanDevice() = default;
+		VulkanDevice(VulkanPhysicalDevice& _physicalDevice);
 
-	VkQueue GetGraphicsQueue() { return m_GraphicsQueue; };
-	VkQueue GetPresentQueue() { return m_PresentQueue; }
+		VulkanPhysicalDevice& GetVulkanPhysicalDevice();
+		VkDevice& GetLogicalDevice();
 
-private:
-	VulkanPhysicalDevice m_PhysicalDevice;
-	VkDevice m_Device;
+		VkQueue GetGraphicsQueue() { return m_GraphicsQueue; };
+		VkQueue GetPresentQueue() { return m_PresentQueue; }
 
-	// Device Queues
-	VkQueue m_GraphicsQueue;
-	VkQueue m_PresentQueue;
-};
+	private:
+		VulkanPhysicalDevice m_PhysicalDevice;
+		VkDevice m_Device;
+
+		// Device Queues
+		VkQueue m_GraphicsQueue;
+		VkQueue m_PresentQueue;
+	};
+}

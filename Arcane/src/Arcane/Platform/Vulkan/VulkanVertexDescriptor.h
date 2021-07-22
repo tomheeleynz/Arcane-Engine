@@ -4,15 +4,18 @@
 #include <vector>
 #include "Renderer/VertexDescriptor.h"
 
-class VulkanVertexDescriptor : public VertexDescriptor
-{
-public:
-	VulkanVertexDescriptor(std::initializer_list<VertexType> vertexTypes);
+namespace Arcane {
 
-	VkVertexInputBindingDescription GetBindingDescription() { return m_BindingDescription; }
-	std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions() { return m_AttributeDescriptions; }
+	class VulkanVertexDescriptor : public VertexDescriptor
+	{
+	public:
+		VulkanVertexDescriptor(std::initializer_list<VertexType> vertexTypes);
 
-private:
-	VkVertexInputBindingDescription m_BindingDescription;
-	std::vector<VkVertexInputAttributeDescription> m_AttributeDescriptions;
-};
+		VkVertexInputBindingDescription GetBindingDescription() { return m_BindingDescription; }
+		std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions() { return m_AttributeDescriptions; }
+
+	private:
+		VkVertexInputBindingDescription m_BindingDescription;
+		std::vector<VkVertexInputAttributeDescription> m_AttributeDescriptions;
+	};
+}

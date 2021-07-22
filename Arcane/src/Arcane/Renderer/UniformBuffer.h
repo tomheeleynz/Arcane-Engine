@@ -1,10 +1,12 @@
 #pragma once
 
-class UniformBuffer
-{
-public:
+namespace Arcane {
+	class UniformBuffer
+	{
+	public:
 
-	static UniformBuffer* Create();
-private:
+		static UniformBuffer* Create();
+	private:
 
-};
+	};
+}

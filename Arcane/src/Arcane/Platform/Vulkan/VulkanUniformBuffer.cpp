@@ -2,63 +2,104 @@
 #include "Core/Application.h"
 #include "VulkanContext.h"
 
-static uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
-{
-	Application& app = Application::Get();
-	VkDevice logicalDevice = static_cast<VulkanContext*>(app.GetWindow().GetContext())->GetDevice().GetLogicalDevice();
-	VkPhysicalDevice physicalDevice = static_cast<VulkanContext*>(app.GetWindow().GetContext())->GetPhysicalDevice().GetPhysicalDevice();
+namespace Arcane {
+	static uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
+	{
+		Application& app = Application::Get();
+		VkDevice logicalDevice = static_cast<VulkanContext*>(app.GetWindow().GetContext())->GetDevice().GetLogicalDevice();
+		VkPhysicalDevice physicalDevice = static_cast<VulkanContext*>(app.GetWindow().GetContext())->GetPhysicalDevice().GetPhysicalDevice();
 
-	VkPhysicalDeviceMemoryProperties memProperties;
-	vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
+		VkPhysicalDeviceMemoryProperties memProperties;
+		vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
 
-	for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
-		if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
-			return i;
+		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+			if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+				return i;
+			}
 		}
+
+		return -1;
 	}
 
-	return -1;
-}
+	VulkanUniformBuffer::VulkanUniformBuffer()
+	{
+		Application& app = Application::Get();
+		VulkanContext* context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
+		VkDevice logicalDevice = context->GetDevice().GetLogicalDevice();
 
-VulkanUniformBuffer::VulkanUniformBuffer()
-{
-	Application& app = Application::Get();
-	VulkanContext* context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
-	VkDevice logicalDevice = context->GetDevice().GetLogicalDevice();
+		// Create set descriptor layout
+		VkDescriptorSetLayoutBinding uboLayoutBinding{};
+		uboLayoutBinding.binding = 0;
+		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		uboLayoutBinding.descriptorCount = 1;
+		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		uboLayoutBinding.pImmutableSamplers = nullptr;
 
-	VkDeviceSize bufferSize = sizeof(UniformBufferObject);
+		VkDescriptorSetLayoutCreateInfo layoutInfo{};
+		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		layoutInfo.bindingCount = 1;
+		layoutInfo.pBindings = &uboLayoutBinding;
 
-	m_UniformBuffers.resize(context->GetSwapChain().GetSwapChainImagesSize());
-	m_UniformBuffersMemory.resize(context->GetSwapChain().GetSwapChainImagesSize());
-
-	for (int i = 0; i < context->GetSwapChain().GetSwapChainImagesSize(); i++) {
-		VkBufferCreateInfo bufferInfo{};
-		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-		bufferInfo.size = bufferSize;
-		bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-		if (vkCreateBuffer(logicalDevice, &bufferInfo, nullptr, &m_UniformBuffers[i]) != VK_SUCCESS) {
-			printf("Uniform Buffer Not Created\n");
+		if (vkCreateDescriptorSetLayout(logicalDevice, &layoutInfo, nullptr, &m_DescriptorLayout) != VK_SUCCESS) {
+			printf("Descriptor Set Layout Not Created\n");
 		}
 		else {
-			printf("Uniform Buffer Created\n");
+			printf("Descriptor Set Created\n");
 		}
 
-		// Get buffer memeory requirements
-		VkMemoryRequirements memRequirements;
-		vkGetBufferMemoryRequirements(logicalDevice, m_UniformBuffers[i], &memRequirements);
+		// Create Uniform Buffers
+		VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
-		VkMemoryAllocateInfo allocInfo{};
-		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+		m_UniformBuffers.resize(context->GetSwapChain().GetSwapChainImagesSize());
+		m_UniformBuffersMemory.resize(context->GetSwapChain().GetSwapChainImagesSize());
 
-		if (vkAllocateMemory(logicalDevice, &allocInfo, nullptr, &m_UniformBuffersMemory[i]) != VK_SUCCESS) {
-			printf("Failed to allocated uniform buffer memory\n");
+		for (int i = 0; i < context->GetSwapChain().GetSwapChainImagesSize(); i++) {
+			VkBufferCreateInfo bufferInfo{};
+			bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+			bufferInfo.size = bufferSize;
+			bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+			bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+			if (vkCreateBuffer(logicalDevice, &bufferInfo, nullptr, &m_UniformBuffers[i]) != VK_SUCCESS) {
+				printf("Uniform Buffer Not Created\n");
+			}
+			else {
+				printf("Uniform Buffer Created\n");
+			}
+
+			// Get buffer memeory requirements
+			VkMemoryRequirements memRequirements;
+			vkGetBufferMemoryRequirements(logicalDevice, m_UniformBuffers[i], &memRequirements);
+
+			VkMemoryAllocateInfo allocInfo{};
+			allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+			allocInfo.allocationSize = memRequirements.size;
+			allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+			if (vkAllocateMemory(logicalDevice, &allocInfo, nullptr, &m_UniformBuffersMemory[i]) != VK_SUCCESS) {
+				printf("Failed to allocated uniform buffer memory\n");
+			}
+			else {
+				printf("Allocated uniform buffer memory\n");
+			}
+		}
+
+		// Creating Descriptor Pools
+		VkDescriptorPoolSize poolSize{};
+		poolSize.type == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		poolSize.descriptorCount = context->GetSwapChain().GetSwapChainImagesSize();
+
+		VkDescriptorPoolCreateInfo poolInfo{};
+		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		poolInfo.poolSizeCount = 1;
+		poolInfo.pPoolSizes = &poolSize;
+		poolInfo.maxSets = context->GetSwapChain().GetSwapChainImagesSize();
+
+		if (vkCreateDescriptorPool(logicalDevice, &poolInfo, nullptr, &m_DescriptorPool)) {
+			printf("Failed to create descriptor pool\n");
 		}
 		else {
-			printf("Allocated uniform buffer memory\n");
+			printf("Created descriptor pool\n");
 		}
 	}
 }

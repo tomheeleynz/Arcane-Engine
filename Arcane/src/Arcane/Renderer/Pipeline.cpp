@@ -2,11 +2,13 @@
 #include "Renderer/Renderer.h"
 #include "Platform/Vulkan/VulkanPipeline.h"
 
-Pipeline* Pipeline::Create(PipelineSpecification& spec)
-{
-	switch (RendererAPI::Current())
+namespace Arcane {
+	Pipeline* Pipeline::Create(PipelineSpecification& spec)
 	{
-	case RendererAPIType::Vulkan: return new VulkanPipeline(spec);
-	default: return nullptr;
+		switch (RendererAPI::Current())
+		{
+		case RendererAPIType::Vulkan: return new VulkanPipeline(spec);
+		default: return nullptr;
+		}
 	}
 }

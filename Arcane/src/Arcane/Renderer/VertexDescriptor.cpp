@@ -5,12 +5,14 @@
 // -- Vulkan
 #include "Platform/Vulkan/VulkanVertexDescriptor.h"
 
-VertexDescriptor* VertexDescriptor::Create(std::initializer_list<VertexType> vertexTypes)
-{
-	switch (RendererAPI::Current())
+namespace Arcane {
+	VertexDescriptor* VertexDescriptor::Create(std::initializer_list<VertexType> vertexTypes)
 	{
-	case RendererAPIType::Vulkan: return new VulkanVertexDescriptor(vertexTypes);
-	default: return nullptr;
+		switch (RendererAPI::Current())
+		{
+		case RendererAPIType::Vulkan: return new VulkanVertexDescriptor(vertexTypes);
+		default: return nullptr;
+		}
+
 	}
-	
 }
