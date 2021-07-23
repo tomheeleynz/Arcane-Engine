@@ -24,6 +24,8 @@ namespace Arcane {
 
 		m_ImGuiLayer = ImGuiLayer::Create();
 		m_ImGuiLayer->OnAttach();
+
+		m_Clock = new CClock();
 	}
 
 	void Application::RenderImGui()
@@ -59,8 +61,11 @@ namespace Arcane {
 	{
 		while (m_bIsRunning)
 		{
+			m_Clock->Process();
+			float deltaTime = m_Clock->GetDeltaTick() / 1000.0f;
+
 			for (Layer* layer : m_LayerStack) {
-				layer->OnUpdate(1.0f);
+				layer->OnUpdate(deltaTime);
 			}
 
 			RenderImGui();

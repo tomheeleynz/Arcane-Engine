@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 
+#include "Clock.h"
 #include "Window.h"
 #include "Arcane/ImGui/ImGuiLayer.h"
 
@@ -43,5 +44,6 @@ namespace Arcane {
 		std::vector<Layer*> m_LayerStack;
 		bool m_bIsRunning = true;
 		ImGuiLayer* m_ImGuiLayer;
+		CClock* m_Clock;
 	};
 }

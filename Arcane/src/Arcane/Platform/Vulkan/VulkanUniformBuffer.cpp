@@ -21,7 +21,7 @@ namespace Arcane {
 		return -1;
 	}
 
-	VulkanUniformBuffer::VulkanUniformBuffer()
+	VulkanUniformBuffer::VulkanUniformBuffer(uint32_t size)
 	{
 		Application& app = Application::Get();
 		VulkanContext* context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
@@ -48,7 +48,7 @@ namespace Arcane {
 		}
 
 		// Create Uniform Buffers
-		VkDeviceSize bufferSize = sizeof(UniformBufferObject);
+		VkDeviceSize bufferSize = size;
 
 		m_UniformBuffers.resize(context->GetSwapChain().GetSwapChainImagesSize());
 		m_UniformBuffersMemory.resize(context->GetSwapChain().GetSwapChainImagesSize());
@@ -101,5 +101,46 @@ namespace Arcane {
 		else {
 			printf("Created descriptor pool\n");
 		}
+
+		std::vector<VkDescriptorSetLayout> layouts(context->GetSwapChain().GetSwapChainImagesSize(), m_DescriptorLayout);
+		VkDescriptorSetAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		allocInfo.descriptorPool = m_DescriptorPool;
+		allocInfo.descriptorSetCount = context->GetSwapChain().GetSwapChainImagesSize();
+		allocInfo.pSetLayouts = layouts.data();
+
+		m_DescriptorSets.resize(context->GetSwapChain().GetSwapChainImagesSize());
+
+		if (vkAllocateDescriptorSets(logicalDevice, &allocInfo, m_DescriptorSets.data()) != VK_SUCCESS) {
+			printf("Descriptor Sets Not Allocated\n");
+		}
+
+		// Now we populate every descriptor
+		for (size_t i = 0; i < context->GetSwapChain().GetSwapChainImagesSize(); i++) {
+			VkDescriptorBufferInfo bufferInfo{};
+			bufferInfo.buffer = m_UniformBuffers[i];
+			bufferInfo.offset = 0;
+			bufferInfo.range = sizeof(UniformBufferObject);
+
+			VkWriteDescriptorSet descriptorWrite{};
+			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptorWrite.dstSet = m_DescriptorSets[i];
+			descriptorWrite.dstBinding = 0;
+			descriptorWrite.dstArrayElement = 0;
+
+			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			descriptorWrite.descriptorCount = 1;
+
+			descriptorWrite.pBufferInfo = &bufferInfo;
+			descriptorWrite.pImageInfo = nullptr; // Optional
+			descriptorWrite.pTexelBufferView = nullptr; // Optional
+
+			vkUpdateDescriptorSets(logicalDevice, 1, &descriptorWrite, 0, nullptr);
+		}
+	}
+
+	void VulkanUniformBuffer::WriteData(void* data)
+	{
+
 	}
 }

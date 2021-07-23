@@ -1,6 +1,6 @@
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
-#include <vector>
-#include <filesystem>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "EditorLayer.h"
 
@@ -8,6 +8,13 @@ struct TestVertex
 {
 	glm::vec3 position;
 	glm::vec3 color;
+};
+
+struct UniformBufferObject
+{
+	glm::mat4 model;
+	glm::mat4 view;
+	glm::mat4 proj;
 };
 
 
@@ -33,17 +40,16 @@ void EditorLayer::OnAttach()
 	spec.descriptor = m_VertexDescriptor;
 	spec.renderPass = m_RenderPass;
 	spec.shader = m_Shader;
-	spec.uniformBuffer = Arcane::UniformBuffer::Create();
-	 
+	spec.uniformBuffer = Arcane::UniformBuffer::Create(sizeof(UniformBufferObject));
 
 	m_Pipeline = Arcane::Pipeline::Create(spec);
 
 	// Test Vertices
 	std::vector<TestVertex> vertices = { 
-		{{-0.5f, -0.5f,0.0f}, {1.0f, 0.5f, 0.2f}},
-		{{0.5f, -0.5f, 0.0f}, {1.0f, 0.5f, 0.2f}},
-		{{0.5f, 0.5f,  0.0f}, {1.0f, 0.5f, 0.2f}},
-		{{-0.5f, 0.5f, 0.0f}, {1.0f, 0.5f, 0.2f}}
+		{{-0.5f, -0.5f,0.0f}, {1.0f, 0.0f, 0.0f}},
+		{{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
+		{{0.5f, 0.5f,  0.0f}, {0.0f, 0.0f, 1.0f}},
+		{{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}}
 	};
 
 	std::vector<uint32_t> indices = {
@@ -63,6 +69,13 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnUpdate(float deltaTime)
 {
+	printf("%.2f\n", deltaTime);
+
+	UniformBufferObject ubo{};
+	ubo.model = glm::rotate(glm::mat4(1.0f), deltaTime * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	ubo.proj = glm::perspective(glm::radians(45.0f), 1600.0f / 1200.0f, 0.1f, 10.0f);
+
 	// Begin a Render pass
 	Arcane::Renderer::BeginRenderPass(m_RenderPass);
 

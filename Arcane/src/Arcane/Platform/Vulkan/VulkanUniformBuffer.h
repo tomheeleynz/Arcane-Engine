@@ -17,10 +17,13 @@ namespace Arcane {
 	class VulkanUniformBuffer : public UniformBuffer
 	{
 	public:
-		VulkanUniformBuffer();
+		VulkanUniformBuffer(uint32_t size);
 
 		// Get Descriptor Layout to give to pipeline
 		VkDescriptorSetLayout GetLayout() { return m_DescriptorLayout; }
+
+		// Write Data
+		void WriteData(void* data) override;
 	private:
 		// Descriptor Set Layout
 		VkDescriptorSetLayout m_DescriptorLayout;
