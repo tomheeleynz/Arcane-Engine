@@ -1,5 +1,5 @@
 #include "Window.h"
-#include "Renderer/GraphicsContext.h"
+#include "Arcane/Renderer/GraphicsContext.h"
 
 namespace Arcane {
 	Window::Window(WindowSpecifications& specifications)

@@ -1,9 +1,10 @@
 #include "UniformBuffer.h"
-#include "Renderer/Renderer.h"
+#include "Arcane/Renderer/Renderer.h"
 
 // Platform
 // -- Vulkan
-#include "Platform/Vulkan/VulkanUniformBuffer.h"
+#include "Arcane/Platform/Vulkan/VulkanUniformBuffer.h"
+
 namespace Arcane {
 	UniformBuffer* UniformBuffer::Create()
 	{

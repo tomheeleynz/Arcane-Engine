@@ -4,7 +4,7 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-#include "Renderer/UniformBuffer.h"
+#include "Arcane/Renderer/UniformBuffer.h"
 
 namespace Arcane {
 	struct UniformBufferObject

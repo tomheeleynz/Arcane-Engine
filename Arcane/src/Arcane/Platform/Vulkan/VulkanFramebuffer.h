@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
-#include "Renderer/Framebuffer.h"
+#include "Arcane/Renderer/Framebuffer.h"
 
 namespace Arcane {
 	class VulkanFramebuffer : public Framebuffer

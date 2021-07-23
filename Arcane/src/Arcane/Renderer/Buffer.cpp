@@ -1,9 +1,9 @@
 #include "Buffer.h"
-#include "Renderer/Renderer.h"
+#include "Arcane/Renderer/Renderer.h"
 
 // Platform Specific
 // -- Vulkan
-#include "Platform/Vulkan/VulkanBuffer.h"
+#include "Arcane/Platform/Vulkan/VulkanBuffer.h"
 
 namespace Arcane {
 

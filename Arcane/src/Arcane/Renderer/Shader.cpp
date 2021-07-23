@@ -1,6 +1,6 @@
 #include "Shader.h"
-#include "Renderer/Renderer.h"
-#include "Platform/Vulkan/VulkanShader.h"
+#include "Arcane/Renderer/Renderer.h"
+#include "Arcane/Platform/Vulkan/VulkanShader.h"
 
 namespace Arcane {
 	Shader* Shader::Create(std::string vertexShader, std::string fragmentShader)

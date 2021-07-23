@@ -3,7 +3,7 @@
 
 // Platform Specific
 // -- Vulkan
-#include "Platform/Vulkan/VulkanVertexDescriptor.h"
+#include "Arcane/Platform/Vulkan/VulkanVertexDescriptor.h"
 
 namespace Arcane {
 	VertexDescriptor* VertexDescriptor::Create(std::initializer_list<VertexType> vertexTypes)

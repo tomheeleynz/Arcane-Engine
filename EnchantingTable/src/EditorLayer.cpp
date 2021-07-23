@@ -19,23 +19,24 @@ EditorLayer::EditorLayer()
 void EditorLayer::OnAttach()
 {
 	// Test Shader
-	Arcane::Shader* shader = Arcane::Shader::Create(".\\src\\Assets\\Shaders\\vert.spv", ".\\src\\Assets\\Shaders\\frag.spv");
-	Arcane::RenderPass* renderPass = Arcane::RenderPass::Create();
+	m_Shader = Arcane::Shader::Create(".\\src\\Assets\\Shaders\\vert.spv", ".\\src\\Assets\\Shaders\\frag.spv");
+	m_RenderPass = Arcane::RenderPass::Create();
 
 	// Test Vertex Descriptor
-	Arcane::VertexDescriptor* vertexDescriptor = Arcane::VertexDescriptor::Create({
+	m_VertexDescriptor = Arcane::VertexDescriptor::Create({
 		Arcane::VertexType::float3,
 		Arcane::VertexType::float3
 	});
 
 	// Test Pipeline
 	Arcane::PipelineSpecification spec;
-	spec.descriptor = vertexDescriptor;
-	spec.renderPass = renderPass;
-	spec.shader = shader;
+	spec.descriptor = m_VertexDescriptor;
+	spec.renderPass = m_RenderPass;
+	spec.shader = m_Shader;
 	spec.uniformBuffer = Arcane::UniformBuffer::Create();
+	 
 
-	Arcane::Pipeline* pipeline = Arcane::Pipeline::Create(spec);
+	m_Pipeline = Arcane::Pipeline::Create(spec);
 
 	// Test Vertices
 	std::vector<TestVertex> vertices = { 
@@ -50,18 +51,9 @@ void EditorLayer::OnAttach()
 	};
 
 	// Test Vertex Buffer
-	Arcane::VertexBuffer* vertexBuffer = Arcane::VertexBuffer::Create(vertices.data(), sizeof(TestVertex) * vertices.size());
+	m_VertexBuffer = Arcane::VertexBuffer::Create(vertices.data(), sizeof(TestVertex) * vertices.size());
 	Arcane::IndexBuffer* indexBuffer = Arcane::IndexBuffer::Create(indices.data(), indices.size());
-	vertexBuffer->AddIndexBuffer(indexBuffer);
-
-	// Begin a Render pass
-	Arcane::Renderer::BeginRenderPass(renderPass);
-
-	// Render Test Triangle
-	Arcane::Renderer::RenderQuad(vertexBuffer, pipeline);
-
-	// End a pass
-	Arcane::Renderer::EndRenderPass(renderPass);
+	m_VertexBuffer->AddIndexBuffer(indexBuffer);
 }
 
 void EditorLayer::OnDetach()
@@ -71,7 +63,14 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnUpdate(float deltaTime)
 {
-	
+	// Begin a Render pass
+	Arcane::Renderer::BeginRenderPass(m_RenderPass);
+
+	// Render Test Triangle
+	Arcane::Renderer::RenderQuad(m_VertexBuffer, m_Pipeline);
+
+	// End a pass
+	Arcane::Renderer::EndRenderPass(m_RenderPass);
 }
 
 void EditorLayer::OnImGuiRender()

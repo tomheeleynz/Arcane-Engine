@@ -4,6 +4,7 @@
 #include <vector>
 #include <optional>
 #include <set>
+#include <string>
 
 namespace Arcane {
 

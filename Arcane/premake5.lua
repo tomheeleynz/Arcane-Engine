@@ -17,7 +17,7 @@ project "Arcane"
         "%{IncludeDirs.vulkan}",
         "%{IncludeDirs.glm}",
         "%{IncludeDirs.imgui}",
-        "src/Arcane"
+        "src"
     }
 
     links {

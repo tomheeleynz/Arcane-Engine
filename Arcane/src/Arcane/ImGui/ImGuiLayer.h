@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Layer.h"
+#include "Arcane/Core/Layer.h"
 
 namespace Arcane {
 	class ImGuiLayer : public Layer

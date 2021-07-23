@@ -13,7 +13,7 @@ project "EnchantingTable"
 
     includedirs {
         "src",
-        "%{wks.location}/Arcane/src/Arcane",
+        "%{wks.location}/Arcane/src",
         "%{IncludeDirs.vulkan}",
         "%{IncludeDirs.glm}",
         "%{IncludeDirs.glfw}",

@@ -1,9 +1,9 @@
 #include "Application.h"
 
-#include "Renderer/Renderer.h"
-#include "Renderer/Shader.h"
-#include "Renderer/Pipeline.h"
-#include "Renderer/RenderPass.h"
+#include "Arcane/Renderer/Renderer.h"
+#include "Arcane/Renderer/Shader.h"
+#include "Arcane/Renderer/Pipeline.h"
+#include "Arcane/Renderer/RenderPass.h"
 
 namespace Arcane {
 	Application* Application::s_Instance = nullptr;

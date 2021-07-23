@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
-#include "Renderer/Buffer.h"
+#include "Arcane/Renderer/Buffer.h"
 
 namespace Arcane {
 	////////////////////////////////////////////////////////

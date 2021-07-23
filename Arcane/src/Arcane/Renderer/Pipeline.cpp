@@ -1,6 +1,6 @@
 #include "Pipeline.h"
-#include "Renderer/Renderer.h"
-#include "Platform/Vulkan/VulkanPipeline.h"
+#include "Arcane/Renderer/Renderer.h"
+#include "Arcane/Platform/Vulkan/VulkanPipeline.h"
 
 namespace Arcane {
 	Pipeline* Pipeline::Create(PipelineSpecification& spec)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Window.h"
+#include "Arcane/Core/Window.h"
 
 namespace Arcane {
 	class GraphicsContext

@@ -2,7 +2,7 @@
 
 #include <vulkan/vulkan.h>
 #include <vector>
-#include "Renderer/VertexDescriptor.h"
+#include "Arcane/Renderer/VertexDescriptor.h"
 
 namespace Arcane {
 

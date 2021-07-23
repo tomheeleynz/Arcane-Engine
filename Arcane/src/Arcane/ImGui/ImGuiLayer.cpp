@@ -1,9 +1,9 @@
 #include "ImGuiLayer.h"
-#include "Renderer/Renderer.h"
+#include "Arcane/Renderer/Renderer.h"
 
 // Platform
 // -- Vulkan
-#include "Platform/Vulkan/VulkanImGuiLayer.h"
+#include "Arcane/Platform/Vulkan/VulkanImGuiLayer.h"
 
 namespace Arcane {
 	ImGuiLayer* ImGuiLayer::Create()
