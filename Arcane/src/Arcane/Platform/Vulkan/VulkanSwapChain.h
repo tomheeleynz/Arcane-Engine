@@ -19,6 +19,8 @@ namespace Arcane {
 		std::vector<VkFramebuffer> GetSwapChainFramebuffers() { return m_SwapChainFramebuffers; }
 		uint32_t GetSwapChainImagesSize() { return m_SwapChainImages.size(); }
 
+		uint32_t GetImageIndex() { return m_CurrentImageIndex; }
+
 		void SwapBuffers();
 	private:
 		VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
@@ -47,5 +49,6 @@ namespace Arcane {
 
 		int m_MaxFramesInFlight = 2;
 		size_t m_CurrentFrameIndex = 0;
+		uint32_t m_CurrentImageIndex = 0;
 	};
 }

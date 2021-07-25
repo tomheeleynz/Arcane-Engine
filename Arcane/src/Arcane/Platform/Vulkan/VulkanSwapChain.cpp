@@ -227,6 +227,7 @@ namespace Arcane {
 
         uint32_t imageIndex;
         vkAcquireNextImageKHR(_context->GetDevice().GetLogicalDevice(), m_SwapChain, UINT64_MAX, m_ImageAvailableSemaphores[m_CurrentFrameIndex], VK_NULL_HANDLE, &imageIndex);
+        m_CurrentImageIndex = imageIndex;
 
         if (m_ImagesInFlight[imageIndex] != VK_NULL_HANDLE) {
             vkWaitForFences(_context->GetDevice().GetLogicalDevice(), 1, &m_ImagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);

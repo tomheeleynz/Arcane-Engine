@@ -23,6 +23,8 @@ namespace Arcane {
 
 	VulkanUniformBuffer::VulkanUniformBuffer(uint32_t size)
 	{
+		m_Size = size;
+
 		Application& app = Application::Get();
 		VulkanContext* context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
 		VkDevice logicalDevice = context->GetDevice().GetLogicalDevice();
@@ -141,6 +143,13 @@ namespace Arcane {
 
 	void VulkanUniformBuffer::WriteData(void* data)
 	{
+		Application& app = Application::Get();
+		VulkanContext* context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
+		VkDevice logicalDevice = context->GetDevice().GetLogicalDevice();
 
+		// Copy data into uniform buffer memory
+		vkMapMemory(logicalDevice, m_UniformBuffersMemory[context->GetSwapChain().GetImageIndex()], 0, m_Size, 0, &data);
+		memcpy(data, data, m_Size);
+		vkUnmapMemory(logicalDevice, m_UniformBuffersMemory[context->GetSwapChain().GetImageIndex()]);
 	}
 }

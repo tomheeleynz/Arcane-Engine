@@ -61,6 +61,7 @@ namespace Arcane {
 
 	void VulkanContext::SwapBuffers()
 	{
+		// printf("Swapchain Image index: %d\n", m_SwapChain->GetImageIndex());
 		m_SwapChain->SwapBuffers();
 	}
 }

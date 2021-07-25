@@ -9,6 +9,7 @@ namespace Arcane {
 	public:
 		VulkanPipeline(PipelineSpecification& spec);
 
+		VkPipelineLayout GetLayout() { return m_PipelineLayout; }
 		VkPipeline GetPipeline() { return m_Pipeline; }
 	private:
 		VkPipelineLayout m_PipelineLayout;

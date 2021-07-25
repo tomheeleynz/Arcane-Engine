@@ -34,5 +34,8 @@ namespace Arcane {
 		std::vector<VkBuffer> m_UniformBuffers;
 		std::vector<VkDeviceMemory> m_UniformBuffersMemory;
 		std::vector<VkDescriptorSet> m_DescriptorSets;
+
+		// Uniform Buffer Size
+		uint32_t m_Size;
 	};
 }
