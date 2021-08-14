@@ -35,14 +35,12 @@ void EditorLayer::OnAttach()
 		Arcane::VertexType::float3
 	});
 
-	m_UniformBuffer = Arcane::UniformBuffer::Create(sizeof(UniformBufferObject));
 
 	// Test Pipeline
 	Arcane::PipelineSpecification spec;
 	spec.descriptor = m_VertexDescriptor;
 	spec.renderPass = m_RenderPass;
 	spec.shader = m_Shader;
-	spec.uniformBuffer = m_UniformBuffer;
 
 	m_Pipeline = Arcane::Pipeline::Create(spec);
 
@@ -62,15 +60,6 @@ void EditorLayer::OnAttach()
 	m_VertexBuffer = Arcane::VertexBuffer::Create(vertices.data(), sizeof(TestVertex) * vertices.size());
 	Arcane::IndexBuffer* indexBuffer = Arcane::IndexBuffer::Create(indices.data(), indices.size());
 	m_VertexBuffer->AddIndexBuffer(indexBuffer);
-
-	UniformBufferObject ubo{};
-	ubo.model = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	ubo.proj = glm::perspective(glm::radians(45.0f), 1600.0f / 1200.0f, 0.1f, 10.0f);
-	ubo.proj[1][1] *= -1;
-
-	m_UniformBuffer->WriteData(&ubo);
-
 }
 
 void EditorLayer::OnDetach()
@@ -80,11 +69,6 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnUpdate(float deltaTime)
 {
-	// printf("%.2f\n", deltaTime);
-
-
-	// m_UniformBuffer->WriteData(&ubo);
-
 	// Begin a Render pass
 	Arcane::Renderer::BeginRenderPass(m_RenderPass);
 

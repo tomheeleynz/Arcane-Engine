@@ -21,7 +21,6 @@ namespace Arcane {
 		// Render Quad Functions
 		// -- Without Uniform Buffer
 		void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline) override;
-		// -- With Uniform Buffer
 
 	private:
 

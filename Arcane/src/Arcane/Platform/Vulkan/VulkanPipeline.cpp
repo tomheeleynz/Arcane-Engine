@@ -5,15 +5,11 @@
 #include "VulkanContext.h"
 #include "VulkanRenderPass.h"
 #include "VulkanVertexDescriptor.h"
-#include "VulkanUniformBuffer.h"
 
 namespace Arcane {
 	VulkanPipeline::VulkanPipeline(PipelineSpecification& spec)
 	{
 		VulkanShader* shader = static_cast<VulkanShader*>(spec.shader);
-
-		VulkanUniformBuffer* vulkanUniformBuffer = static_cast<VulkanUniformBuffer*>(spec.uniformBuffer);
-		VkDescriptorSetLayout vulkanDescriptorLayout = vulkanUniformBuffer->GetLayout();
 
 		// Get Vulkan Context to be able to get the devices
 		Application& app = Application::Get();
@@ -110,8 +106,6 @@ namespace Arcane {
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount = 1;
-		pipelineLayoutInfo.pSetLayouts = &vulkanDescriptorLayout;
 
 		if (vkCreatePipelineLayout(logicalDevice, &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS) {
 			printf("Pipeline Layout Not Created");

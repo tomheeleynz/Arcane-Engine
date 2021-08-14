@@ -3,7 +3,6 @@
 #include "VulkanPipeline.h"
 #include "VulkanBuffer.h"
 #include "VulkanRenderPass.h"
-
 #include "Arcane/Core/Application.h"
 
 namespace Arcane {
@@ -122,7 +121,7 @@ namespace Arcane {
 		VulkanSwapChain& swapChain = _context->GetSwapChain();
 
 		// Bind Pipeline for triangle to use
-		VkPipeline vulkanPipeline = static_cast<VulkanPipeline*>(pipeline)->GetPipeline();
+		VulkanPipeline* vulkanPipeline = static_cast<VulkanPipeline*>(pipeline);
 		VkBuffer vulkanVertexBuffer = static_cast<VulkanVertexBuffer*>(buffer)->GetVertexBuffer();
 
 		// Get Index Buffer and count from vertex buffer
@@ -134,7 +133,7 @@ namespace Arcane {
 
 		for (size_t i = 0; i < swapChainBuffers.size(); i++) {
 			// Bind Pipeline
-			vkCmdBindPipeline(swapChainBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline);
+			vkCmdBindPipeline(swapChainBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline->GetPipeline());
 
 			// Bind Vertex Buffer
 			VkBuffer vertexBuffers[] = { vulkanVertexBuffer };

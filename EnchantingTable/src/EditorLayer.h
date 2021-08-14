@@ -19,6 +19,5 @@ private:
 	Arcane::VertexDescriptor* m_VertexDescriptor;
 	Arcane::VertexBuffer* m_VertexBuffer;
 	Arcane::Pipeline* m_Pipeline;
-	Arcane::UniformBuffer* m_UniformBuffer;
 
 };

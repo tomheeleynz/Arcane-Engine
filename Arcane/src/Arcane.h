@@ -9,6 +9,5 @@
 #include "Arcane/Renderer/RenderPass.h"
 #include "Arcane/Renderer/VertexDescriptor.h"
 #include "Arcane/Renderer/Buffer.h"
-#include "Arcane/Renderer/UniformBuffer.h"
 
 #include "Arcane/ImGui/ImGuiLayer.h"
