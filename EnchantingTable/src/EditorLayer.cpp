@@ -12,11 +12,8 @@ struct TestVertex
 
 struct UniformBufferObject
 {
-	glm::mat4 model;
-	glm::mat4 view;
-	glm::mat4 proj;
+	glm::vec3 color;
 };
-
 
 EditorLayer::EditorLayer()
 {
@@ -46,10 +43,10 @@ void EditorLayer::OnAttach()
 
 	// Test Vertices
 	std::vector<TestVertex> vertices = { 
-		{{-0.5f, -0.5f,0.0f}, {1.0f, 0.0f, 0.0f}},
-		{{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
-		{{0.5f, 0.5f,  0.0f}, {0.0f, 0.0f, 1.0f}},
-		{{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}}
+		{{-0.5f, -0.5f,0.0f}, {1.0f, 0.5f, 0.2f}},
+		{{0.5f, -0.5f, 0.0f}, {1.0f, 0.5f, 0.2f}}, 
+		{{0.5f, 0.5f,  0.0f}, {1.0f, 0.5f, 0.2f}},
+		{{-0.5f, 0.5f, 0.0f}, {1.0f, 0.5f, 0.2f}}
 	};
 
 	std::vector<uint32_t> indices = {
@@ -60,6 +57,9 @@ void EditorLayer::OnAttach()
 	m_VertexBuffer = Arcane::VertexBuffer::Create(vertices.data(), sizeof(TestVertex) * vertices.size());
 	Arcane::IndexBuffer* indexBuffer = Arcane::IndexBuffer::Create(indices.data(), indices.size());
 	m_VertexBuffer->AddIndexBuffer(indexBuffer);
+
+	// Create a uniform buffer
+	Arcane::UniformBuffer* uniformBuffer = Arcane::UniformBuffer::Create(sizeof(UniformBufferObject));
 }
 
 void EditorLayer::OnDetach()
