@@ -3,6 +3,7 @@
 #include "VulkanPipeline.h"
 #include "VulkanBuffer.h"
 #include "VulkanRenderPass.h"
+#include "VulkanUniformBuffer.h"
 #include "Arcane/Core/Application.h"
 
 namespace Arcane {
@@ -139,6 +140,44 @@ namespace Arcane {
 			VkBuffer vertexBuffers[] = { vulkanVertexBuffer };
 			VkDeviceSize offsets[] = { 0 };
 			vkCmdBindVertexBuffers(swapChainBuffers[i], 0, 1, vertexBuffers, offsets);
+
+			// Bind Index Buffer
+			vkCmdBindIndexBuffer(swapChainBuffers[i], vulkanIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+
+			// Draw Vertices
+			vkCmdDrawIndexed(swapChainBuffers[i], indiceCount, 1, 0, 0, 0);
+		}
+	}
+
+	void VulkanRenderer::RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, UniformBuffer* uniformBuffer)
+	{
+		Application& app = Application::Get();
+
+		VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
+		VulkanSwapChain& swapChain = _context->GetSwapChain();
+		VulkanUniformBuffer* vulkanUniformBuffer = static_cast<VulkanUniformBuffer*>(uniformBuffer);
+
+		// Bind Pipeline for triangle to use
+		VulkanPipeline* vulkanPipeline = static_cast<VulkanPipeline*>(pipeline);
+		VkBuffer vulkanVertexBuffer = static_cast<VulkanVertexBuffer*>(buffer)->GetVertexBuffer();
+
+		// Get Index Buffer and count from vertex buffer
+		IndexBuffer* indexBuffer = buffer->GetIndexBuffer();
+		uint32_t indiceCount = indexBuffer->GetCount();
+		VkBuffer vulkanIndexBuffer = static_cast<VulkanIndexBuffer*>(indexBuffer)->GetIndexBuffer();
+
+		std::vector<VkCommandBuffer> swapChainBuffers = swapChain.GetCommandBuffers();
+
+		for (size_t i = 0; i < swapChainBuffers.size(); i++) {
+			// Bind Pipeline
+			vkCmdBindPipeline(swapChainBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline->GetPipeline());
+
+			// Bind Vertex Buffer
+			VkBuffer vertexBuffers[] = { vulkanVertexBuffer };
+			VkDeviceSize offsets[] = { 0 };
+			vkCmdBindVertexBuffers(swapChainBuffers[i], 0, 1, vertexBuffers, offsets);
+
+			vkCmdBindDescriptorSets(swapChainBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline->GetLayout(), 0, 1, &vulkanUniformBuffer->GetDescriptorSets()[i], 0, nullptr);
 
 			// Bind Index Buffer
 			vkCmdBindIndexBuffer(swapChainBuffers[i], vulkanIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
