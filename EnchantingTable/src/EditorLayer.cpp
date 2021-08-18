@@ -1,6 +1,7 @@
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "EditorLayer.h"
 
@@ -32,12 +33,14 @@ void EditorLayer::OnAttach()
 		Arcane::VertexType::float3
 	});
 
+	m_UniformBuffer = Arcane::UniformBuffer::Create(sizeof(UniformBufferObject));
 
 	// Test Pipeline
 	Arcane::PipelineSpecification spec;
 	spec.descriptor = m_VertexDescriptor;
 	spec.renderPass = m_RenderPass;
 	spec.shader = m_Shader;
+	spec.uniformBuffer = m_UniformBuffer;
 
 	m_Pipeline = Arcane::Pipeline::Create(spec);
 
@@ -58,8 +61,6 @@ void EditorLayer::OnAttach()
 	Arcane::IndexBuffer* indexBuffer = Arcane::IndexBuffer::Create(indices.data(), indices.size());
 	m_VertexBuffer->AddIndexBuffer(indexBuffer);
 
-	// Create a uniform buffer
-	Arcane::UniformBuffer* uniformBuffer = Arcane::UniformBuffer::Create(sizeof(UniformBufferObject));
 }
 
 void EditorLayer::OnDetach()
@@ -69,6 +70,10 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnUpdate(float deltaTime)
 {
+	// Test Quad Color
+	glm::vec3 quadColor = {1.0f, 1.0f, 1.0f};
+	m_UniformBuffer->WriteData(glm::value_ptr(quadColor), sizeof(quadColor));
+
 	// Begin a Render pass
 	Arcane::Renderer::BeginRenderPass(m_RenderPass);
 

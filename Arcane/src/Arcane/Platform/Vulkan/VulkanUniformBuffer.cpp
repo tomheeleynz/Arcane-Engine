@@ -62,10 +62,19 @@ namespace Arcane
 				printf("Allocated Uniform buffer memory\n");
 			}
 		}
+
+		m_DescriptorSet = new VulkanDescriptorSet(m_UniformBuffers, size);
 	}
 
-	void VulkanUniformBuffer::WriteData(void* data)
+	void VulkanUniformBuffer::WriteData(void* data, uint32_t size)
 	{
+		VulkanContext* context = static_cast<VulkanContext*>(Application::Get().GetWindow().GetContext());
+		VulkanSwapChain& swapchain = context->GetSwapChain();
+		VkDevice logicalDevice = context->GetDevice().GetLogicalDevice();
 
+		void* tempData;
+		vkMapMemory(logicalDevice, m_UniformBuffersMemory[swapchain.GetImageIndex()], 0, size, 0, &tempData);
+		memcpy(tempData, data,  size);
+		vkUnmapMemory(logicalDevice, m_UniformBuffersMemory[swapchain.GetImageIndex()]);
 	}
 }

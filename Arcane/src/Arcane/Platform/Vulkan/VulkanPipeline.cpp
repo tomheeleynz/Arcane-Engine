@@ -5,6 +5,7 @@
 #include "VulkanContext.h"
 #include "VulkanRenderPass.h"
 #include "VulkanVertexDescriptor.h"
+#include "VulkanUniformBuffer.h"
 
 namespace Arcane {
 	VulkanPipeline::VulkanPipeline(PipelineSpecification& spec)
@@ -17,7 +18,9 @@ namespace Arcane {
 		VulkanContext* _context = static_cast<VulkanContext*>(window.GetContext());
 		VkDevice logicalDevice = _context->GetDevice().GetLogicalDevice();
 		VkVertexInputBindingDescription bindingDescription = static_cast<VulkanVertexDescriptor*>(spec.descriptor)->GetBindingDescription();
+		
 		auto attributeDescriptions = static_cast<VulkanVertexDescriptor*>(spec.descriptor)->GetAttributeDescriptions();
+		auto vulkanUniformBufferLayout = static_cast<VulkanUniformBuffer*>(spec.uniformBuffer)->GetLayout();
 
 		// Creating Vertex Shader
 		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
@@ -106,6 +109,8 @@ namespace Arcane {
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		pipelineLayoutInfo.setLayoutCount = 1;
+		pipelineLayoutInfo.pSetLayouts = &vulkanUniformBufferLayout;
 
 		if (vkCreatePipelineLayout(logicalDevice, &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS) {
 			printf("Pipeline Layout Not Created");
