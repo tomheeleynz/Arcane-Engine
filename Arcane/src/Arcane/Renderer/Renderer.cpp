@@ -48,9 +48,4 @@ namespace Arcane {
 	{
 		s_RendererAPI->RenderQuad(buffer, pipeline);
 	}
-
-	void Renderer::RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, UniformBuffer* uniformBuffer)
-	{
-		s_RendererAPI->RenderQuad(buffer, pipeline, uniformBuffer);
-	}
 }
