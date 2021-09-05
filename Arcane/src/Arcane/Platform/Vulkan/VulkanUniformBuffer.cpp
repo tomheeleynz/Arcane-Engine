@@ -61,6 +61,8 @@ namespace Arcane
 			else {
 				printf("Allocated Uniform buffer memory\n");
 			}
+
+			vkBindBufferMemory(logicalDevice, m_UniformBuffers[i], m_UniformBuffersMemory[i], 0);
 		}
 
 		m_DescriptorSet = new VulkanDescriptorSet(m_UniformBuffers, size);

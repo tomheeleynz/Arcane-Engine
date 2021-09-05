@@ -33,12 +33,14 @@ void EditorLayer::OnAttach()
 		Arcane::VertexType::float3
 	});
 
+	m_UniformBuffer = Arcane::UniformBuffer::Create(sizeof(UniformBufferObject));
+
 	// Test Pipeline
 	Arcane::PipelineSpecification spec;
 	spec.descriptor = m_VertexDescriptor;
 	spec.renderPass = m_RenderPass;
 	spec.shader = m_Shader;
-	spec.uniformBuffer = nullptr;
+	spec.uniformBuffer = m_UniformBuffer;
 
 	m_Pipeline = Arcane::Pipeline::Create(spec);
 
