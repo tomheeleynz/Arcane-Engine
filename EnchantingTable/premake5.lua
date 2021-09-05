@@ -17,7 +17,8 @@ project "EnchantingTable"
         "%{IncludeDirs.vulkan}",
         "%{IncludeDirs.glm}",
         "%{IncludeDirs.glfw}",
-        "%{IncludeDirs.imgui}"
+        "%{IncludeDirs.imgui}",
+        "%{IncludeDirs.stb}"
     }
 
     links {

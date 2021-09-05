@@ -13,6 +13,7 @@ IncludeDirs["glfw"] = "%{wks.location}/Arcane/vendor/glfw/include"
 IncludeDirs["vulkan"] = "%{VULKAN_SDK}/Include"
 IncludeDirs["glm"] ="%{wks.location}/Arcane/vendor/glm"
 IncludeDirs["imgui"] = "%{wks.location}/Arcane/vendor/imgui"
+IncludeDirs["stb"] =  "%{wks.location}/Arcane/vendor/stb"
 
 -- Library Includes
 LibDirs = {}

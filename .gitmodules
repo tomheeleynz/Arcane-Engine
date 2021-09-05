@@ -7,3 +7,6 @@
 [submodule "Arcane/vendor/imgui"]
 	path = Arcane/vendor/imgui
 	url = https://github.com/tomheeleynz/imgui.git
+[submodule "Arcane/vendor/stb"]
+	path = Arcane/vendor/stb
+	url = https://github.com/tomheeleynz/stb.git

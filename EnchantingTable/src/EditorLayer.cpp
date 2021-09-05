@@ -2,7 +2,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
+#include <cmath>
 #include "EditorLayer.h"
 
 struct TestVertex
@@ -60,6 +60,8 @@ void EditorLayer::OnAttach()
 	m_VertexBuffer = Arcane::VertexBuffer::Create(vertices.data(), sizeof(TestVertex) * vertices.size());
 	Arcane::IndexBuffer* indexBuffer = Arcane::IndexBuffer::Create(indices.data(), indices.size());
 	m_VertexBuffer->AddIndexBuffer(indexBuffer);
+
+	Arcane::Texture* testTexture = Arcane::Texture::Create(".\\src\\Assets\\Textures\\shield.png");
 
 }
 
