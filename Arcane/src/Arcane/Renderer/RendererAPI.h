@@ -3,6 +3,7 @@
 #include "Buffer.h"
 #include "Pipeline.h"
 #include "RenderPass.h"
+#include "UniformBuffer.h"
 
 namespace Arcane {
 
@@ -22,6 +23,8 @@ namespace Arcane {
 
 		// Render Functions
 		virtual void RenderTriangle(VertexBuffer* buffer, Pipeline* pipeline) = 0;
+
+		// -- Without Uniform Buffer
 		virtual void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline) = 0;
 
 		// Static Renderer Functions

@@ -70,10 +70,6 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnUpdate(float deltaTime)
 {
-	// Test Quad Color
-	glm::vec3 quadColor = {1.0f, 1.0f, 1.0f};
-	m_UniformBuffer->WriteData(glm::value_ptr(quadColor), sizeof(quadColor));
-
 	// Begin a Render pass
 	Arcane::Renderer::BeginRenderPass(m_RenderPass);
 

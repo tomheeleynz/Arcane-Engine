@@ -22,10 +22,15 @@ namespace Arcane {
 		VulkanSwapChain& GetSwapChain() { return *m_SwapChain; }
 		VkSurfaceKHR GetSurface() { return m_Surface; }
 	private:
+		bool CheckValidationLayerSupport();
+		std::vector<const char*> GetRequiredExtensions();
+		void SetUpDebugMessenger();
+	private:
 		inline static VkInstance m_Instance;
 		VkSurfaceKHR m_Surface;
 		VulkanPhysicalDevice* m_PhysicalDevice;
 		VulkanDevice* m_Device;
 		VulkanSwapChain* m_SwapChain;
+		VkDebugUtilsMessengerEXT m_DebugMessenger;
 	};
 }

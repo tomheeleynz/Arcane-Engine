@@ -8,10 +8,10 @@
 namespace Arcane {
 	struct PipelineSpecification
 	{
-		Shader* shader;
-		RenderPass* renderPass;
-		VertexDescriptor* descriptor;
-		UniformBuffer* uniformBuffer;
+		Shader* shader = nullptr;
+		RenderPass* renderPass = nullptr;
+		VertexDescriptor* descriptor = nullptr;
+		UniformBuffer* uniformBuffer = nullptr;
 	};
 
 	class Pipeline
