@@ -32,7 +32,7 @@ namespace Arcane
 		poolSize.descriptorCount = swapchain.GetSwapChainImagesSize();
 
 		VkDescriptorPoolCreateInfo poolInfo{};
-		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_INLINE_UNIFORM_BLOCK_CREATE_INFO_EXT;
+		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 		poolInfo.poolSizeCount = 1;
 		poolInfo.pPoolSizes = &poolSize;
 		poolInfo.maxSets = swapchain.GetSwapChainImagesSize();
@@ -50,11 +50,13 @@ namespace Arcane
 		allocInfo.pSetLayouts = layouts.data();
 
 		m_DescriptorSets.resize(swapchain.GetSwapChainImagesSize());
+
 		if (vkAllocateDescriptorSets(logicalDevice, &allocInfo, m_DescriptorSets.data()) != VK_SUCCESS) {
 			printf("Failed to allocate descriptor sets\n");
 		}
 
 		for (int i = 0; i < swapchain.GetSwapChainImagesSize(); i++) {
+			
 			VkDescriptorBufferInfo bufferInfo{};
 			bufferInfo.buffer = uniformBuffers[i];
 			bufferInfo.offset = 0;
