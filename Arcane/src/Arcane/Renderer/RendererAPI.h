@@ -26,6 +26,7 @@ namespace Arcane {
 
 		// -- Without Uniform Buffer
 		virtual void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline) = 0;
+		virtual void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, UniformBuffer* uniformBuffer) = 0;
 
 		// Static Renderer Functions
 		static void SetAPI(RendererAPIType api);

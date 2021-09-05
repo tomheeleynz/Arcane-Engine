@@ -70,11 +70,16 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnUpdate(float deltaTime)
 {
+	UniformBufferObject ubo;
+	ubo.color = {1.0f, 0.0f, 0.0f};
+
+	m_UniformBuffer->WriteData(&ubo, sizeof(ubo));
+
 	// Begin a Render pass
 	Arcane::Renderer::BeginRenderPass(m_RenderPass);
 
 	// Render Test Triangle
-	Arcane::Renderer::RenderQuad(m_VertexBuffer, m_Pipeline);
+	Arcane::Renderer::RenderQuad(m_VertexBuffer, m_Pipeline, m_UniformBuffer);
 
 	// End a pass
 	Arcane::Renderer::EndRenderPass(m_RenderPass);
