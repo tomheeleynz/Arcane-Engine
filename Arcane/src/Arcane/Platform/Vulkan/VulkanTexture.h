@@ -11,6 +11,8 @@ namespace Arcane
 	public:
 		VulkanTexture(std::string fileName);
 
+
+		VkDescriptorImageInfo GetImageDescriptorInfo() { return m_ImageInfo; }
 	private:
 		VkCommandBuffer BeginSingleTimeCommands();
 		void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
@@ -28,5 +30,6 @@ namespace Arcane
 		VkDeviceMemory m_TextureImageMemory;
 		VkImageView m_TextureImageView;
 		VkSampler m_TextureSampler;
+		VkDescriptorImageInfo m_ImageInfo;
 	};
 }
