@@ -16,4 +16,14 @@ namespace Arcane
 			break;
 		}
 	}
+
+	UniformBuffer* UniformBuffer::Create(Texture* texture, uint32_t size)
+	{
+		switch (RendererAPI::Current())
+		{
+		case RendererAPIType::Vulkan: return new VulkanUniformBuffer(texture, size);
+		default:
+			break;
+		}
+	}
 }

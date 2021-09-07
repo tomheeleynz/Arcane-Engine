@@ -11,6 +11,7 @@ namespace Arcane
 	{
 	public:
 		VulkanUniformBuffer(uint32_t size);
+		VulkanUniformBuffer(Texture* texture, uint32_t size);
 
 		void WriteData(void* data, uint32_t size) override;
 

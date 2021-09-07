@@ -35,7 +35,9 @@ void EditorLayer::OnAttach()
 		Arcane::VertexType::float2
 	});
 
-	m_UniformBuffer = Arcane::UniformBuffer::Create(sizeof(UniformBufferObject));
+
+	Arcane::Texture* testTexture = Arcane::Texture::Create(".\\src\\Assets\\Textures\\shield.png");
+	m_UniformBuffer = Arcane::UniformBuffer::Create(testTexture, sizeof(UniformBufferObject));
 
 	// Test Pipeline
 	Arcane::PipelineSpecification spec;
@@ -62,8 +64,6 @@ void EditorLayer::OnAttach()
 	m_VertexBuffer = Arcane::VertexBuffer::Create(vertices.data(), sizeof(TestVertex) * vertices.size());
 	Arcane::IndexBuffer* indexBuffer = Arcane::IndexBuffer::Create(indices.data(), indices.size());
 	m_VertexBuffer->AddIndexBuffer(indexBuffer);
-
-	Arcane::Texture* testTexture = Arcane::Texture::Create(".\\src\\Assets\\Textures\\shield.png");
 
 }
 
