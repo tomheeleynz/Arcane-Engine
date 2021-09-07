@@ -9,6 +9,7 @@ struct TestVertex
 {
 	glm::vec3 position;
 	glm::vec3 color;
+	glm::vec2 texCoord;
 };
 
 struct UniformBufferObject
@@ -30,7 +31,8 @@ void EditorLayer::OnAttach()
 	// Test Vertex Descriptor
 	m_VertexDescriptor = Arcane::VertexDescriptor::Create({
 		Arcane::VertexType::float3,
-		Arcane::VertexType::float3
+		Arcane::VertexType::float3,
+		Arcane::VertexType::float2
 	});
 
 	m_UniformBuffer = Arcane::UniformBuffer::Create(sizeof(UniformBufferObject));
@@ -46,10 +48,10 @@ void EditorLayer::OnAttach()
 
 	// Test Vertices
 	std::vector<TestVertex> vertices = { 
-		{{-0.5f, -0.5f,0.0f}, {1.0f, 0.5f, 0.2f}},
-		{{0.5f, -0.5f, 0.0f}, {1.0f, 0.5f, 0.2f}}, 
-		{{0.5f, 0.5f,  0.0f}, {1.0f, 0.5f, 0.2f}},
-		{{-0.5f, 0.5f, 0.0f}, {1.0f, 0.5f, 0.2f}}
+		{{-0.5f, -0.5f,0.0f}, {1.0f, 0.5f, 0.2f}, {1.0f, 0.0f}},
+		{{0.5f, -0.5f, 0.0f}, {1.0f, 0.5f, 0.2f}, {0.0f, 0.0f}},
+		{{0.5f, 0.5f,  0.0f}, {1.0f, 0.5f, 0.2f}, {0.0f, 1.0f}},
+		{{-0.5f, 0.5f, 0.0f}, {1.0f, 0.5f, 0.2f}, {1.0f, 1.0f}}
 	};
 
 	std::vector<uint32_t> indices = {
