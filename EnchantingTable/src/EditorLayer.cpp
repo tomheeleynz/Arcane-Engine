@@ -73,7 +73,7 @@ void EditorLayer::OnDetach()
 void EditorLayer::OnUpdate(float deltaTime)
 {
 	UniformBufferObject ubo;
-	ubo.color = {1.0f, 0.0f, 0.0f};
+	ubo.color = {1.0f, 0.5f, 0.2f};
 
 	m_UniformBuffer->WriteData(&ubo, sizeof(ubo));
 

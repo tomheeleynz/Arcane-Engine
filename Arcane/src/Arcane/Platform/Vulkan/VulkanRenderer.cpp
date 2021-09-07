@@ -46,9 +46,6 @@ namespace Arcane {
 			if (vkBeginCommandBuffer(swapChainCommandBuffers[i], &beginInfo) != VK_SUCCESS) {
 				printf("Command Buffer Not Began\n");
 			}
-			else {
-				printf("Command Buffer Began\n");
-			}
 
 			VkRenderPassBeginInfo renderPassInfo{};
 			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -80,10 +77,7 @@ namespace Arcane {
 			vkCmdEndRenderPass(swapChainCommandBuffers[i]);
 
 			if (vkEndCommandBuffer(swapChainCommandBuffers[i]) != VK_SUCCESS) {
-				printf("Command Buffer Failed\n");
-			}
-			else {
-				printf("Command Buffer Success\n");
+				printf("Command Buffer End Failed\n");
 			}
 		}
 	}

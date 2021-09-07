@@ -1,8 +1,8 @@
 #pragma once
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+#include <vulkan/vulkan.h>
 #include "Arcane/Renderer/Texture.h"
+
 
 namespace Arcane 
 {
@@ -10,7 +10,17 @@ namespace Arcane
 	{
 	public:
 		VulkanTexture(std::string fileName);
-	private:
 
+	private:
+		VkCommandBuffer BeginSingleTimeCommands();
+		void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
+
+		void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+		void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+
+		void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+	private:
+		VkImage m_TextureImage;
+		VkDeviceMemory m_TextureImageMemory;
 	};
 }

@@ -21,6 +21,8 @@ namespace Arcane {
 
 		uint32_t GetImageIndex() { return m_CurrentImageIndex; }
 
+		VkCommandPool GetCommandPool() { return m_CommandPool; }
+
 		void SwapBuffers();
 	private:
 		VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
