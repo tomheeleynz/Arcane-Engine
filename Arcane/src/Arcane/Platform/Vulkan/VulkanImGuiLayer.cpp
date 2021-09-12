@@ -43,6 +43,7 @@ namespace Arcane {
 
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Enable Docking for ImGui
 
 		Application& app = Application::Get();
 		GLFWwindow* windowHandle = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
