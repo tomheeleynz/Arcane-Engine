@@ -1,3 +1,4 @@
+#include "Arcane/Core/Application.h"
 #include "VulkanDevice.h"
 #include "VulkanContext.h"
 
@@ -160,5 +161,61 @@ namespace Arcane {
 	VkDevice& VulkanDevice::GetLogicalDevice()
 	{
 		return m_Device;
+	}
+
+
+	VkCommandBuffer VulkanDevice::CreateCommandBuffer(VkCommandBufferLevel commandBufferLevel)
+	{
+		Application& app = Application::Get();
+		VkCommandPool commandPool = static_cast<VulkanContext*>(app.GetWindow().GetContext())->GetSwapChain().GetCommandPool();
+
+		VkCommandBufferAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		allocInfo.level = commandBufferLevel;
+		allocInfo.commandPool = commandPool;
+		allocInfo.commandBufferCount = 1;
+
+		VkCommandBuffer commandBuffer;
+		vkAllocateCommandBuffers(m_Device, &allocInfo, &commandBuffer);
+
+		VkCommandBufferBeginInfo beginInfo{};
+		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+		vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+		return commandBuffer;
+	}
+
+	void VulkanDevice::FlushCommandBuffer(VkCommandBuffer commandBuffer)
+	{
+		Application& app = Application::Get();
+		VkCommandPool commandPool = static_cast<VulkanContext*>(app.GetWindow().GetContext())->GetSwapChain().GetCommandPool();
+		VulkanDevice logicalDevice = static_cast<VulkanContext*>(app.GetWindow().GetContext())->GetDevice();
+
+		vkEndCommandBuffer(commandBuffer);
+
+		VkSubmitInfo submitInfo{};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		submitInfo.commandBufferCount = 1;
+		submitInfo.pCommandBuffers = &commandBuffer;
+
+		VkFenceCreateInfo fenceCreateInfo{};
+		fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+		fenceCreateInfo.flags = 0;
+
+		VkFence fence;
+
+		if (vkCreateFence(logicalDevice.GetLogicalDevice(), &fenceCreateInfo, nullptr, &fence) != VK_SUCCESS) {
+			printf("Single time fence not created\n");
+		}
+
+		vkQueueSubmit(logicalDevice.GetGraphicsQueue(), 1, &submitInfo, fence);
+
+		vkWaitForFences(logicalDevice.GetLogicalDevice(), 1, &fence, VK_TRUE, UINT64_MAX);
+
+		vkDestroyFence(logicalDevice.GetLogicalDevice(), fence, nullptr);
+
+		vkFreeCommandBuffers(logicalDevice.GetLogicalDevice(), commandPool, 1, &commandBuffer);
 	}
 }

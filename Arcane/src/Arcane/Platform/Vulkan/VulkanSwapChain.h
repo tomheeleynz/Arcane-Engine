@@ -17,13 +17,29 @@ namespace Arcane {
 
 		std::vector<VkCommandBuffer> GetCommandBuffers() { return m_CommandBuffers; }
 		std::vector<VkFramebuffer> GetSwapChainFramebuffers() { return m_SwapChainFramebuffers; }
-		uint32_t GetSwapChainImagesSize() { return m_SwapChainImages.size(); }
 
+		uint32_t GetSwapChainImagesSize() { return m_SwapChainImages.size(); }
 		uint32_t GetImageIndex() { return m_CurrentImageIndex; }
+		uint32_t GetFrameIndex() { return m_CurrentFrameIndex; }
 
 		VkCommandPool GetCommandPool() { return m_CommandPool; }
+		VkRenderPass GetSwapchainRenderPass() { return m_RenderPass; }
 
 		void SwapBuffers();
+
+		// Get Semaphores and Stuff
+		VkSemaphore GetCurrentImageSemaphore() { return m_ImageAvailableSemaphores[m_CurrentFrameIndex]; }
+		VkSemaphore GetCurrentRenderSemaphore() { return m_RenderFinishedSemaphores[m_CurrentFrameIndex]; };
+		
+		// Get Current Framebuffer
+		VkFramebuffer GetCurrentFramebuffer() { return m_SwapChainFramebuffers[m_CurrentFrameIndex]; }
+
+		// Get Native Swapchain
+		VkSwapchainKHR GetSwapchain() { return m_SwapChain; }
+
+		// Get Current Draw Command Buffer
+		VkCommandBuffer GetCurrentDrawCommandBuffer() { return m_CommandBuffers[m_CurrentFrameIndex]; }
+
 	private:
 		VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 		VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
@@ -43,9 +59,11 @@ namespace Arcane {
 		VkRenderPass m_RenderPass;
 		VkCommandPool m_CommandPool;
 
+		// Image Semaphores
 		std::vector<VkSemaphore> m_ImageAvailableSemaphores;
 		std::vector<VkSemaphore> m_RenderFinishedSemaphores;
 
+		// InFlight Images
 		std::vector<VkFence> m_InFlightFences;
 		std::vector<VkFence> m_ImagesInFlight;
 

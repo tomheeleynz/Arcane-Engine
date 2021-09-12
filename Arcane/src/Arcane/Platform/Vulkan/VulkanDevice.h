@@ -56,6 +56,8 @@ namespace Arcane {
 		VkQueue GetGraphicsQueue() { return m_GraphicsQueue; };
 		VkQueue GetPresentQueue() { return m_PresentQueue; }
 
+		VkCommandBuffer CreateCommandBuffer(VkCommandBufferLevel commandBufferLevel);
+		void FlushCommandBuffer(VkCommandBuffer commandBuffer);
 	private:
 		VulkanPhysicalDevice m_PhysicalDevice;
 		VkDevice m_Device;

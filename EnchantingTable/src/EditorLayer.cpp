@@ -2,7 +2,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <cmath>
+#include <imgui.h>
+
+
 #include "EditorLayer.h"
 
 struct TestVertex
@@ -91,5 +93,9 @@ void EditorLayer::OnUpdate(float deltaTime)
 
 void EditorLayer::OnImGuiRender()
 {
-
+	ImGui::Begin("Hello World");
+	{
+		ImGui::Button("Test Button");
+	}
+	ImGui::End();
 }

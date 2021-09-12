@@ -1,6 +1,9 @@
+#include <glm/glm.hpp>
+#include<glm/gtc/type_ptr.hpp>
 #include "Arcane/Core/Application.h"
 #include "VulkanContext.h"
 #include "VulkanImGuiLayer.h"
+#include "VulkanSwapChain.h"
 
 namespace Arcane {
 	VulkanImGuiLayer::VulkanImGuiLayer()
@@ -37,6 +40,33 @@ namespace Arcane {
 		else {
 			printf("ImGui Descriptor Pool Created\n");
 		}
+
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+		Application& app = Application::Get();
+		GLFWwindow* windowHandle = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
+		VulkanContext* vulkanContext = static_cast<VulkanContext*>(app.GetWindow().GetContext());
+
+		ImGui_ImplGlfw_InitForVulkan(windowHandle, false);
+
+		ImGui_ImplVulkan_InitInfo initInfo{};
+		initInfo.Instance = vulkanContext->GetInstance();
+		initInfo.PhysicalDevice = vulkanContext->GetPhysicalDevice().GetPhysicalDevice();
+		initInfo.Device = vulkanContext->GetDevice().GetLogicalDevice();
+		initInfo.Queue = vulkanContext->GetDevice().GetGraphicsQueue();
+		initInfo.DescriptorPool = imguiPool;
+		initInfo.MinImageCount = 3;
+		initInfo.ImageCount = 3;
+		initInfo.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+
+		ImGui_ImplVulkan_Init(&initInfo, vulkanContext->GetSwapChain().GetSwapchainRenderPass());
+		
+		VkCommandBuffer fontCommand = vulkanContext->GetDevice().CreateCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+
+		ImGui_ImplVulkan_CreateFontsTexture(fontCommand);
+
+		vulkanContext->GetDevice().FlushCommandBuffer(fontCommand);
 	}
 
 	void VulkanImGuiLayer::OnAttach()
@@ -46,11 +76,56 @@ namespace Arcane {
 
 	void VulkanImGuiLayer::Begin()
 	{
-
+		ImGui_ImplVulkan_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
 	}
 
 	void VulkanImGuiLayer::End()
 	{
+		ImGui::Render();
 
+		VulkanContext* context = static_cast<VulkanContext*>(Application::Get().GetWindow().GetContext());
+		VulkanDevice device = context->GetDevice();
+
+		auto swapChainCommandBuffers = context->GetSwapChain().GetCommandBuffers();
+		auto swapChainFramebuffers = context->GetSwapChain().GetSwapChainFramebuffers();
+
+		for (size_t i = 0; i < swapChainCommandBuffers.size(); i++)
+		{
+			VkCommandBufferBeginInfo beginInfo{};
+			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+			beginInfo.flags = 0;
+			beginInfo.pInheritanceInfo = nullptr;
+
+			if (vkBeginCommandBuffer(swapChainCommandBuffers[i], &beginInfo) != VK_SUCCESS) {
+				printf("Command Buffer Not Began\n");
+			}
+
+			VkRenderPassBeginInfo renderPassInfo{};
+			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+			renderPassInfo.renderPass = context->GetSwapChain().GetSwapchainRenderPass();
+			renderPassInfo.framebuffer = swapChainFramebuffers[i];
+			renderPassInfo.renderArea.offset = { 0, 0 };
+			renderPassInfo.renderArea.extent = context->GetSwapChain().GetExtent();
+
+			VkClearValue clearColor = { 0.2f, 0.3f, 0.3f, 1.0f };
+			renderPassInfo.clearValueCount = 1;
+			renderPassInfo.pClearValues = &clearColor;
+
+			vkCmdBeginRenderPass(swapChainCommandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+			ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), swapChainCommandBuffers[i]);
+
+		}
+
+		for (size_t i = 0; i < swapChainCommandBuffers.size(); i++)
+		{
+			vkCmdEndRenderPass(swapChainCommandBuffers[i]);
+
+			if (vkEndCommandBuffer(swapChainCommandBuffers[i]) != VK_SUCCESS) {
+				printf("Command Buffer End Failed\n");
+			}
+		}
 	}
 }

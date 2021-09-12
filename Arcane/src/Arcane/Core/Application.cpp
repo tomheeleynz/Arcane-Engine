@@ -69,6 +69,7 @@ namespace Arcane {
 			}
 
 			RenderImGui();
+			
 			m_ImGuiLayer->End();
 
 			m_Window->ProcessEvents();
