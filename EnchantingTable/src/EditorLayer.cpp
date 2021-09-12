@@ -95,7 +95,10 @@ void EditorLayer::OnImGuiRender()
 {
 	ImGui::Begin("Hello World");
 	{
-		ImGui::Button("Test Button");
+		if (ImGui::Button("Test Button")) 
+		{
+			printf("Hello, ImGui Button\n");
+		}
 	}
 	ImGui::End();
 }
