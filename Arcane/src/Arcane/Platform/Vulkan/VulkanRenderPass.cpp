@@ -4,12 +4,15 @@
 
 namespace Arcane {
 
-    VulkanRenderPass::VulkanRenderPass()
+    VulkanRenderPass::VulkanRenderPass(RenderPassSpecs specs)
     {
         Application& app = Application::Get();
         Window& window = app.GetWindow();
         VulkanContext* _context = static_cast<VulkanContext*>(window.GetContext());
         VkDevice logicalDevice = _context->GetDevice().GetLogicalDevice();
+
+
+        m_Specifications = specs;
 
         VkAttachmentDescription colorAttachment{};
         colorAttachment.format = _context->GetSwapChain().GetFormat();
@@ -58,5 +61,10 @@ namespace Arcane {
         else {
             printf("Render Pass created\n");
         }
+    }
+
+    RenderPassSpecs& VulkanRenderPass::GetRenderPassSpecs()
+    {
+        return m_Specifications;
     }
 }

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
+#include <vector>
+
 #include "Arcane/Renderer/Framebuffer.h"
 
 namespace Arcane {
@@ -8,8 +10,26 @@ namespace Arcane {
 	{
 	public:
 		VulkanFramebuffer(FramebufferSpecifications& specs);
+		
+		VkFramebuffer GetVulkanFramebuffer() { return m_Framebuffer; }
 
+		VkRenderPass GetFramebufferRenderPass() { return m_RenderPass; }
 	private:
+		struct FrameBufferAttachment
+		{
+			VkImage Image;
+			VkDeviceMemory ImageMemory;
+			VkImageView ImageView;
+		};
 
+		std::vector<FrameBufferAttachment> m_Attachments;
+
+		uint32_t m_Width;
+		uint32_t m_Height;
+
+		VkRenderPass m_RenderPass;
+		VkFramebuffer m_Framebuffer;
+		VkDescriptorImageInfo m_ImageDescriptor;
+		VkSampler m_ImageSampler;
 	};
 }

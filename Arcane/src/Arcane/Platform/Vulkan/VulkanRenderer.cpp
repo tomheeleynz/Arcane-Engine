@@ -4,6 +4,7 @@
 #include "VulkanBuffer.h"
 #include "VulkanUniformBuffer.h"
 #include "VulkanRenderPass.h"
+#include "VulkanFramebuffer.h"
 #include "Arcane/Core/Application.h"
 
 namespace Arcane {
@@ -31,7 +32,10 @@ namespace Arcane {
 		Application& app = Application::Get();
 		VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
 		VulkanSwapChain& swapChain = _context->GetSwapChain();
-		VulkanRenderPass* vulkanRenderPass = static_cast<VulkanRenderPass*>(renderPass);
+
+		RenderPassSpecs& renderSpecs = renderPass->GetRenderPassSpecs();
+		VulkanFramebuffer* frameBuffer = static_cast<VulkanFramebuffer*>(renderSpecs.TargetFramebuffer);
+
 
 		auto swapChainCommandBuffers = swapChain.GetCommandBuffers();
 		auto swapChainFramebuffers = swapChain.GetSwapChainFramebuffers();
@@ -49,10 +53,10 @@ namespace Arcane {
 
 			VkRenderPassBeginInfo renderPassInfo{};
 			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			renderPassInfo.renderPass = vulkanRenderPass->GetRenderPass();
-			renderPassInfo.framebuffer = swapChainFramebuffers[i];
+			renderPassInfo.renderPass = frameBuffer->GetFramebufferRenderPass();
+			renderPassInfo.framebuffer = frameBuffer->GetVulkanFramebuffer();
 			renderPassInfo.renderArea.offset = { 0, 0 };
-			renderPassInfo.renderArea.extent = swapChain.GetExtent();
+			renderPassInfo.renderArea.extent = { 512, 512 };
 
 			VkClearValue clearColor = { 0.2f, 0.3f, 0.3f, 1.0f };
 			renderPassInfo.clearValueCount = 1;
@@ -67,7 +71,6 @@ namespace Arcane {
 		Application& app = Application::Get();
 		VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
 		VulkanSwapChain& swapChain = _context->GetSwapChain();
-		VulkanRenderPass* vulkanRenderPass = static_cast<VulkanRenderPass*>(renderPass);
 
 		auto swapChainCommandBuffers = swapChain.GetCommandBuffers();
 		auto swapChainFramebuffers = swapChain.GetSwapChainFramebuffers();

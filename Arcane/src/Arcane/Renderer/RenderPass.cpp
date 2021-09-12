@@ -4,11 +4,11 @@
 
 namespace Arcane {
 
-	RenderPass* RenderPass::Create()
+	RenderPass* RenderPass::Create(RenderPassSpecs specs)
 	{
 		switch (RendererAPI::Current())
 		{
-		case RendererAPIType::Vulkan: return new VulkanRenderPass();
+		case RendererAPIType::Vulkan: return new VulkanRenderPass(specs);
 		default:
 			break;
 		}

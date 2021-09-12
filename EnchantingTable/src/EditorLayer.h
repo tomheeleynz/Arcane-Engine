@@ -20,4 +20,5 @@ private:
 	Arcane::VertexBuffer* m_VertexBuffer;
 	Arcane::Pipeline* m_Pipeline;
 	Arcane::UniformBuffer* m_UniformBuffer;
+	Arcane::Framebuffer* m_Framebuffer;
 };

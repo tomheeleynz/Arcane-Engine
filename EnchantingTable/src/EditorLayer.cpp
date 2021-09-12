@@ -28,7 +28,7 @@ void EditorLayer::OnAttach()
 {
 	// Test Shader
 	m_Shader = Arcane::Shader::Create(".\\src\\Assets\\Shaders\\vert.spv", ".\\src\\Assets\\Shaders\\frag.spv");
-	m_RenderPass = Arcane::RenderPass::Create();
+
 
 	// Test Vertex Descriptor
 	m_VertexDescriptor = Arcane::VertexDescriptor::Create({
@@ -40,15 +40,6 @@ void EditorLayer::OnAttach()
 
 	Arcane::Texture* testTexture = Arcane::Texture::Create(".\\src\\Assets\\Textures\\shield.png");
 	m_UniformBuffer = Arcane::UniformBuffer::Create(testTexture, sizeof(UniformBufferObject));
-
-	// Test Pipeline
-	Arcane::PipelineSpecification spec;
-	spec.descriptor = m_VertexDescriptor;
-	spec.renderPass = m_RenderPass;
-	spec.shader = m_Shader;
-	spec.uniformBuffer = m_UniformBuffer;
-
-	m_Pipeline = Arcane::Pipeline::Create(spec);
 
 	// Test Vertices
 	std::vector<TestVertex> vertices = { 
@@ -67,6 +58,26 @@ void EditorLayer::OnAttach()
 	Arcane::IndexBuffer* indexBuffer = Arcane::IndexBuffer::Create(indices.data(), indices.size());
 	m_VertexBuffer->AddIndexBuffer(indexBuffer);
 
+	// Create an offscreen framebuffer 
+	Arcane::FramebufferSpecifications offscreenSpecs;
+	offscreenSpecs.Width = 512;
+	offscreenSpecs.Height = 512;
+	offscreenSpecs.ClearColor = {0.2f, 0.3f, 0.3f, 1.0f};
+	offscreenSpecs.AttachmentSpecs = { Arcane::FramebufferAttachmentType::COLOR };
+
+	Arcane::RenderPassSpecs renderPassSpecs;
+	renderPassSpecs.TargetFramebuffer = Arcane::Framebuffer::Create(offscreenSpecs);
+
+	m_RenderPass = Arcane::RenderPass::Create(renderPassSpecs);
+
+	// Test Pipeline
+	Arcane::PipelineSpecification spec;
+	spec.descriptor = m_VertexDescriptor;
+	spec.renderPass = m_RenderPass;
+	spec.shader = m_Shader;
+	spec.uniformBuffer = m_UniformBuffer;
+
+	m_Pipeline = Arcane::Pipeline::Create(spec);
 }
 
 void EditorLayer::OnDetach()
@@ -76,19 +87,22 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnUpdate(float deltaTime)
 {
-	UniformBufferObject ubo;
-	ubo.color = {1.0f, 0.5f, 0.2f};
+	// Geometry Pass
+	{
+		UniformBufferObject ubo;
+		ubo.color = {1.0f, 0.5f, 0.2f};
+		m_UniformBuffer->WriteData(&ubo, sizeof(ubo));
+		// Begin a Render pass
 
-	m_UniformBuffer->WriteData(&ubo, sizeof(ubo));
+		// This renderpass needs to be the one contaained in the framebuffer
+		Arcane::Renderer::BeginRenderPass(m_RenderPass);
 
-	// Begin a Render pass
-	Arcane::Renderer::BeginRenderPass(m_RenderPass);
+		// Render Test Triangle
+		Arcane::Renderer::RenderQuad(m_VertexBuffer, m_Pipeline, m_UniformBuffer);
 
-	// Render Test Triangle
-	Arcane::Renderer::RenderQuad(m_VertexBuffer, m_Pipeline, m_UniformBuffer);
-
-	// End a pass
-	Arcane::Renderer::EndRenderPass(m_RenderPass);
+		// End a pass
+		Arcane::Renderer::EndRenderPass(m_RenderPass);
+	}
 }
 
 void EditorLayer::OnImGuiRender()
@@ -135,15 +149,24 @@ void EditorLayer::OnImGuiRender()
 	}
 
 
-	ImGui::Begin("Hello World");
+	ImGui::Begin("Scene Panel");
 	{
-		if (ImGui::Button("Test Button")) 
-		{
-			printf("Hello, ImGui Button\n");
-		}
 	}
 	ImGui::End();
 
+	ImGui::Begin("Entity Panel");
+	{
+	
+	}
+	ImGui::End();
+
+	ImGui::Begin("File Browser");
+	{
+
+	}
+	ImGui::End();
+	
+	
 	//End Dockspace
 	ImGui::End();
 }
