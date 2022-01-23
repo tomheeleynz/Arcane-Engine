@@ -23,3 +23,4 @@
 ////////// ImGui
 /////////////////////////////////////////////////////
 #include "Arcane/ImGui/ImGuiLayer.h"
+#include "Arcane/ImGui/PlatformImGui.h"

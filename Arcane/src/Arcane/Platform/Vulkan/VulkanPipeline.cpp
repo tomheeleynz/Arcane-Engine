@@ -6,6 +6,7 @@
 #include "VulkanRenderPass.h"
 #include "VulkanVertexDescriptor.h"
 #include "VulkanUniformBuffer.h"
+#include "VulkanFramebuffer.h"
 
 namespace Arcane {
 	VulkanPipeline::VulkanPipeline(PipelineSpecification& spec)
@@ -129,6 +130,8 @@ namespace Arcane {
 			printf("Pipeline Layout Created\n");
 		}
 
+		VulkanFramebuffer* frameBuffer = static_cast<VulkanFramebuffer*>(spec.renderPass->GetRenderPassSpecs().TargetFramebuffer);
+
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		pipelineInfo.stageCount = 2;
@@ -142,7 +145,7 @@ namespace Arcane {
 		pipelineInfo.pColorBlendState = &colorBlending;
 		pipelineInfo.pDynamicState = nullptr; // Optional
 		pipelineInfo.layout = m_PipelineLayout;
-		pipelineInfo.renderPass = static_cast<VulkanRenderPass*>(spec.renderPass)->GetRenderPass();
+		pipelineInfo.renderPass = frameBuffer->GetFramebufferRenderPass();
 		pipelineInfo.subpass = 0;
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
 		pipelineInfo.basePipelineIndex = -1; // Optional

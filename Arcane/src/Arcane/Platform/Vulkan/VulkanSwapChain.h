@@ -40,12 +40,27 @@ namespace Arcane {
 		// Get Current Draw Command Buffer
 		VkCommandBuffer GetCurrentDrawCommandBuffer() { return m_CommandBuffers[m_CurrentFrameIndex]; }
 
+		// Recreate Swapchain
+
+
 	private:
 		VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 		VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 		VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+
+		void RecreateSwapchain();
+
+		// Creation Functions
+		void CreateSwapChain();
+		void CreateImageViews();
+		void CreateRenderPass();
+		void CreateFramebuffers();
+		void CreateCommandPool() ;
+		void CreateCommandBuffers();
+
 	private:
 		VkSwapchainKHR m_SwapChain;
+		uint32_t m_ImageCount = -1;
 
 		std::vector<VkImage> m_SwapChainImages;
 		std::vector<VkImageView> m_SwapChainImageViews;
@@ -70,5 +85,9 @@ namespace Arcane {
 		int m_MaxFramesInFlight = 2;
 		size_t m_CurrentFrameIndex = 0;
 		uint32_t m_CurrentImageIndex = 0;
+
+		// Information Passed from vulkan context
+		VulkanDevice* m_VulkanDevice;
+		VkSurfaceKHR  m_Surface;
 	};
 }

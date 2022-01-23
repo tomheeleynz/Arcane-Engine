@@ -29,90 +29,89 @@ namespace Arcane {
 
 		for (FramebufferAttachmentType element : specs.AttachmentSpecs.m_Attachments) {
 			switch (element) {
-			case FramebufferAttachmentType::COLOR:
-			{
-				FrameBufferAttachment attachment = {};
-
-				// Image Create Info
-				VkImageCreateInfo imageCreateInfo = {};
-				imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-				imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
-				imageCreateInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
-				imageCreateInfo.extent.width = specs.Width;
-				imageCreateInfo.extent.height = specs.Height;
-				imageCreateInfo.extent.depth = 1;
-				imageCreateInfo.mipLevels = 1;
-				imageCreateInfo.arrayLayers = 1;
-				imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-				imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-				imageCreateInfo.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-
-				// Create Image color attachment
-				if (vkCreateImage(context->GetDevice().GetLogicalDevice(), &imageCreateInfo, nullptr, &attachment.Image) != VK_SUCCESS) {
-					printf("Framebuffer Color not created\n");
-				}
-
-				// Get Image Memory Requirmentes
-				VkMemoryRequirements memRequirements;
-				vkGetImageMemoryRequirements(context->GetDevice().GetLogicalDevice(), attachment.Image, &memRequirements);
-
-				VkMemoryAllocateInfo allocInfo{};
-				allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-				allocInfo.allocationSize = memRequirements.size;
-				allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
-				if (vkAllocateMemory(context->GetDevice().GetLogicalDevice(), &allocInfo, nullptr, &attachment.ImageMemory) != VK_SUCCESS) {
-					printf("Framebuffer Color Image Memory Not Allocated\n");
-				}
-
-
-				if (vkBindImageMemory(context->GetDevice().GetLogicalDevice(), attachment.Image, attachment.ImageMemory, 0) != VK_SUCCESS) {
-					printf("Framebuffer Color Image Memory Not Bound\n");
-				}
-
-
-				// Create Image View
-				VkImageViewCreateInfo colorImageInfo = {};
-				colorImageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-				colorImageInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-				colorImageInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
-				colorImageInfo.subresourceRange = {};
-				colorImageInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-				colorImageInfo.subresourceRange.baseMipLevel = 0;
-				colorImageInfo.subresourceRange.levelCount = 1;
-				colorImageInfo.subresourceRange.baseArrayLayer = 0;
-				colorImageInfo.subresourceRange.layerCount = 1;
-				colorImageInfo.image = attachment.Image;
-
-				if (vkCreateImageView(context->GetDevice().GetLogicalDevice(), &colorImageInfo, nullptr, &attachment.ImageView) != VK_SUCCESS)
+				case FramebufferAttachmentType::COLOR:
 				{
-					printf("Framebuffer Color Image View Not Created\n");
+					FrameBufferAttachment attachment = {};
+
+					// Image Create Info
+					VkImageCreateInfo imageCreateInfo = {};
+					imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+					imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
+					imageCreateInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
+					imageCreateInfo.extent.width = specs.Width;
+					imageCreateInfo.extent.height = specs.Height;
+					imageCreateInfo.extent.depth = 1;
+					imageCreateInfo.mipLevels = 1;
+					imageCreateInfo.arrayLayers = 1;
+					imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+					imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+					imageCreateInfo.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+
+					// Create Image color attachment
+					if (vkCreateImage(context->GetDevice().GetLogicalDevice(), &imageCreateInfo, nullptr, &attachment.Image) != VK_SUCCESS) {
+						printf("Framebuffer Color not created\n");
+					}
+
+					// Get Image Memory Requirmentes
+					VkMemoryRequirements memRequirements;
+					vkGetImageMemoryRequirements(context->GetDevice().GetLogicalDevice(), attachment.Image, &memRequirements);
+
+					VkMemoryAllocateInfo allocInfo{};
+					allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+					allocInfo.allocationSize = memRequirements.size;
+					allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+					if (vkAllocateMemory(context->GetDevice().GetLogicalDevice(), &allocInfo, nullptr, &attachment.ImageMemory) != VK_SUCCESS) {
+						printf("Framebuffer Color Image Memory Not Allocated\n");
+					}
+
+
+					if (vkBindImageMemory(context->GetDevice().GetLogicalDevice(), attachment.Image, attachment.ImageMemory, 0) != VK_SUCCESS) {
+						printf("Framebuffer Color Image Memory Not Bound\n");
+					}
+
+					// Create Image View
+					VkImageViewCreateInfo colorImageInfo = {};
+					colorImageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+					colorImageInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+					colorImageInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
+					colorImageInfo.subresourceRange = {};
+					colorImageInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+					colorImageInfo.subresourceRange.baseMipLevel = 0;
+					colorImageInfo.subresourceRange.levelCount = 1;
+					colorImageInfo.subresourceRange.baseArrayLayer = 0;
+					colorImageInfo.subresourceRange.layerCount = 1;
+					colorImageInfo.image = attachment.Image;
+
+					if (vkCreateImageView(context->GetDevice().GetLogicalDevice(), &colorImageInfo, nullptr, &attachment.ImageView) != VK_SUCCESS)
+					{
+						printf("Framebuffer Color Image View Not Created\n");
+					}
+
+					// Create Image 
+					VkSamplerCreateInfo samplerInfo{};
+					samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+					samplerInfo.magFilter = VK_FILTER_LINEAR;
+					samplerInfo.minFilter = VK_FILTER_LINEAR;
+					samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+					samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+					samplerInfo.addressModeV = samplerInfo.addressModeU;
+					samplerInfo.addressModeW = samplerInfo.addressModeU;
+					samplerInfo.mipLodBias = 0.0f;
+					samplerInfo.maxAnisotropy = 1.0f;
+					samplerInfo.minLod = 0.0f;
+					samplerInfo.maxLod = 1.0f;
+					samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+
+					if (vkCreateSampler(context->GetDevice().GetLogicalDevice(), &samplerInfo, nullptr, &m_ImageSampler) != VK_SUCCESS)
+					{
+						printf("Color Sampler Not Created in framebuffer\n");
+					}
+
+					m_Attachments.push_back(attachment);
+
+					break;
 				}
-
-				// Create Image 
-				VkSamplerCreateInfo samplerInfo{};
-				samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-				samplerInfo.magFilter = VK_FILTER_LINEAR;
-				samplerInfo.minFilter = VK_FILTER_LINEAR;
-				samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-				samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-				samplerInfo.addressModeV = samplerInfo.addressModeU;
-				samplerInfo.addressModeW = samplerInfo.addressModeU;
-				samplerInfo.mipLodBias = 0.0f;
-				samplerInfo.maxAnisotropy = 1.0f;
-				samplerInfo.minLod = 0.0f;
-				samplerInfo.maxLod = 1.0f;
-				samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-
-				if (vkCreateSampler(context->GetDevice().GetLogicalDevice(), &samplerInfo, nullptr, &m_ImageSampler) != VK_SUCCESS)
-				{
-					printf("Color Sampler Not Created in framebuffer\n");
-				}
-
-				m_Attachments.push_back(attachment);
-
-				break;
-			}
 			}
 
 			// Create Framebuffer Renderpass
@@ -182,6 +181,10 @@ namespace Arcane {
 			else {
 				printf("Framebuffer  created\n");
 			}
+
+			m_ImageDescriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			m_ImageDescriptor.imageView = m_Attachments[0].ImageView;
+			m_ImageDescriptor.sampler = m_ImageSampler;
 		}
 
 	}

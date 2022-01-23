@@ -3,7 +3,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
-
+#include <backends/imgui_impl_vulkan.h>
+#include <Arcane/Platform/Vulkan/VulkanFramebuffer.h>
 
 #include "EditorLayer.h"
 
@@ -38,8 +39,8 @@ void EditorLayer::OnAttach()
 	});
 
 
-	Arcane::Texture* testTexture = Arcane::Texture::Create(".\\src\\Assets\\Textures\\shield.png");
-	m_UniformBuffer = Arcane::UniformBuffer::Create(testTexture, sizeof(UniformBufferObject));
+	m_Texture = Arcane::Texture::Create(".\\src\\Assets\\Textures\\shield.png");
+	m_UniformBuffer = Arcane::UniformBuffer::Create(m_Texture, sizeof(UniformBufferObject));
 
 	// Test Vertices
 	std::vector<TestVertex> vertices = { 
@@ -65,8 +66,10 @@ void EditorLayer::OnAttach()
 	offscreenSpecs.ClearColor = {0.2f, 0.3f, 0.3f, 1.0f};
 	offscreenSpecs.AttachmentSpecs = { Arcane::FramebufferAttachmentType::COLOR };
 
+	m_Framebuffer = Arcane::Framebuffer::Create(offscreenSpecs);
+
 	Arcane::RenderPassSpecs renderPassSpecs;
-	renderPassSpecs.TargetFramebuffer = Arcane::Framebuffer::Create(offscreenSpecs);
+	renderPassSpecs.TargetFramebuffer = m_Framebuffer;
 
 	m_RenderPass = Arcane::RenderPass::Create(renderPassSpecs);
 
@@ -82,7 +85,6 @@ void EditorLayer::OnAttach()
 
 void EditorLayer::OnDetach()
 {
-
 }
 
 void EditorLayer::OnUpdate(float deltaTime)
@@ -102,6 +104,11 @@ void EditorLayer::OnUpdate(float deltaTime)
 
 		// End a pass
 		Arcane::Renderer::EndRenderPass(m_RenderPass);
+	} 
+
+	// Screen Space Pass
+	{
+		
 	}
 }
 
@@ -147,7 +154,6 @@ void EditorLayer::OnImGuiRender()
 		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
 		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 	}
-
 
 	ImGui::Begin("Scene Panel");
 	{

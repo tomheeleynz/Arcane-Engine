@@ -8,6 +8,9 @@ namespace Arcane {
 
     VulkanSwapChain::VulkanSwapChain(VulkanDevice& _device, VkSurfaceKHR _surface)
     {
+        m_VulkanDevice = &_device;
+        m_Surface = _surface;
+
         SwapChainSupportDetails& details = _device.GetVulkanPhysicalDevice().GetSwapChainDetails();
         QueueFamilyIndices& indices = _device.GetVulkanPhysicalDevice().GetIndices();
 
@@ -15,17 +18,64 @@ namespace Arcane {
         VkPresentModeKHR presentMode = ChooseSwapPresentMode(details.presentModes);
         VkExtent2D extent = ChooseSwapExtent(details.capabilities);
 
+        m_Extent = extent;
+        m_Format = surfaceFormat.format;
+        m_PresentMode = presentMode;
+
+        // Creation Functions
+        CreateSwapChain();
+        CreateImageViews();
+        CreateRenderPass();
+        CreateFramebuffers();
+        CreateCommandPool();
+        CreateCommandBuffers();
+
+        // Create Semaphores and Fences
+        VkSemaphoreCreateInfo semaphoreInfo{};
+        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+        VkFenceCreateInfo fenceInfo{};
+        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+        m_ImageAvailableSemaphores.resize(m_MaxFramesInFlight);
+        m_RenderFinishedSemaphores.resize(m_MaxFramesInFlight);
+        m_InFlightFences.resize(m_MaxFramesInFlight);
+        m_ImagesInFlight.resize(m_SwapChainImages.size(), VK_NULL_HANDLE);
+
+        for (size_t i = 0; i < m_MaxFramesInFlight; i++) {
+            if (vkCreateSemaphore(m_VulkanDevice->GetLogicalDevice(), &semaphoreInfo, nullptr, &m_ImageAvailableSemaphores[i]) != VK_SUCCESS ||
+                vkCreateSemaphore(m_VulkanDevice->GetLogicalDevice(), &semaphoreInfo, nullptr, &m_RenderFinishedSemaphores[i]) != VK_SUCCESS ||
+                vkCreateFence(m_VulkanDevice->GetLogicalDevice(), &fenceInfo, nullptr, &m_InFlightFences[i]) != VK_SUCCESS) {
+
+                printf("Failed to create sync objects for a frame!\n");
+            }
+            else {
+                printf("Created sync objects for a frame!\n");
+            }
+        }
+    }
+
+    void VulkanSwapChain::CreateSwapChain() 
+    {
+        SwapChainSupportDetails& details = m_VulkanDevice->GetVulkanPhysicalDevice().GetSwapChainDetails();
+        QueueFamilyIndices& indices = m_VulkanDevice->GetVulkanPhysicalDevice().GetIndices();
+
+        VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(details.formats);
+        VkPresentModeKHR presentMode = ChooseSwapPresentMode(details.presentModes);
+        VkExtent2D extent = ChooseSwapExtent(details.capabilities);
+
         // Get Image Count
-        uint32_t imageCount = details.capabilities.minImageCount + 1;
-        if (details.capabilities.maxImageCount > 0 && imageCount > details.capabilities.maxImageCount) {
-            imageCount = details.capabilities.maxImageCount;
+        m_ImageCount = details.capabilities.minImageCount + 1;
+        if (details.capabilities.maxImageCount > 0 && m_ImageCount > details.capabilities.maxImageCount) {
+            m_ImageCount = details.capabilities.maxImageCount;
         }
 
         // Create Swap Chain
         VkSwapchainCreateInfoKHR createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-        createInfo.surface = _surface;
-        createInfo.minImageCount = imageCount;
+        createInfo.surface = m_Surface;
+        createInfo.minImageCount = m_ImageCount;
         createInfo.imageFormat = surfaceFormat.format;
         createInfo.imageColorSpace = surfaceFormat.colorSpace;
         createInfo.imageExtent = extent;
@@ -51,17 +101,17 @@ namespace Arcane {
         createInfo.clipped = VK_TRUE;
         createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-        if (vkCreateSwapchainKHR(_device.GetLogicalDevice(), &createInfo, nullptr, &m_SwapChain) != VK_SUCCESS) {
+        if (vkCreateSwapchainKHR(m_VulkanDevice->GetLogicalDevice(), &createInfo, nullptr, &m_SwapChain) != VK_SUCCESS) {
             printf("Swapchain Not Created");
+        } else {
+            printf("Swapchain Created\n");
         }
+    }
 
-        vkGetSwapchainImagesKHR(_device.GetLogicalDevice(), m_SwapChain, &imageCount, nullptr);
-        m_SwapChainImages.resize(imageCount);
-        vkGetSwapchainImagesKHR(_device.GetLogicalDevice(), m_SwapChain, &imageCount, m_SwapChainImages.data());
-
-        m_Extent = extent;
-        m_Format = surfaceFormat.format;
-        m_PresentMode = presentMode;
+    void VulkanSwapChain::CreateImageViews() {
+        vkGetSwapchainImagesKHR(m_VulkanDevice->GetLogicalDevice(), m_SwapChain, &m_ImageCount, nullptr);
+        m_SwapChainImages.resize(m_ImageCount);
+        vkGetSwapchainImagesKHR(m_VulkanDevice->GetLogicalDevice(), m_SwapChain, &m_ImageCount, m_SwapChainImages.data());
 
         // Create Swap Chain Images
         m_SwapChainImageViews.resize(m_SwapChainImages.size());
@@ -84,23 +134,21 @@ namespace Arcane {
             createInfo.subresourceRange.baseArrayLayer = 0;
             createInfo.subresourceRange.layerCount = 1;
 
-            if (vkCreateImageView(_device.GetLogicalDevice(), &createInfo, nullptr, &m_SwapChainImageViews[i]) != VK_SUCCESS) {
+            if (vkCreateImageView(m_VulkanDevice->GetLogicalDevice(), &createInfo, nullptr, &m_SwapChainImageViews[i]) != VK_SUCCESS) {
                 printf("Image View Not Created\n");
             }
             else {
                 printf("Image View Created\n");
             }
         }
+    }
 
-        // Create Swap Chain Renderpass
-        Application& app = Application::Get();
-        Window& window = app.GetWindow();
-        VulkanContext* _context = static_cast<VulkanContext*>(window.GetContext());
-        VkDevice logicalDevice = _device.GetLogicalDevice();
 
+    void VulkanSwapChain::CreateRenderPass() 
+    {
         // Create Renderpass
         VkAttachmentDescription colorAttachment{};
-        colorAttachment.format = surfaceFormat.format;
+        colorAttachment.format = m_Format;
         colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
         colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
         colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -125,10 +173,13 @@ namespace Arcane {
         renderPassInfo.subpassCount = 1;
         renderPassInfo.pSubpasses = &subpass;
 
-        if (vkCreateRenderPass(logicalDevice, &renderPassInfo, nullptr, &m_RenderPass) != VK_SUCCESS) {
+        if (vkCreateRenderPass(m_VulkanDevice->GetLogicalDevice(), &renderPassInfo, nullptr, &m_RenderPass) != VK_SUCCESS) {
             printf("Swapchain Renderpass Not Created\n");
         }
 
+    }
+
+    void VulkanSwapChain::CreateFramebuffers() {
         m_SwapChainFramebuffers.resize(m_SwapChainImageViews.size());
 
         // Create Swapchain Framebuffers
@@ -146,28 +197,35 @@ namespace Arcane {
             framebufferInfo.height = m_Extent.height;
             framebufferInfo.layers = 1;
 
-            if (vkCreateFramebuffer(logicalDevice, &framebufferInfo, nullptr, &m_SwapChainFramebuffers[i]) != VK_SUCCESS) {
+            if (vkCreateFramebuffer(m_VulkanDevice->GetLogicalDevice(), &framebufferInfo, nullptr, &m_SwapChainFramebuffers[i]) != VK_SUCCESS) {
                 printf("Framebuffers Not Created\n");
             }
             else {
                 printf("Framebuffers Created\n");
             }
         }
+    }
+
+    void VulkanSwapChain::CreateCommandPool() 
+    {
+        QueueFamilyIndices& indices = m_VulkanDevice->GetVulkanPhysicalDevice().GetIndices();
 
         // Create Command Pool
         VkCommandPoolCreateInfo poolInfo{};
         poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
         poolInfo.queueFamilyIndex = indices.graphicsFamily.value();
         poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-        
 
-        if (vkCreateCommandPool(logicalDevice, &poolInfo, nullptr, &m_CommandPool) != VK_SUCCESS) {
+        if (vkCreateCommandPool(m_VulkanDevice->GetLogicalDevice(), &poolInfo, nullptr, &m_CommandPool) != VK_SUCCESS) {
             printf("Command Pool Not Created\n");
         }
         else {
             printf("Command Pool Created\n");
         }
+    }
 
+    void VulkanSwapChain::CreateCommandBuffers() 
+    {
         // Create Command Buffers
         m_CommandBuffers.resize(m_SwapChainFramebuffers.size());
 
@@ -177,36 +235,11 @@ namespace Arcane {
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         allocInfo.commandBufferCount = (uint32_t)m_CommandBuffers.size();
 
-        if (vkAllocateCommandBuffers(logicalDevice, &allocInfo, m_CommandBuffers.data()) != VK_SUCCESS) {
+        if (vkAllocateCommandBuffers(m_VulkanDevice->GetLogicalDevice(), &allocInfo, m_CommandBuffers.data()) != VK_SUCCESS) {
             printf("Failed to allocate command buffers!\n");
         }
         else {
             printf("Allocated Command Buffers!\n");
-        }
-
-        // Create Semaphores and Fences
-        VkSemaphoreCreateInfo semaphoreInfo{};
-        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-        VkFenceCreateInfo fenceInfo{};
-        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-        m_ImageAvailableSemaphores.resize(m_MaxFramesInFlight);
-        m_RenderFinishedSemaphores.resize(m_MaxFramesInFlight);
-        m_InFlightFences.resize(m_MaxFramesInFlight);
-        m_ImagesInFlight.resize(m_SwapChainImages.size(), VK_NULL_HANDLE);
-
-        for (size_t i = 0; i < m_MaxFramesInFlight; i++) {
-            if (vkCreateSemaphore(logicalDevice, &semaphoreInfo, nullptr, &m_ImageAvailableSemaphores[i]) != VK_SUCCESS ||
-                vkCreateSemaphore(logicalDevice, &semaphoreInfo, nullptr, &m_RenderFinishedSemaphores[i]) != VK_SUCCESS ||
-                vkCreateFence(logicalDevice, &fenceInfo, nullptr, &m_InFlightFences[i]) != VK_SUCCESS) {
-
-                printf("Failed to create sync objects for a frame!\n");
-            }
-            else {
-                printf("Created sync objects for a frame!\n");
-            }
         }
     }
 
@@ -250,6 +283,34 @@ namespace Arcane {
         }
     }
 
+    void VulkanSwapChain::RecreateSwapchain()
+    {
+        vkDeviceWaitIdle(m_VulkanDevice->GetLogicalDevice());
+
+        // Destroy Framebuffers
+        for (size_t i = 0; i < m_SwapChainFramebuffers.size(); i++) {
+            vkDestroyFramebuffer(m_VulkanDevice->GetLogicalDevice(), m_SwapChainFramebuffers[i], nullptr);
+        }
+
+        // Free Command Buffers
+        vkFreeCommandBuffers(m_VulkanDevice->GetLogicalDevice(), m_CommandPool, static_cast<uint32_t>(m_CommandBuffers.size()), m_CommandBuffers.data());
+       
+        // Destroy Image Views
+        for (size_t i = 0; i < m_SwapChainImageViews.size(); i++) {
+            vkDestroyImageView(m_VulkanDevice->GetLogicalDevice(), m_SwapChainImageViews[i], nullptr);
+        }
+
+        // Destroy actual swapchain
+        vkDestroySwapchainKHR(m_VulkanDevice->GetLogicalDevice(), m_SwapChain, nullptr);
+
+        // Recreate Things for swapchain
+        CreateSwapChain();
+        CreateImageViews();
+        CreateRenderPass();
+        CreateFramebuffers();
+        CreateCommandBuffers();
+    }
+
     void VulkanSwapChain::SwapBuffers()
     {
         Application& app = Application::Get();
@@ -259,7 +320,12 @@ namespace Arcane {
         vkWaitForFences(_context->GetDevice().GetLogicalDevice(), 1, &m_InFlightFences[m_CurrentFrameIndex], VK_TRUE, UINT64_MAX);
 
         uint32_t imageIndex;
-        vkAcquireNextImageKHR(_context->GetDevice().GetLogicalDevice(), m_SwapChain, UINT64_MAX, m_ImageAvailableSemaphores[m_CurrentFrameIndex], VK_NULL_HANDLE, &imageIndex);
+        VkResult result = vkAcquireNextImageKHR(_context->GetDevice().GetLogicalDevice(), m_SwapChain, UINT64_MAX, m_ImageAvailableSemaphores[m_CurrentFrameIndex], VK_NULL_HANDLE, &imageIndex);
+
+        if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+            RecreateSwapchain();
+            return;
+        }
 
         if (m_ImagesInFlight[imageIndex] != VK_NULL_HANDLE) {
             vkWaitForFences(_context->GetDevice().GetLogicalDevice(), 1, &m_ImagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
@@ -301,7 +367,11 @@ namespace Arcane {
         presentInfo.pImageIndices = &imageIndex;
         presentInfo.pResults = nullptr;
 
-        vkQueuePresentKHR(_context->GetDevice().GetPresentQueue(), &presentInfo);
+        result = vkQueuePresentKHR(_context->GetDevice().GetPresentQueue(), &presentInfo);
+
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
+            RecreateSwapchain();
+        }
 
         vkQueueWaitIdle(_context->GetDevice().GetPresentQueue());
 

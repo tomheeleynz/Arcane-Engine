@@ -163,7 +163,6 @@ namespace Arcane {
 		return m_Device;
 	}
 
-
 	VkCommandBuffer VulkanDevice::CreateCommandBuffer(VkCommandBufferLevel commandBufferLevel)
 	{
 		Application& app = Application::Get();

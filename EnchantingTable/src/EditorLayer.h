@@ -21,4 +21,5 @@ private:
 	Arcane::Pipeline* m_Pipeline;
 	Arcane::UniformBuffer* m_UniformBuffer;
 	Arcane::Framebuffer* m_Framebuffer;
+	Arcane::Texture* m_Texture;
 };

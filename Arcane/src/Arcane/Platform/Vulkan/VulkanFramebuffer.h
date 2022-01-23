@@ -14,6 +14,8 @@ namespace Arcane {
 		VkFramebuffer GetVulkanFramebuffer() { return m_Framebuffer; }
 
 		VkRenderPass GetFramebufferRenderPass() { return m_RenderPass; }
+
+		VkDescriptorImageInfo GetDescriptor() { return m_ImageDescriptor; }
 	private:
 		struct FrameBufferAttachment
 		{

@@ -5,6 +5,11 @@
 
 namespace Arcane
 {
+	enum class UniformDescriptorType 
+	{
+
+	};
+
 	class UniformBuffer
 	{
 	public:
