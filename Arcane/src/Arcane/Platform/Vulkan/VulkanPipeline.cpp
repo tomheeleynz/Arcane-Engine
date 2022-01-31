@@ -18,8 +18,9 @@ namespace Arcane {
 		Window& window = app.GetWindow();
 		VulkanContext* _context = static_cast<VulkanContext*>(window.GetContext());
 		VkDevice logicalDevice = _context->GetDevice().GetLogicalDevice();
-		VkVertexInputBindingDescription bindingDescription = static_cast<VulkanVertexDescriptor*>(spec.descriptor)->GetBindingDescription();
 		
+		// Get Vertex Binding Descriptions
+		VkVertexInputBindingDescription bindingDescription = static_cast<VulkanVertexDescriptor*>(spec.descriptor)->GetBindingDescription();
 		auto attributeDescriptions = static_cast<VulkanVertexDescriptor*>(spec.descriptor)->GetAttributeDescriptions();
 
 		// Creating Vertex Shader
@@ -122,7 +123,6 @@ namespace Arcane {
 			pipelineLayoutInfo.pSetLayouts = &vulkanUniformBufferLayout;
 		}
 
-
 		if (vkCreatePipelineLayout(logicalDevice, &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS) {
 			printf("Pipeline Layout Not Created");
 		}
@@ -130,7 +130,17 @@ namespace Arcane {
 			printf("Pipeline Layout Created\n");
 		}
 
-		VulkanFramebuffer* frameBuffer = static_cast<VulkanFramebuffer*>(spec.renderPass->GetRenderPassSpecs().TargetFramebuffer);
+
+		VkRenderPass renderPass = VK_NULL_HANDLE;
+
+		if (spec.renderPass->GetRenderPassSpecs().SwapchainFramebuffer)
+		{
+			renderPass = _context->GetSwapChain().GetSwapchainRenderPass();
+		}
+		else {
+			VulkanFramebuffer* frameBuffer = static_cast<VulkanFramebuffer*>(spec.renderPass->GetRenderPassSpecs().TargetFramebuffer);
+			renderPass = frameBuffer->GetFramebufferRenderPass();
+		}
 
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -145,7 +155,7 @@ namespace Arcane {
 		pipelineInfo.pColorBlendState = &colorBlending;
 		pipelineInfo.pDynamicState = nullptr; // Optional
 		pipelineInfo.layout = m_PipelineLayout;
-		pipelineInfo.renderPass = frameBuffer->GetFramebufferRenderPass();
+		pipelineInfo.renderPass = renderPass;
 		pipelineInfo.subpass = 0;
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
 		pipelineInfo.basePipelineIndex = -1; // Optional

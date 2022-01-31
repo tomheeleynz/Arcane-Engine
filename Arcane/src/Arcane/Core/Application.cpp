@@ -22,8 +22,8 @@ namespace Arcane {
 
 		Renderer::Init();
 
-		m_ImGuiLayer = ImGuiLayer::Create();
-		m_ImGuiLayer->OnAttach();
+		// m_ImGuiLayer = ImGuiLayer::Create();
+		// m_ImGuiLayer->OnAttach();
 
 		m_Clock = new CClock();
 	}
@@ -68,9 +68,8 @@ namespace Arcane {
 				layer->OnUpdate(deltaTime);
 			}
 
-			RenderImGui();
-			
-			m_ImGuiLayer->End();
+			// RenderImGui();
+			// m_ImGuiLayer->End();
 
 			m_Window->ProcessEvents();
 			m_Window->SwapBuffers();

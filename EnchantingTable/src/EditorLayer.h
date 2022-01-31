@@ -14,8 +14,13 @@ public:
 	void OnImGuiRender() override;
 private:
 	// Test Data
+	// -- Geo Shader
 	Arcane::Shader* m_Shader;
+	// -- Screen Shader
+	Arcane::Shader* m_ScreenSpaceShader;
+
 	Arcane::RenderPass* m_RenderPass;
+	
 	Arcane::VertexDescriptor* m_VertexDescriptor;
 	Arcane::VertexBuffer* m_VertexBuffer;
 	Arcane::Pipeline* m_Pipeline;

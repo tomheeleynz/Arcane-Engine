@@ -22,7 +22,7 @@ namespace Arcane {
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 		void* pUserData) {
 
-		std::cout << "validation layer: " << pCallbackData->pMessage << std::endl;
+		// std::cout << "validation layer: " << pCallbackData->pMessage << std::endl;
 
 		return VK_FALSE;
 	}
@@ -159,7 +159,6 @@ namespace Arcane {
 
 	void VulkanContext::SwapBuffers()
 	{
-		// printf("Swapchain Image index: %d\n", m_SwapChain->GetImageIndex());
 		m_SwapChain->SwapBuffers();
 	}
 }

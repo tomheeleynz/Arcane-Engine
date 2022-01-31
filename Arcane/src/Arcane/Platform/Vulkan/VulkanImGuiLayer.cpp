@@ -117,7 +117,6 @@ namespace Arcane {
 			vkCmdBeginRenderPass(swapChainCommandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 			ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), swapChainCommandBuffers[i]);
-
 		}
 
 		for (size_t i = 0; i < swapChainCommandBuffers.size(); i++)

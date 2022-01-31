@@ -29,13 +29,19 @@ namespace Arcane {
 
 	void VulkanRenderer::BeginRenderPass(RenderPass* renderPass)
 	{
+		bool renderToSwapchain = false;
+
 		Application& app = Application::Get();
 		VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
 		VulkanSwapChain& swapChain = _context->GetSwapChain();
 
 		RenderPassSpecs& renderSpecs = renderPass->GetRenderPassSpecs();
-		VulkanFramebuffer* frameBuffer = static_cast<VulkanFramebuffer*>(renderSpecs.TargetFramebuffer);
+		
+		if (renderSpecs.SwapchainFramebuffer) {		
+			renderToSwapchain = true;
+		}
 
+		VulkanFramebuffer* frameBuffer = static_cast<VulkanFramebuffer*>(renderSpecs.TargetFramebuffer);
 
 		auto swapChainCommandBuffers = swapChain.GetCommandBuffers();
 		auto swapChainFramebuffers = swapChain.GetSwapChainFramebuffers();
@@ -53,10 +59,19 @@ namespace Arcane {
 
 			VkRenderPassBeginInfo renderPassInfo{};
 			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			renderPassInfo.renderPass = frameBuffer->GetFramebufferRenderPass();
-			renderPassInfo.framebuffer = frameBuffer->GetVulkanFramebuffer();
+			
+			if (renderToSwapchain) {
+				renderPassInfo.renderPass = swapChain.GetSwapchainRenderPass();
+				renderPassInfo.framebuffer = swapChainFramebuffers[i];
+				renderPassInfo.renderArea.extent = swapChain.GetExtent();
+			}
+			else {
+				renderPassInfo.renderPass = frameBuffer->GetFramebufferRenderPass();
+				renderPassInfo.framebuffer = frameBuffer->GetVulkanFramebuffer();
+				renderPassInfo.renderArea.extent = { 512, 512 };
+			}
+			
 			renderPassInfo.renderArea.offset = { 0, 0 };
-			renderPassInfo.renderArea.extent = { 512, 512 };
 
 			VkClearValue clearColor = { 0.2f, 0.3f, 0.3f, 1.0f };
 			renderPassInfo.clearValueCount = 1;
@@ -73,7 +88,6 @@ namespace Arcane {
 		VulkanSwapChain& swapChain = _context->GetSwapChain();
 
 		auto swapChainCommandBuffers = swapChain.GetCommandBuffers();
-		auto swapChainFramebuffers = swapChain.GetSwapChainFramebuffers();
 
 		for (size_t i = 0; i < swapChainCommandBuffers.size(); i++)
 		{
@@ -95,6 +109,7 @@ namespace Arcane {
 		// Bind Pipeline for triangle to use
 		VkPipeline vulkanPipeline = static_cast<VulkanPipeline*>(pipeline)->GetPipeline();
 		VkBuffer vulkanVertexBuffer = static_cast<VulkanVertexBuffer*>(buffer)->GetVertexBuffer();
+		
 		std::vector<VkCommandBuffer> swapChainBuffers = swapChain.GetCommandBuffers();
 
 		for (size_t i = 0; i < swapChainBuffers.size(); i++) {

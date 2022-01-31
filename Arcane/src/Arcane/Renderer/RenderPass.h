@@ -3,10 +3,12 @@
 #include <glm/glm.hpp>
 #include "Framebuffer.h"
 
-namespace Arcane {
+namespace Arcane 
+{
 	struct RenderPassSpecs
 	{
 		Framebuffer* TargetFramebuffer;
+		bool SwapchainFramebuffer = true;
 	};
 	
 	class RenderPass
