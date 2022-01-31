@@ -32,7 +32,7 @@ namespace Arcane {
 	class Framebuffer
 	{
 	public:
-
+		virtual FramebufferSpecifications GetSpecs() = 0;
 		static Framebuffer* Create(FramebufferSpecifications& specs);
 	private:
 

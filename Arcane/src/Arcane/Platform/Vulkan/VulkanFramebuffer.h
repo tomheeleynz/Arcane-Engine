@@ -16,6 +16,9 @@ namespace Arcane {
 		VkRenderPass GetFramebufferRenderPass() { return m_RenderPass; }
 
 		VkDescriptorImageInfo GetDescriptor() { return m_ImageDescriptor; }
+
+
+		FramebufferSpecifications GetSpecs() override { return m_Specs; }
 	private:
 		struct FrameBufferAttachment
 		{
@@ -25,6 +28,8 @@ namespace Arcane {
 		};
 
 		std::vector<FrameBufferAttachment> m_Attachments;
+
+		FramebufferSpecifications m_Specs;
 
 		uint32_t m_Width;
 		uint32_t m_Height;

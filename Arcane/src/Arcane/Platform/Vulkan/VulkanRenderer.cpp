@@ -68,7 +68,7 @@ namespace Arcane {
 			else {
 				renderPassInfo.renderPass = frameBuffer->GetFramebufferRenderPass();
 				renderPassInfo.framebuffer = frameBuffer->GetVulkanFramebuffer();
-				renderPassInfo.renderArea.extent = { 512, 512 };
+				renderPassInfo.renderArea.extent = { frameBuffer->GetSpecs().Width, frameBuffer->GetSpecs().Height};
 			}
 			
 			renderPassInfo.renderArea.offset = { 0, 0 };
@@ -199,7 +199,5 @@ namespace Arcane {
 			// Draw Vertices
 			vkCmdDrawIndexed(swapChainBuffers[i], indiceCount, 1, 0, 0, 0);
 		}
-
-
 	}
 }

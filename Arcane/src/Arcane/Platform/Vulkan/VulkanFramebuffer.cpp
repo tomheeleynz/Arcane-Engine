@@ -27,6 +27,8 @@ namespace Arcane {
 		Application& app = Application::Get();
 		VulkanContext* context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
 
+		m_Specs = specs;
+
 		for (FramebufferAttachmentType element : specs.AttachmentSpecs.m_Attachments) {
 			switch (element) {
 				case FramebufferAttachmentType::COLOR:
