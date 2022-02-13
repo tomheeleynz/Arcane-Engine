@@ -16,6 +16,7 @@ private:
 	// Test Data
 	// -- Geo Shader
 	Arcane::Shader* m_Shader;
+	
 	// -- Screen Shader
 	Arcane::Shader* m_ScreenSpaceShader;
 
@@ -25,6 +26,7 @@ private:
 	Arcane::VertexBuffer* m_VertexBuffer;
 	Arcane::Pipeline* m_Pipeline;
 	Arcane::UniformBuffer* m_UniformBuffer;
+	
 	Arcane::Framebuffer* m_Framebuffer;
 	Arcane::Texture* m_Texture;
 };

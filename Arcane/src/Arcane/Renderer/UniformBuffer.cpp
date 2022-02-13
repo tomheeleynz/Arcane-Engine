@@ -26,4 +26,14 @@ namespace Arcane
 			break;
 		}
 	}
+
+	UniformBuffer* UniformBuffer::Create(std::initializer_list<UniformDescriptor> descriptors)
+	{
+		switch (RendererAPI::Current())
+		{
+		case RendererAPIType::Vulkan: return new VulkanUniformBuffer(descriptors);
+		default:
+			break;
+		}
+	}
 }

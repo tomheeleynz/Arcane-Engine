@@ -167,4 +167,60 @@ namespace Arcane
 			vkUpdateDescriptorSets(logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 		}
 	}
+
+	VulkanDescriptorSet::VulkanDescriptorSet(std::vector<VkBuffer> uniformBuffers, std::initializer_list<UniformDescriptor> descriptors)
+	{
+		Application& app = Application::Get();
+		VulkanContext* context = static_cast<VulkanContext*>(Application::Get().GetWindow().GetContext());
+		VkDevice logicalDevice = static_cast<VulkanContext*>(app.GetWindow().GetContext())->GetDevice().GetLogicalDevice();
+		VulkanSwapChain& swapchain = context->GetSwapChain();
+		
+		uint32_t bindingCount = 0;
+		std::vector<VkDescriptorSetLayoutBinding> layoutBindings;
+
+		for (UniformDescriptor descriptor : descriptors) 
+		{
+			UniformDescriptorType currentType = descriptor.GetType();
+
+			switch (currentType)
+			{
+			case UniformDescriptorType::UniformBufferObject: 
+			{
+				VkDescriptorSetLayoutBinding uboBinding{};
+				uboBinding.binding = bindingCount;
+				uboBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+				uboBinding.descriptorCount = 1;
+				uboBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+				uboBinding.pImmutableSamplers = nullptr;
+
+				layoutBindings.push_back(uboBinding);
+				break;
+			}
+			case UniformDescriptorType::TextureSampler:
+			{
+				VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+				samplerLayoutBinding.binding = bindingCount;
+				samplerLayoutBinding.descriptorCount = 1;
+				samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				samplerLayoutBinding.pImmutableSamplers = nullptr;
+				samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+				layoutBindings.push_back(samplerLayoutBinding);
+				break;
+			}
+			default:
+				break;
+			}
+		}
+
+		VkDescriptorSetLayoutCreateInfo layoutInfo{};
+		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		layoutInfo.bindingCount = static_cast<uint32_t>(layoutBindings.size());
+		layoutInfo.pBindings = layoutBindings.data();
+
+		if (vkCreateDescriptorSetLayout(logicalDevice, &layoutInfo, nullptr, &m_Layout) != VK_SUCCESS) {
+			printf("Uniform Descriptor Layout Not Created\n");
+		}
+
+	}
 }

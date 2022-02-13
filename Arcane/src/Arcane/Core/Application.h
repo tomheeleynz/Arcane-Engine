@@ -17,6 +17,7 @@ namespace Arcane {
 		std::string Name;
 		uint32_t WindowWidth;
 		uint32_t WindowHeight;
+		bool PushImguiLayer = false;
 	};
 
 	class Application
@@ -45,5 +46,6 @@ namespace Arcane {
 		bool m_bIsRunning = true;
 		ImGuiLayer* m_ImGuiLayer;
 		CClock* m_Clock;
+		bool m_ImguiEnabled = false;
 	};
 }

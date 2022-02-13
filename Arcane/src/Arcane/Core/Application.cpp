@@ -22,8 +22,12 @@ namespace Arcane {
 
 		Renderer::Init();
 
-		// m_ImGuiLayer = ImGuiLayer::Create();
-		// m_ImGuiLayer->OnAttach();
+		m_ImguiEnabled = specifications.PushImguiLayer;
+
+		if (m_ImguiEnabled) {
+			 m_ImGuiLayer = ImGuiLayer::Create();
+			 m_ImGuiLayer->OnAttach();
+		}
 
 		m_Clock = new CClock();
 	}
@@ -68,8 +72,10 @@ namespace Arcane {
 				layer->OnUpdate(deltaTime);
 			}
 
-			// RenderImGui();
-			// m_ImGuiLayer->End();
+			if (m_ImguiEnabled) {
+				RenderImGui();
+				m_ImGuiLayer->End();
+			}
 
 			m_Window->ProcessEvents();
 			m_Window->SwapBuffers();
