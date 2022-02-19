@@ -311,16 +311,13 @@ namespace Arcane
 					TextureSampler* textureSampler = static_cast<TextureSampler*>(descriptor);
 					VulkanTexture* texture = static_cast<VulkanTexture*>(textureSampler->GetTexture());
 
-					VkWriteDescriptorSet set;
-					set.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-					set.dstSet = m_DescriptorSets[i];
-					set.dstBinding = bindingCount;
-					set.dstArrayElement = 0;
-					set.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-					set.descriptorCount = 1;
-					set.pImageInfo = &texture->GetImageDescriptorInfo();
-
-					descriptorWrites.push_back(set);
+					descriptorWrites[bindingCount].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+					descriptorWrites[bindingCount].dstSet = m_DescriptorSets[i];
+					descriptorWrites[bindingCount].dstBinding = descriptor->GetBinding();
+					descriptorWrites[bindingCount].dstArrayElement = 0;
+					descriptorWrites[bindingCount].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+					descriptorWrites[bindingCount].descriptorCount = 1;
+					descriptorWrites[bindingCount].pImageInfo = &texture->GetImageDescriptorInfo();
 					bindingCount++;
 					break;
 				}

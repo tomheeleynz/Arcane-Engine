@@ -30,6 +30,7 @@ private:
 	// Test Uniform Buffer
 	Arcane::UniformBuffer* m_UniformBuffer;
 	Arcane::UniformObject* m_ColorObject;
+	Arcane::TextureSampler* m_TestSampler;
 
 	Arcane::Framebuffer* m_Framebuffer;
 	Arcane::Texture* m_Texture;

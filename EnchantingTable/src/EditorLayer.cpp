@@ -12,6 +12,7 @@ struct TestVertex
 {
 	glm::vec3 position;
 	glm::vec3 color;
+	glm::vec2 texCoord;
 };
 
 struct UniformBufferObject
@@ -32,18 +33,21 @@ void EditorLayer::OnAttach()
 		".\\src\\Assets\\Shaders\\frag.spv"
 	);
 
+	m_Texture = Arcane::Texture::Create(".\\src\\Assets\\Textures\\shield.png");
+
 	// Test Vertex Descriptor
 	m_VertexDescriptor = Arcane::VertexDescriptor::Create({
 		Arcane::VertexType::float3,
 		Arcane::VertexType::float3,
+		Arcane::VertexType::float2
 	});
 
 	// Test Vertices
 	std::vector<TestVertex> vertices = { 
-		{{-0.5f, -0.5f,0.0f}, {1.0f, 0.5f, 0.2f}},
-		{{0.5f, -0.5f, 0.0f}, {1.0f, 0.5f, 0.2f}},
-		{{0.5f, 0.5f,  0.0f}, {1.0f, 0.5f, 0.2f}},
-		{{-0.5f, 0.5f, 0.0f}, {1.0f, 0.5f, 0.2f}}
+		{{-0.5f, -0.5f,0.0f}, {1.0f, 0.5f, 0.2f}, {1.0f, 0.0f}},
+		{{0.5f, -0.5f, 0.0f}, {1.0f, 0.5f, 0.2f}, {0.0f, 0.0f}},
+		{{0.5f, 0.5f,  0.0f}, {1.0f, 0.5f, 0.2f}, {0.0f, 1.0f}},
+		{{-0.5f, 0.5f, 0.0f}, {1.0f, 0.5f, 0.2f}, {1.0f, 1.0f}}
 	};
 
 	std::vector<uint32_t> indices = {
@@ -61,11 +65,15 @@ void EditorLayer::OnAttach()
 	
 	// Setup Uniform buffer
 	m_ColorObject = new Arcane::UniformObject(sizeof(UniformBufferObject));
-	
+
+	m_TestSampler = new Arcane::TextureSampler(m_Texture);
+	m_TestSampler->SetBinding(0);
+
+
 	// Create Uniform Buffer
 	m_UniformBuffer = Arcane::UniformBuffer::Create({
 		// -- Color Uniform Object
-		m_ColorObject
+		m_TestSampler
 	});
 
 	// Test Pipeline
@@ -84,12 +92,6 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnUpdate(float deltaTime)
 {
-	// Write to uniform buffer
-	UniformBufferObject newColor;
-	newColor.color = glm::vec3(0.0f, 1.0, 0.0f);
-	m_ColorObject->WriteData((void*)&newColor);
-	m_UniformBuffer->WriteData(m_ColorObject);
-
 	// Geometry Pass
 	{
 		// This renderpass needs to be the one contaained in the framebuffer

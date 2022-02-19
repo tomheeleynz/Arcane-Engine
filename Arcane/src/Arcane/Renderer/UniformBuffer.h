@@ -19,8 +19,12 @@ namespace Arcane
 			m_Type = _type; 
 		}
 
+		void SetBinding(uint32_t bindNum) { m_BindNum = bindNum; }
+		uint32_t GetBinding() { return m_BindNum; }
+
 		UniformDescriptorType GetType() { return m_Type; }
 	private:
+		uint32_t m_BindNum = -1;
 		UniformDescriptorType m_Type;
 	};
 
@@ -63,8 +67,6 @@ namespace Arcane
 		virtual void WriteData(UniformObject* object) = 0;
 
 		static UniformBuffer* Create(std::initializer_list<UniformDescriptor*> descriptors);
-		static UniformBuffer* Create(uint32_t size);
-		static UniformBuffer* Create(Texture* texture, uint32_t size);
 	private:
 
 	};
