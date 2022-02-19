@@ -25,8 +25,12 @@ private:
 	Arcane::VertexDescriptor* m_VertexDescriptor;
 	Arcane::VertexBuffer* m_VertexBuffer;
 	Arcane::Pipeline* m_Pipeline;
+
+
+	// Test Uniform Buffer
 	Arcane::UniformBuffer* m_UniformBuffer;
-	
+	Arcane::UniformObject* m_ColorObject;
+
 	Arcane::Framebuffer* m_Framebuffer;
 	Arcane::Texture* m_Texture;
 };

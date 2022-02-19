@@ -12,9 +12,10 @@ namespace Arcane
 	public:
 		VulkanUniformBuffer(uint32_t size);
 		VulkanUniformBuffer(Texture* texture, uint32_t size);
-		VulkanUniformBuffer(std::initializer_list<UniformDescriptor> descriptors);
+		VulkanUniformBuffer(std::initializer_list<UniformDescriptor*> descriptors);
 
 		void WriteData(void* data, uint32_t size) override;
+		void WriteData(UniformObject* object) override;
 
 		VkDescriptorSetLayout GetLayout() { return m_DescriptorSet->GetLayout(); }
 		std::vector<VkDescriptorSet> GetDescriptorSets() { return m_DescriptorSet->GetDescriptorSets(); }

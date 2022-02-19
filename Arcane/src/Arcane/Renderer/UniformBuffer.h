@@ -15,7 +15,9 @@ namespace Arcane
 	class UniformDescriptor
 	{
 	public:
-		UniformDescriptor(UniformDescriptorType _type) { m_Type = _type; }
+		UniformDescriptor(UniformDescriptorType _type) { 
+			m_Type = _type; 
+		}
 
 		UniformDescriptorType GetType() { return m_Type; }
 	private:
@@ -30,9 +32,12 @@ namespace Arcane
 		}
 
 		uint32_t GetSize() { return m_Size; }
+		void* GetData() { return m_Data; }
 
+		void WriteData(void* data) { m_Data = data; };
 	private:
 		uint32_t m_Size;
+		void* m_Data = nullptr;
 
 	};
 
@@ -43,6 +48,7 @@ namespace Arcane
 			m_Texture = texture;
 		}
 
+		Texture* GetTexture() { return m_Texture; }
 	private:
 		Texture* m_Texture = nullptr;
 
@@ -53,8 +59,10 @@ namespace Arcane
 	{
 	public:
 		virtual void WriteData(void* data, uint32_t size) = 0;
+		// -- Write a uniform object
+		virtual void WriteData(UniformObject* object) = 0;
 
-		static UniformBuffer* Create(std::initializer_list<UniformDescriptor> descriptors);
+		static UniformBuffer* Create(std::initializer_list<UniformDescriptor*> descriptors);
 		static UniformBuffer* Create(uint32_t size);
 		static UniformBuffer* Create(Texture* texture, uint32_t size);
 	private:

@@ -58,13 +58,22 @@ void EditorLayer::OnAttach()
 	Arcane::RenderPassSpecs renderPassSpecs;
 	renderPassSpecs.SwapchainFramebuffer = true;
 	m_RenderPass = Arcane::RenderPass::Create(renderPassSpecs);
+	
+	// Setup Uniform buffer
+	m_ColorObject = new Arcane::UniformObject(sizeof(UniformBufferObject));
+	
+	// Create Uniform Buffer
+	m_UniformBuffer = Arcane::UniformBuffer::Create({
+		// -- Color Uniform Object
+		m_ColorObject
+	});
 
 	// Test Pipeline
 	Arcane::PipelineSpecification spec;
 	spec.descriptor = m_VertexDescriptor;
 	spec.renderPass = m_RenderPass;
 	spec.shader = m_Shader;
-	spec.uniformBuffer = nullptr;
+	spec.uniformBuffer = m_UniformBuffer;
 
 	m_Pipeline = Arcane::Pipeline::Create(spec);
 }
@@ -75,13 +84,19 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnUpdate(float deltaTime)
 {
+	// Write to uniform buffer
+	UniformBufferObject newColor;
+	newColor.color = glm::vec3(0.0f, 1.0, 0.0f);
+	m_ColorObject->WriteData((void*)&newColor);
+	m_UniformBuffer->WriteData(m_ColorObject);
+
 	// Geometry Pass
 	{
 		// This renderpass needs to be the one contaained in the framebuffer
 		Arcane::Renderer::BeginRenderPass(m_RenderPass);
 
 		// Render Test Triangle
-		Arcane::Renderer::RenderQuad(m_VertexBuffer, m_Pipeline);
+		Arcane::Renderer::RenderQuad(m_VertexBuffer, m_Pipeline, m_UniformBuffer);
 
 		// End a pass
 		Arcane::Renderer::EndRenderPass(m_RenderPass);

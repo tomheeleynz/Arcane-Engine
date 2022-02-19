@@ -114,7 +114,7 @@ namespace Arcane
 		m_DescriptorSet = new VulkanDescriptorSet(m_UniformBuffers, size, vulkanTexture);
 	}
 
-	VulkanUniformBuffer::VulkanUniformBuffer(std::initializer_list<UniformDescriptor> descriptors)
+	VulkanUniformBuffer::VulkanUniformBuffer(std::initializer_list<UniformDescriptor*> descriptors)
 	{
 		VulkanContext* context = static_cast<VulkanContext*>(Application::Get().GetWindow().GetContext());
 		VulkanSwapChain& swapchain = context->GetSwapChain();
@@ -123,15 +123,15 @@ namespace Arcane
 		uint32_t uniformBufferSize = 0;
 
 		// Get The sizes for creating uniform buffers
-		for (UniformDescriptor descriptor : descriptors) 
+		for (UniformDescriptor* descriptor : descriptors) 
 		{
-			UniformDescriptorType currentType = descriptor.GetType();
+			UniformDescriptorType currentType = descriptor->GetType();
 
 			switch (currentType)
 			{
 			case UniformDescriptorType::UniformBufferObject: {
-				UniformObject* uniformObject = static_cast<UniformObject*>(&descriptor);
-				uniformBufferSize = uniformObject->GetSize();
+				UniformObject* object = static_cast<UniformObject*>(descriptor);
+				uniformBufferSize = object->GetSize();
 				break;
 			}
 			default:
@@ -187,6 +187,18 @@ namespace Arcane
 		void* tempData;
 		vkMapMemory(logicalDevice, m_UniformBuffersMemory[swapchain.GetImageIndex()], 0, size, 0, &tempData);
 		memcpy(tempData, data,  size);
+		vkUnmapMemory(logicalDevice, m_UniformBuffersMemory[swapchain.GetImageIndex()]);
+	}
+
+	void VulkanUniformBuffer::WriteData(UniformObject* object)
+	{
+		VulkanContext* context = static_cast<VulkanContext*>(Application::Get().GetWindow().GetContext());
+		VulkanSwapChain& swapchain = context->GetSwapChain();
+		VkDevice logicalDevice = context->GetDevice().GetLogicalDevice();
+
+		void* tempData;
+		vkMapMemory(logicalDevice, m_UniformBuffersMemory[swapchain.GetImageIndex()], 0, object->GetSize(), 0, &tempData);
+		memcpy(tempData, object->GetData(), object->GetSize());
 		vkUnmapMemory(logicalDevice, m_UniformBuffersMemory[swapchain.GetImageIndex()]);
 	}
 

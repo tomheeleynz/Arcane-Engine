@@ -27,7 +27,7 @@ namespace Arcane
 		}
 	}
 
-	UniformBuffer* UniformBuffer::Create(std::initializer_list<UniformDescriptor> descriptors)
+	UniformBuffer* UniformBuffer::Create(std::initializer_list<UniformDescriptor*> descriptors)
 	{
 		switch (RendererAPI::Current())
 		{
