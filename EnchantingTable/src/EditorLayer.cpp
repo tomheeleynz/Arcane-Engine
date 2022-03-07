@@ -65,14 +65,15 @@ void EditorLayer::OnAttach()
 	
 	// Setup Uniform buffer
 	m_ColorObject = new Arcane::UniformObject(sizeof(UniformBufferObject));
+	m_ColorObject->SetBinding(0);
 
 	m_TestSampler = new Arcane::TextureSampler(m_Texture);
-	m_TestSampler->SetBinding(0);
-
+	m_TestSampler->SetBinding(1);
 
 	// Create Uniform Buffer
 	m_UniformBuffer = Arcane::UniformBuffer::Create({
 		// -- Color Uniform Object
+		m_ColorObject,
 		m_TestSampler
 	});
 

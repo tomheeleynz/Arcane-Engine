@@ -276,7 +276,7 @@ namespace Arcane
 
 		for (size_t i = 0; i < swapchain.GetSwapChainImagesSize(); i++) {
 
-			std::vector<VkWriteDescriptorSet> descriptorWrites;
+ 			std::vector<VkWriteDescriptorSet> descriptorWrites;
 			descriptorWrites.resize(descriptors.size());
 
 			int bindingCount = 0;
@@ -297,7 +297,7 @@ namespace Arcane
 					
 					descriptorWrites[bindingCount].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 					descriptorWrites[bindingCount].dstSet = m_DescriptorSets[i];
-					descriptorWrites[bindingCount].dstBinding = 0;
+					descriptorWrites[bindingCount].dstBinding = descriptor->GetBinding();
 					descriptorWrites[bindingCount].dstArrayElement = 0;
 					descriptorWrites[bindingCount].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 					descriptorWrites[bindingCount].descriptorCount = 1;

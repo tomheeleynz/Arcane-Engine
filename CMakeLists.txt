@@ -1,0 +1,21 @@
+cmake_minimum_required(VERSION 3.17)
+project(ArcaneEngine)
+
+# Arcane Engine Library
+add_subdirectory(Arcane)
+
+# EnchantingTable Editor
+add_subdirectory(EnchantingTable)
+
+# Vendor Libraries
+# -- GLFW 
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+add_subdirectory("Arcane/vendor/glfw")
+
+# -- ImGui
+add_subdirectory("Arcane/vendor/imgui")
+
+set_property(TARGET Arcane PROPERTY CXX_STANDARD 17)
+set_property(TARGET EnchantingTable PROPERTY CXX_STANDARD 17)
