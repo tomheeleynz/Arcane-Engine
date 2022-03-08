@@ -188,6 +188,5 @@ namespace Arcane {
 			m_ImageDescriptor.imageView = m_Attachments[0].ImageView;
 			m_ImageDescriptor.sampler = m_ImageSampler;
 		}
-
 	}
 }

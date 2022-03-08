@@ -15,6 +15,12 @@ struct TestVertex
 	glm::vec2 texCoord;
 };
 
+struct ScreenVertex
+{
+	glm::vec3 position;
+	glm::vec2 texCoord;
+};
+
 struct UniformBufferObject
 {
 	glm::vec3 color;
@@ -27,7 +33,9 @@ EditorLayer::EditorLayer()
 
 void EditorLayer::OnAttach()
 {
-	// Test Shader
+	//////////////////////////////////////////////////////////
+	//// Geometry Renderpass
+	//////////////////////////////////////////////////////////
 	m_Shader = Arcane::Shader::Create(
 		".\\src\\Assets\\Shaders\\vert.spv", 
 		".\\src\\Assets\\Shaders\\frag.spv"
@@ -50,9 +58,22 @@ void EditorLayer::OnAttach()
 		{{-0.5f, 0.5f, 0.0f}, {1.0f, 0.5f, 0.2f}, {1.0f, 1.0f}}
 	};
 
+
 	std::vector<uint32_t> indices = {
 		0, 1, 2, 2, 3, 0
 	};
+	
+	// Setup framebuffer
+	Arcane::FramebufferSpecifications screenFramebufferSpecs;
+	screenFramebufferSpecs.Height = 512;
+	screenFramebufferSpecs.Width = 512;
+	screenFramebufferSpecs.ClearColor = { 1.0f, 0.0f, 0.0f, 1.0f };
+	screenFramebufferSpecs.AttachmentSpecs = {
+		Arcane::FramebufferAttachmentType::COLOR
+	};
+
+	m_ScreenFramebuffer = Arcane::Framebuffer::Create(screenFramebufferSpecs);
+
 
 	// Test Vertex Buffer
 	m_VertexBuffer = Arcane::VertexBuffer::Create(vertices.data(), sizeof(TestVertex) * vertices.size());
@@ -60,20 +81,15 @@ void EditorLayer::OnAttach()
 	m_VertexBuffer->AddIndexBuffer(indexBuffer);
 
 	Arcane::RenderPassSpecs renderPassSpecs;
-	renderPassSpecs.SwapchainFramebuffer = true;
+	renderPassSpecs.SwapchainFramebuffer = false;
+	renderPassSpecs.TargetFramebuffer = m_ScreenFramebuffer;
 	m_RenderPass = Arcane::RenderPass::Create(renderPassSpecs);
-	
-	// Setup Uniform buffer
-	m_ColorObject = new Arcane::UniformObject(sizeof(UniformBufferObject));
-	m_ColorObject->SetBinding(0);
 
 	m_TestSampler = new Arcane::TextureSampler(m_Texture);
-	m_TestSampler->SetBinding(1);
+	m_TestSampler->SetBinding(0);
 
 	// Create Uniform Buffer
 	m_UniformBuffer = Arcane::UniformBuffer::Create({
-		// -- Color Uniform Object
-		m_ColorObject,
 		m_TestSampler
 	});
 
@@ -85,6 +101,53 @@ void EditorLayer::OnAttach()
 	spec.uniformBuffer = m_UniformBuffer;
 
 	m_Pipeline = Arcane::Pipeline::Create(spec);
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+	//////////////////////////////////////////////////////////
+	//// Screen Renderpass
+	//////////////////////////////////////////////////////////
+	m_ScreenSpaceShader = Arcane::Shader::Create(
+		".\\src\\Assets\\Shaders\\ScreenShaderVert.spv",
+		".\\src\\Assets\\Shaders\\ScreenShaderFrag.spv"
+	);
+
+	m_ScreenVertexDescriptor = Arcane::VertexDescriptor::Create({
+		Arcane::VertexType::float3,
+		Arcane::VertexType::float2
+		});
+
+	std::vector<ScreenVertex> screenVertices = {
+		{{-0.5f, -0.5f,0.0f}, {1.0f, 0.0f}},
+		{{0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}},
+		{{0.5f, 0.5f,  0.0f}, {0.0f, 1.0f}},
+		{{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f}}
+	};
+
+	std::vector<uint32_t> screenIndices = {
+		0, 1, 2, 
+		2, 3, 0
+	};
+
+	// Setting up vertex and index buffers
+	m_ScreenVertexBuffer = Arcane::VertexBuffer::Create(screenVertices.data(), screenVertices.size() * sizeof(ScreenVertex));
+	m_ScreenIndexBuffer = Arcane::IndexBuffer::Create(screenIndices.data(), screenIndices.size());
+	m_ScreenVertexBuffer->AddIndexBuffer(m_ScreenIndexBuffer);
+
+	// Set Up Renderpass 
+	Arcane::RenderPassSpecs screenRenderPassSpecs;
+	screenRenderPassSpecs.SwapchainFramebuffer = true;
+	m_ScreenRenderPass = Arcane::RenderPass::Create(screenRenderPassSpecs);
+
+	// Create Pipeline
+	Arcane::PipelineSpecification screenPipelineSpecs;
+	screenPipelineSpecs.descriptor = m_ScreenVertexDescriptor;
+	screenPipelineSpecs.renderPass = m_ScreenRenderPass;
+	screenPipelineSpecs.shader = m_ScreenSpaceShader;
+	m_ScreenPipeline = Arcane::Pipeline::Create(screenPipelineSpecs);
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 void EditorLayer::OnDetach()
@@ -95,15 +158,21 @@ void EditorLayer::OnUpdate(float deltaTime)
 {
 	// Geometry Pass
 	{
-		// This renderpass needs to be the one contaained in the framebuffer
 		Arcane::Renderer::BeginRenderPass(m_RenderPass);
 
-		// Render Test Triangle
 		Arcane::Renderer::RenderQuad(m_VertexBuffer, m_Pipeline, m_UniformBuffer);
 
-		// End a pass
 		Arcane::Renderer::EndRenderPass(m_RenderPass);
-	} 
+	}
+
+	// Screen Space Pass
+	{
+		Arcane::Renderer::BeginRenderPass(m_ScreenRenderPass);
+
+		Arcane::Renderer::RenderQuad(m_ScreenVertexBuffer, m_ScreenPipeline);
+
+		Arcane::Renderer::EndRenderPass(m_ScreenRenderPass);
+	}
 }
 
 void EditorLayer::OnImGuiRender()

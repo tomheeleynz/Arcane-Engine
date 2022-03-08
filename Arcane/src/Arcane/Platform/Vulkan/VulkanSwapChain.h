@@ -21,6 +21,7 @@ namespace Arcane {
 		uint32_t GetSwapChainImagesSize() { return m_SwapChainImages.size(); }
 		uint32_t GetImageIndex() { return m_CurrentImageIndex; }
 		uint32_t GetFrameIndex() { return m_CurrentFrameIndex; }
+		uint32_t GetMaxFranesInFlight() { return m_MaxFramesInFlight; }
 
 		VkCommandPool GetCommandPool() { return m_CommandPool; }
 		VkRenderPass GetSwapchainRenderPass() { return m_RenderPass; }
@@ -57,7 +58,6 @@ namespace Arcane {
 		void CreateFramebuffers();
 		void CreateCommandPool() ;
 		void CreateCommandBuffers();
-
 	private:
 		VkSwapchainKHR m_SwapChain;
 		uint32_t m_ImageCount = -1;

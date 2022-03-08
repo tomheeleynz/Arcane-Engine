@@ -2,6 +2,7 @@
 
 #include <Arcane.h>
 
+
 class EditorLayer : public Arcane::Layer
 {
 public:
@@ -13,19 +14,26 @@ public:
 	void OnUpdate(float deltaTime) override;
 	void OnImGuiRender() override;
 private:
+	// Screen Renderpasss
+	Arcane::Shader* m_ScreenSpaceShader;
+	Arcane::RenderPass* m_ScreenRenderPass;
+	Arcane::Framebuffer* m_ScreenFramebuffer;
+	Arcane::Pipeline* m_ScreenPipeline;
+	Arcane::VertexDescriptor* m_ScreenVertexDescriptor;
+	Arcane::VertexBuffer* m_ScreenVertexBuffer;
+	Arcane::IndexBuffer* m_ScreenIndexBuffer;
+
 	// Test Data
 	// -- Geo Shader
 	Arcane::Shader* m_Shader;
 	
 	// -- Screen Shader
-	Arcane::Shader* m_ScreenSpaceShader;
 
 	Arcane::RenderPass* m_RenderPass;
 	
 	Arcane::VertexDescriptor* m_VertexDescriptor;
 	Arcane::VertexBuffer* m_VertexBuffer;
 	Arcane::Pipeline* m_Pipeline;
-
 
 	// Test Uniform Buffer
 	Arcane::UniformBuffer* m_UniformBuffer;
