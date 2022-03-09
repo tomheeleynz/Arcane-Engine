@@ -22,6 +22,8 @@ private:
 	Arcane::VertexDescriptor* m_ScreenVertexDescriptor;
 	Arcane::VertexBuffer* m_ScreenVertexBuffer;
 	Arcane::IndexBuffer* m_ScreenIndexBuffer;
+	Arcane::UniformBuffer* m_ScreenUniformBuffer;
+	Arcane::TextureSampler* m_FramebufferSampler;
 
 	// Test Data
 	// -- Geo Shader

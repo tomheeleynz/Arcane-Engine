@@ -73,10 +73,17 @@ namespace Arcane {
 			
 			renderPassInfo.renderArea.offset = { 0, 0 };
 
-			VkClearValue clearColor = { 0.2f, 0.3f, 0.3f, 1.0f };
+			VkClearValue clearColor;
+
+			if (renderToSwapchain) {
+				clearColor = { 0.2f, 0.3f, 0.3f, 1.0f };
+			}
+			else {
+				clearColor = {1.0f, 0.0f, 0.0f, 1.0f};
+			}
+			
 			renderPassInfo.clearValueCount = 1;
 			renderPassInfo.pClearValues = &clearColor;
-
 			vkCmdBeginRenderPass(swapChainCommandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 		}
 	}

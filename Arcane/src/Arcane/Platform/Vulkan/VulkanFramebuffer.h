@@ -18,6 +18,10 @@ namespace Arcane {
 		VkDescriptorImageInfo GetDescriptor() { return m_ImageDescriptor; }
 
 		FramebufferSpecifications GetSpecs() override { return m_Specs; }
+
+	private:
+		void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+
 	private:
 		struct FrameBufferAttachment
 		{

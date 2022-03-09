@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <initializer_list>
+
+#include "Framebuffer.h"
 #include "Texture.h"
 
 namespace Arcane
@@ -48,16 +50,31 @@ namespace Arcane
 	class TextureSampler : public UniformDescriptor
 	{
 	public:
+		enum class TextureType
+		{
+			BASIC,
+			FRAMEBUFFER
+		};
+	public:
 		TextureSampler(Texture* texture) : UniformDescriptor(UniformDescriptorType::TextureSampler) {
 			m_Texture = texture;
+			m_Type = TextureType::BASIC;
 		}
 
+		TextureSampler(Framebuffer* framebuffer) : UniformDescriptor(UniformDescriptorType::TextureSampler) {
+			m_Framebuffer = framebuffer;
+			m_Type = TextureType::FRAMEBUFFER;
+		}
+
+		TextureType GetType() { return m_Type; }
+
+		Framebuffer* GetFramebuffer() { return m_Framebuffer; };
 		Texture* GetTexture() { return m_Texture; }
 	private:
 		Texture* m_Texture = nullptr;
-
+		Framebuffer* m_Framebuffer = nullptr;
+		TextureType m_Type;
 	};
-
 
 	class UniformBuffer
 	{
@@ -65,7 +82,6 @@ namespace Arcane
 		virtual void WriteData(void* data, uint32_t size) = 0;
 		// -- Write a uniform object
 		virtual void WriteData(UniformObject* object) = 0;
-
 		static UniformBuffer* Create(std::initializer_list<UniformDescriptor*> descriptors);
 	private:
 

@@ -1,5 +1,6 @@
 #include "VulkanDescriptorSet.h"
 #include "VulkanContext.h"
+#include "VulkanFramebuffer.h"
 #include "Arcane/Core/Application.h"
 
 namespace Arcane
@@ -309,7 +310,16 @@ namespace Arcane
 				case UniformDescriptorType::TextureSampler:
 				{
 					TextureSampler* textureSampler = static_cast<TextureSampler*>(descriptor);
-					VulkanTexture* texture = static_cast<VulkanTexture*>(textureSampler->GetTexture());
+					VkDescriptorImageInfo imageInfo;
+
+					if (textureSampler->GetType() == TextureSampler::TextureType::BASIC) {
+						VulkanTexture* texture = static_cast<VulkanTexture*>(textureSampler->GetTexture());
+						imageInfo = texture->GetImageDescriptorInfo();
+					}
+					else {
+						VulkanFramebuffer* framebuffer = static_cast<VulkanFramebuffer*>(textureSampler->GetFramebuffer());
+						imageInfo = framebuffer->GetDescriptor();
+					}
 
 					descriptorWrites[bindingCount].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 					descriptorWrites[bindingCount].dstSet = m_DescriptorSets[i];
@@ -317,7 +327,7 @@ namespace Arcane
 					descriptorWrites[bindingCount].dstArrayElement = 0;
 					descriptorWrites[bindingCount].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 					descriptorWrites[bindingCount].descriptorCount = 1;
-					descriptorWrites[bindingCount].pImageInfo = &texture->GetImageDescriptorInfo();
+					descriptorWrites[bindingCount].pImageInfo = &imageInfo;
 					bindingCount++;
 					break;
 				}

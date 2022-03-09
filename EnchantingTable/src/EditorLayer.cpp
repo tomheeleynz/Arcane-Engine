@@ -65,15 +65,18 @@ void EditorLayer::OnAttach()
 	
 	// Setup framebuffer
 	Arcane::FramebufferSpecifications screenFramebufferSpecs;
+	
 	screenFramebufferSpecs.Height = 512;
+	
 	screenFramebufferSpecs.Width = 512;
-	screenFramebufferSpecs.ClearColor = { 1.0f, 0.0f, 0.0f, 1.0f };
+	
+	screenFramebufferSpecs.ClearColor = { 1.0f, 1.0f, 0.0f, 1.0f };
+	
 	screenFramebufferSpecs.AttachmentSpecs = {
 		Arcane::FramebufferAttachmentType::COLOR
 	};
 
 	m_ScreenFramebuffer = Arcane::Framebuffer::Create(screenFramebufferSpecs);
-
 
 	// Test Vertex Buffer
 	m_VertexBuffer = Arcane::VertexBuffer::Create(vertices.data(), sizeof(TestVertex) * vertices.size());
@@ -116,7 +119,7 @@ void EditorLayer::OnAttach()
 	m_ScreenVertexDescriptor = Arcane::VertexDescriptor::Create({
 		Arcane::VertexType::float3,
 		Arcane::VertexType::float2
-		});
+	});
 
 	std::vector<ScreenVertex> screenVertices = {
 		{{-0.5f, -0.5f,0.0f}, {1.0f, 0.0f}},
@@ -140,11 +143,20 @@ void EditorLayer::OnAttach()
 	screenRenderPassSpecs.SwapchainFramebuffer = true;
 	m_ScreenRenderPass = Arcane::RenderPass::Create(screenRenderPassSpecs);
 
+	// Setup Uniform Buffer
+	m_FramebufferSampler = new Arcane::TextureSampler(m_ScreenFramebuffer);
+	m_FramebufferSampler->SetBinding(0);
+
+	m_ScreenUniformBuffer = Arcane::UniformBuffer::Create({
+		m_FramebufferSampler
+	});
+
 	// Create Pipeline
 	Arcane::PipelineSpecification screenPipelineSpecs;
 	screenPipelineSpecs.descriptor = m_ScreenVertexDescriptor;
 	screenPipelineSpecs.renderPass = m_ScreenRenderPass;
 	screenPipelineSpecs.shader = m_ScreenSpaceShader;
+	screenPipelineSpecs.uniformBuffer = m_ScreenUniformBuffer;
 	m_ScreenPipeline = Arcane::Pipeline::Create(screenPipelineSpecs);
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -156,7 +168,7 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnUpdate(float deltaTime)
 {
-	// Geometry Pass
+	// Geometry Pass (is actually getting rendererd)
 	{
 		Arcane::Renderer::BeginRenderPass(m_RenderPass);
 
@@ -164,12 +176,12 @@ void EditorLayer::OnUpdate(float deltaTime)
 
 		Arcane::Renderer::EndRenderPass(m_RenderPass);
 	}
-
+	
 	// Screen Space Pass
 	{
 		Arcane::Renderer::BeginRenderPass(m_ScreenRenderPass);
 
-		Arcane::Renderer::RenderQuad(m_ScreenVertexBuffer, m_ScreenPipeline);
+		Arcane::Renderer::RenderQuad(m_ScreenVertexBuffer, m_ScreenPipeline, m_ScreenUniformBuffer);
 
 		Arcane::Renderer::EndRenderPass(m_ScreenRenderPass);
 	}
