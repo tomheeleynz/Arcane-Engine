@@ -68,6 +68,8 @@ namespace Arcane {
 			m_Clock->Process();
 			float deltaTime = m_Clock->GetDeltaTick() / 1000.0f;
 
+			Renderer::BeginFrame();
+
 			for (Layer* layer : m_LayerStack) {
 				layer->OnUpdate(deltaTime);
 			}
@@ -76,6 +78,8 @@ namespace Arcane {
 				RenderImGui();
 				m_ImGuiLayer->End();
 			}
+
+			Renderer::EndFrame();
 
 			m_Window->ProcessEvents();
 			m_Window->SwapBuffers();

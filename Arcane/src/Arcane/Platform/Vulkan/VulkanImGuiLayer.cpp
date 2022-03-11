@@ -94,15 +94,6 @@ namespace Arcane {
 
 		for (size_t i = 0; i < swapChainCommandBuffers.size(); i++)
 		{
-			VkCommandBufferBeginInfo beginInfo{};
-			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-			beginInfo.flags = 0;
-			beginInfo.pInheritanceInfo = nullptr;
-
-			if (vkBeginCommandBuffer(swapChainCommandBuffers[i], &beginInfo) != VK_SUCCESS) {
-				printf("Command Buffer Not Began\n");
-			}
-
 			VkRenderPassBeginInfo renderPassInfo{};
 			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 			renderPassInfo.renderPass = context->GetSwapChain().GetSwapchainRenderPass();
@@ -122,10 +113,6 @@ namespace Arcane {
 		for (size_t i = 0; i < swapChainCommandBuffers.size(); i++)
 		{
 			vkCmdEndRenderPass(swapChainCommandBuffers[i]);
-
-			if (vkEndCommandBuffer(swapChainCommandBuffers[i]) != VK_SUCCESS) {
-				printf("Command Buffer End Failed\n");
-			}
 		}
 	}
 }
