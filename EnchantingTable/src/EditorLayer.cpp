@@ -168,6 +168,8 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnUpdate(float deltaTime)
 {
+	Arcane::Renderer::BeginFrame();
+
 	// Geometry Pass (is actually getting rendererd)
 	{
 		Arcane::Renderer::BeginRenderPass(m_RenderPass);
@@ -176,7 +178,7 @@ void EditorLayer::OnUpdate(float deltaTime)
 
 		Arcane::Renderer::EndRenderPass(m_RenderPass);
 	}
-	
+
 	// Screen Space Pass
 	{
 		Arcane::Renderer::BeginRenderPass(m_ScreenRenderPass);
@@ -185,6 +187,8 @@ void EditorLayer::OnUpdate(float deltaTime)
 
 		Arcane::Renderer::EndRenderPass(m_ScreenRenderPass);
 	}
+
+	Arcane::Renderer::EndFrame();
 }
 
 void EditorLayer::OnImGuiRender()

@@ -14,6 +14,8 @@ namespace Arcane {
 		static void Shutdown();
 
 		// Begin and End Functions
+		static void BeginFrame();
+		static void EndFrame();
 		static void BeginRenderPass(RenderPass* renderPass);
 		static void EndRenderPass(RenderPass* renderPass);
 

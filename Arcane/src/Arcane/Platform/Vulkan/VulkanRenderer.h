@@ -11,12 +11,15 @@ namespace Arcane {
 
 		void Init();
 		void Shutdown() override;
+		
+		void BeginFrame() override;
+		void EndFrame() override;
+
 		void BeginRenderPass(RenderPass* renderPass) override;
 		void EndRenderPass(RenderPass* renderPass) override;
 
 		// Render Functions
 		void RenderTriangle(VertexBuffer* buffer, Pipeline* pipeline) override;
-
 
 		// Render Quad Functions
 		void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline) override;

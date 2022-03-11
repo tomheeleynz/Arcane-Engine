@@ -27,6 +27,42 @@ namespace Arcane {
 		vkDeviceWaitIdle(_context->GetDevice().GetLogicalDevice());
 	}
 
+
+	void VulkanRenderer::BeginFrame()
+	{
+		Application& app = Application::Get();
+		VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
+		VulkanSwapChain& swapChain = _context->GetSwapChain();
+		auto swapChainCommandBuffers = swapChain.GetCommandBuffers();
+
+		for (size_t i = 0; i < swapChainCommandBuffers.size(); i++)
+		{
+			VkCommandBufferBeginInfo beginInfo{};
+			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+			beginInfo.flags = 0;
+			beginInfo.pInheritanceInfo = nullptr;
+
+			if (vkBeginCommandBuffer(swapChainCommandBuffers[i], &beginInfo) != VK_SUCCESS) {
+				printf("Command Buffer Not Began\n");
+			}
+		}
+	}
+
+	void VulkanRenderer::EndFrame()
+	{
+		Application& app = Application::Get();
+		VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
+		VulkanSwapChain& swapChain = _context->GetSwapChain();
+		auto swapChainCommandBuffers = swapChain.GetCommandBuffers();
+
+		for (size_t i = 0; i < swapChainCommandBuffers.size(); i++)
+		{
+			if (vkEndCommandBuffer(swapChainCommandBuffers[i]) != VK_SUCCESS) {
+				printf("Command Buffer End Failed\n");
+			}
+		}
+	}
+
 	void VulkanRenderer::BeginRenderPass(RenderPass* renderPass)
 	{
 		bool renderToSwapchain = false;
@@ -48,15 +84,6 @@ namespace Arcane {
 
 		for (size_t i = 0; i < swapChainCommandBuffers.size(); i++)
 		{
-			VkCommandBufferBeginInfo beginInfo{};
-			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-			beginInfo.flags = 0;
-			beginInfo.pInheritanceInfo = nullptr;
-
-			if (vkBeginCommandBuffer(swapChainCommandBuffers[i], &beginInfo) != VK_SUCCESS) {
-				printf("Command Buffer Not Began\n");
-			}
-
 			VkRenderPassBeginInfo renderPassInfo{};
 			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 			
@@ -99,10 +126,6 @@ namespace Arcane {
 		for (size_t i = 0; i < swapChainCommandBuffers.size(); i++)
 		{
 			vkCmdEndRenderPass(swapChainCommandBuffers[i]);
-
-			if (vkEndCommandBuffer(swapChainCommandBuffers[i]) != VK_SUCCESS) {
-				printf("Command Buffer End Failed\n");
-			}
 		}
 	}
 

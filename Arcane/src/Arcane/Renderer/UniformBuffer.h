@@ -55,6 +55,7 @@ namespace Arcane
 			BASIC,
 			FRAMEBUFFER
 		};
+
 	public:
 		TextureSampler(Texture* texture) : UniformDescriptor(UniformDescriptorType::TextureSampler) {
 			m_Texture = texture;

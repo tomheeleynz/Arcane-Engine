@@ -29,6 +29,16 @@ namespace Arcane {
 		s_RendererAPI->Shutdown();
 	}
 
+	void Renderer::BeginFrame()
+	{
+		s_RendererAPI->BeginFrame();
+	}
+
+	void Renderer::EndFrame()
+	{
+		s_RendererAPI->EndFrame();
+	}
+
 	void Renderer::BeginRenderPass(RenderPass* renderPass)
 	{
 		s_RendererAPI->BeginRenderPass(renderPass);

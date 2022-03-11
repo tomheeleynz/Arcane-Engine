@@ -53,19 +53,39 @@ namespace Arcane {
 		inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		inputAssembly.primitiveRestartEnable = VK_FALSE;
 
+		// If the pipeline is using an custom framebuffer, set these values tpo those
+
 		// Set Viewport
 		VkViewport viewport{};
-		viewport.x = 0.0f;
-		viewport.y = 0.0f;
-		viewport.width = (float)_context->GetSwapChain().GetExtent().width;
-		viewport.height = (float)_context->GetSwapChain().GetExtent().height;
-		viewport.minDepth = 0.0f;
-		viewport.maxDepth = 1.0f;
-
-		// Set Scissor
 		VkRect2D scissor{};
-		scissor.offset = { 0, 0 };
-		scissor.extent = _context->GetSwapChain().GetExtent();
+		
+		if (spec.renderPass->GetRenderPassSpecs().SwapchainFramebuffer == false) {
+			viewport.x = 0.0f;
+			viewport.y = 0.0f;
+			viewport.width = spec.renderPass->GetRenderPassSpecs().TargetFramebuffer->GetSpecs().Width;
+			viewport.height = spec.renderPass->GetRenderPassSpecs().TargetFramebuffer->GetSpecs().Height;
+			viewport.minDepth = 0.0f;
+			viewport.maxDepth = 1.0f;
+
+			// Set Scissor
+			scissor.offset = { 0, 0 };
+			scissor.extent = {
+				spec.renderPass->GetRenderPassSpecs().TargetFramebuffer->GetSpecs().Width,
+				spec.renderPass->GetRenderPassSpecs().TargetFramebuffer->GetSpecs().Height
+			};
+		}
+		else {
+			viewport.x = 0.0f;
+			viewport.y = 0.0f;
+			viewport.width = (float)_context->GetSwapChain().GetExtent().width;
+			viewport.height = (float)_context->GetSwapChain().GetExtent().height;
+			viewport.minDepth = 0.0f;
+			viewport.maxDepth = 1.0f;
+
+			// Set Scissor
+			scissor.offset = { 0, 0 };
+			scissor.extent = _context->GetSwapChain().GetExtent();
+		}
 
 		VkPipelineViewportStateCreateInfo viewportState{};
 		viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
