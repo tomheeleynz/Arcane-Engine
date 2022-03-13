@@ -106,7 +106,12 @@ namespace Arcane {
 				clearColor = { 0.2f, 0.3f, 0.3f, 1.0f };
 			}
 			else {
-				clearColor = {1.0f, 0.0f, 0.0f, 1.0f};
+				clearColor = {
+					frameBuffer->GetSpecs().ClearColor.r,
+					frameBuffer->GetSpecs().ClearColor.g,
+					frameBuffer->GetSpecs().ClearColor.b,
+					frameBuffer->GetSpecs().ClearColor.a
+				};
 			}
 			
 			renderPassInfo.clearValueCount = 1;

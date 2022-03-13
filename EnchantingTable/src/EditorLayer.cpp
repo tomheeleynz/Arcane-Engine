@@ -70,7 +70,7 @@ void EditorLayer::OnAttach()
 	
 	screenFramebufferSpecs.Width = 512;
 	
-	screenFramebufferSpecs.ClearColor = { 1.0f, 1.0f, 0.0f, 1.0f };
+	screenFramebufferSpecs.ClearColor = { 0.2f, 0.3f, 0.3f, 1.0f };
 	
 	screenFramebufferSpecs.AttachmentSpecs = {
 		Arcane::FramebufferAttachmentType::COLOR
@@ -104,62 +104,7 @@ void EditorLayer::OnAttach()
 	spec.uniformBuffer = m_UniformBuffer;
 
 	m_Pipeline = Arcane::Pipeline::Create(spec);
-	///////////////////////////////////////////////////////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-	//////////////////////////////////////////////////////////
-	//// Screen Renderpass
-	//////////////////////////////////////////////////////////
-	m_ScreenSpaceShader = Arcane::Shader::Create(
-		".\\src\\Assets\\Shaders\\ScreenShaderVert.spv",
-		".\\src\\Assets\\Shaders\\ScreenShaderFrag.spv"
-	);
-
-	m_ScreenVertexDescriptor = Arcane::VertexDescriptor::Create({
-		Arcane::VertexType::float3,
-		Arcane::VertexType::float2
-	});
-
-	std::vector<ScreenVertex> screenVertices = {
-		{{-0.5f, -0.5f,0.0f}, {1.0f, 0.0f}},
-		{{0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}},
-		{{0.5f, 0.5f,  0.0f}, {0.0f, 1.0f}},
-		{{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f}}
-	};
-
-	std::vector<uint32_t> screenIndices = {
-		0, 1, 2, 
-		2, 3, 0
-	};
-
-	// Setting up vertex and index buffers
-	m_ScreenVertexBuffer = Arcane::VertexBuffer::Create(screenVertices.data(), screenVertices.size() * sizeof(ScreenVertex));
-	m_ScreenIndexBuffer = Arcane::IndexBuffer::Create(screenIndices.data(), screenIndices.size());
-	m_ScreenVertexBuffer->AddIndexBuffer(m_ScreenIndexBuffer);
-
-	// Set Up Renderpass 
-	Arcane::RenderPassSpecs screenRenderPassSpecs;
-	screenRenderPassSpecs.SwapchainFramebuffer = true;
-	m_ScreenRenderPass = Arcane::RenderPass::Create(screenRenderPassSpecs);
-
-	// Setup Uniform Buffer
-	m_FramebufferSampler = new Arcane::TextureSampler(m_ScreenFramebuffer);
-	m_FramebufferSampler->SetBinding(0);
-
-	m_ScreenUniformBuffer = Arcane::UniformBuffer::Create({
-		m_FramebufferSampler
-	});
-
-	// Create Pipeline
-	Arcane::PipelineSpecification screenPipelineSpecs;
-	screenPipelineSpecs.descriptor = m_ScreenVertexDescriptor;
-	screenPipelineSpecs.renderPass = m_ScreenRenderPass;
-	screenPipelineSpecs.shader = m_ScreenSpaceShader;
-	screenPipelineSpecs.uniformBuffer = m_ScreenUniformBuffer;
-	m_ScreenPipeline = Arcane::Pipeline::Create(screenPipelineSpecs);
-	///////////////////////////////////////////////////////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	m_Viewport = Arcane::UI::AddTexture(m_ScreenFramebuffer);
 }
 
 void EditorLayer::OnDetach()
@@ -175,15 +120,6 @@ void EditorLayer::OnUpdate(float deltaTime)
 		Arcane::Renderer::RenderQuad(m_VertexBuffer, m_Pipeline, m_UniformBuffer);
 
 		Arcane::Renderer::EndRenderPass(m_RenderPass);
-	}
-
-	// Screen Space Pass
-	{
-		Arcane::Renderer::BeginRenderPass(m_ScreenRenderPass);
-
-		Arcane::Renderer::RenderQuad(m_ScreenVertexBuffer, m_ScreenPipeline, m_ScreenUniformBuffer);
-
-		Arcane::Renderer::EndRenderPass(m_ScreenRenderPass);
 	}
 }
 
@@ -243,10 +179,18 @@ void EditorLayer::OnImGuiRender()
 
 	ImGui::Begin("File Browser");
 	{
-
+		
 	}
 	ImGui::End();
 	
+
+	ImGui::Begin("Viewport");
+	{
+		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+		Arcane::UI::Image(m_Viewport, viewportSize);
+	}
+	ImGui::End();
+
 	
 	//End Dockspace
 	ImGui::End();

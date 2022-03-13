@@ -26,7 +26,7 @@ int main()
 	specs.Name = "Arcane Engine";
 	specs.WindowWidth = 1600;
 	specs.WindowHeight = 1200;
-	specs.PushImguiLayer = false;
+	specs.PushImguiLayer = true;
 
 	// Create Vulkan Application
 	EnchantingTableApplication* app = new EnchantingTableApplication(specs);

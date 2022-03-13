@@ -1,5 +1,6 @@
 #pragma once
 
+#include <imgui.h>
 #include <Arcane.h>
 
 
@@ -44,4 +45,6 @@ private:
 
 	Arcane::Framebuffer* m_Framebuffer;
 	Arcane::Texture* m_Texture;
+
+	ImTextureID m_Viewport;
 };

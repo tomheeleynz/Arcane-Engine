@@ -1,4 +1,4 @@
-#include  <imgui.h>
+#include <imgui.h>
 #include <backends/imgui_impl_vulkan.h>
 #include "PlatformImGui.h"
 
@@ -6,14 +6,11 @@
 #include "Arcane/Platform/Vulkan/VulkanFramebuffer.h"
 #include "Arcane/Platform/Vulkan/VulkanTexture.h"
 
-namespace Arcane::UI 
+namespace Arcane::UI
 {
-	void Image(Framebuffer* framebuffer) 
+	void Image(ImTextureID id, ImVec2 size)
 	{
-		VulkanFramebuffer* vulkanFramebuffer = static_cast<VulkanFramebuffer*>(framebuffer);
-		VkDescriptorImageInfo imageDescriptor = vulkanFramebuffer->GetDescriptor();
-		
-		ImGui::Image((ImTextureID)ImGui_ImplVulkan_AddTexture(imageDescriptor.sampler, imageDescriptor.imageView, imageDescriptor.imageLayout), ImVec2{1, 1});
+		ImGui::Image(id, size);
 	}
 
 	void Image(Texture* texture)
@@ -22,5 +19,19 @@ namespace Arcane::UI
 		VkDescriptorImageInfo textureInfo = vulkanTexture->GetImageDescriptorInfo();
 
 		ImGui::Image((ImTextureID)ImGui_ImplVulkan_AddTexture(textureInfo.sampler, textureInfo.imageView, textureInfo.imageLayout), ImVec2{ 512, 512 });
+	}
+
+	ImTextureID AddTexture(Texture* texture)
+	{
+		VulkanTexture* vulkanTexture = static_cast<VulkanTexture*>(texture);
+		VkDescriptorImageInfo textureInfo = vulkanTexture->GetImageDescriptorInfo();
+		return ImGui_ImplVulkan_AddTexture(textureInfo.sampler, textureInfo.imageView, textureInfo.imageLayout);
+	}
+
+	ImTextureID AddTexture(Framebuffer* frameBuffer)
+	{
+		VulkanFramebuffer* vulkanFramebuffer = static_cast<VulkanFramebuffer*>(frameBuffer);
+		VkDescriptorImageInfo imageDescriptor = vulkanFramebuffer->GetDescriptor();
+		return ImGui_ImplVulkan_AddTexture(imageDescriptor.sampler, imageDescriptor.imageView, imageDescriptor.imageLayout);
 	}
 }
