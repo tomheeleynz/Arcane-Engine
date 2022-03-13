@@ -103,8 +103,8 @@ namespace Arcane {
 				renderPassInfo.framebuffer = swapChainFramebuffers[i];
 				renderPassInfo.renderArea.extent = swapChain.GetExtent();
 
-				viewport.height = swapChain.GetExtent().width;
-				viewport.width = swapChain.GetExtent().height;
+				viewport.height = swapChain.GetExtent().height;
+				viewport.width = swapChain.GetExtent().width;
 
 				scissor.extent = swapChain.GetExtent();
 			}
