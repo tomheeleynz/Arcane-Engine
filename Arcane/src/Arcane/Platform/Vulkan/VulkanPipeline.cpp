@@ -55,44 +55,24 @@ namespace Arcane {
 
 		// If the pipeline is using an custom framebuffer, set these values tpo those
 
-		// Set Viewport
-		VkViewport viewport{};
-		VkRect2D scissor{};
-		
-		if (spec.renderPass->GetRenderPassSpecs().SwapchainFramebuffer == false) {
-			viewport.x = 0.0f;
-			viewport.y = 0.0f;
-			viewport.width = spec.renderPass->GetRenderPassSpecs().TargetFramebuffer->GetSpecs().Width;
-			viewport.height = spec.renderPass->GetRenderPassSpecs().TargetFramebuffer->GetSpecs().Height;
-			viewport.minDepth = 0.0f;
-			viewport.maxDepth = 1.0f;
-
-			// Set Scissor
-			scissor.offset = { 0, 0 };
-			scissor.extent = {
-				spec.renderPass->GetRenderPassSpecs().TargetFramebuffer->GetSpecs().Width,
-				spec.renderPass->GetRenderPassSpecs().TargetFramebuffer->GetSpecs().Height
-			};
-		}
-		else {
-			viewport.x = 0.0f;
-			viewport.y = 0.0f;
-			viewport.width = (float)_context->GetSwapChain().GetExtent().width;
-			viewport.height = (float)_context->GetSwapChain().GetExtent().height;
-			viewport.minDepth = 0.0f;
-			viewport.maxDepth = 1.0f;
-
-			// Set Scissor
-			scissor.offset = { 0, 0 };
-			scissor.extent = _context->GetSwapChain().GetExtent();
-		}
-
 		VkPipelineViewportStateCreateInfo viewportState{};
 		viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 		viewportState.viewportCount = 1;
-		viewportState.pViewports = &viewport;
 		viewportState.scissorCount = 1;
-		viewportState.pScissors = &scissor;
+		
+		// Set Viewport and Scissor as dynamic state
+		VkDynamicState dynamicStates[] = {
+			VK_DYNAMIC_STATE_VIEWPORT,
+			VK_DYNAMIC_STATE_SCISSOR
+		};
+
+		// Dynamic State Info
+		VkPipelineDynamicStateCreateInfo dynamicStateInfo;
+		dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+		dynamicStateInfo.pNext = nullptr;
+		dynamicStateInfo.flags = 0;
+		dynamicStateInfo.dynamicStateCount = sizeof(dynamicStates)  / sizeof(VkDynamicState);
+		dynamicStateInfo.pDynamicStates = &dynamicStates[0];
 
 		// Rasterizer
 		VkPipelineRasterizationStateCreateInfo rasterizer{};
@@ -173,7 +153,7 @@ namespace Arcane {
 		pipelineInfo.pMultisampleState = &multisampling;
 		pipelineInfo.pDepthStencilState = nullptr; // Optional
 		pipelineInfo.pColorBlendState = &colorBlending;
-		pipelineInfo.pDynamicState = nullptr; // Optional
+		pipelineInfo.pDynamicState = &dynamicStateInfo; // Optional
 		pipelineInfo.layout = m_PipelineLayout;
 		pipelineInfo.renderPass = renderPass;
 		pipelineInfo.subpass = 0;

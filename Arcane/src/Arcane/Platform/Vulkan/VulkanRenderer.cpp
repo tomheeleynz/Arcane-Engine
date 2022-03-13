@@ -86,16 +86,37 @@ namespace Arcane {
 		{
 			VkRenderPassBeginInfo renderPassInfo{};
 			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			
+
+			// Set Viewport
+			VkViewport viewport;
+			viewport.x = 0;
+			viewport.y = 0;
+			viewport.maxDepth = 1.0f;
+			viewport.minDepth = 0.0f;
+
+			// Set Scissor
+			VkRect2D scissor;
+			scissor.offset = {0, 0};
+
 			if (renderToSwapchain) {
 				renderPassInfo.renderPass = swapChain.GetSwapchainRenderPass();
 				renderPassInfo.framebuffer = swapChainFramebuffers[i];
 				renderPassInfo.renderArea.extent = swapChain.GetExtent();
+
+				viewport.height = swapChain.GetExtent().width;
+				viewport.width = swapChain.GetExtent().height;
+
+				scissor.extent = swapChain.GetExtent();
 			}
 			else {
 				renderPassInfo.renderPass = frameBuffer->GetFramebufferRenderPass();
 				renderPassInfo.framebuffer = frameBuffer->GetVulkanFramebuffer();
 				renderPassInfo.renderArea.extent = { frameBuffer->GetSpecs().Width, frameBuffer->GetSpecs().Height};
+
+				viewport.height = frameBuffer->GetSpecs().Height;
+				viewport.width = frameBuffer->GetSpecs().Width;
+
+				scissor.extent = { frameBuffer->GetSpecs().Width, frameBuffer->GetSpecs().Height };
 			}
 			
 			renderPassInfo.renderArea.offset = { 0, 0 };
@@ -113,10 +134,15 @@ namespace Arcane {
 					frameBuffer->GetSpecs().ClearColor.a
 				};
 			}
-			
+
 			renderPassInfo.clearValueCount = 1;
 			renderPassInfo.pClearValues = &clearColor;
 			vkCmdBeginRenderPass(swapChainCommandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+			// Set Viewport
+			vkCmdSetViewport(swapChainCommandBuffers[i], 0, 1, &viewport);
+
+			vkCmdSetScissor(swapChainCommandBuffers[i], 0, 1, &scissor);
 		}
 	}
 
