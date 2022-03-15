@@ -124,7 +124,12 @@ namespace Arcane {
 			VkClearValue clearColor;
 
 			if (renderToSwapchain) {
-				clearColor = { 0.2f, 0.3f, 0.3f, 1.0f };
+				clearColor = { 
+					0.2f, 
+					0.3f, 
+					0.3f, 
+					1.0f 
+				};
 			}
 			else {
 				clearColor = {
@@ -142,6 +147,7 @@ namespace Arcane {
 			// Set Viewport
 			vkCmdSetViewport(swapChainCommandBuffers[i], 0, 1, &viewport);
 
+			// Set Scissor
 			vkCmdSetScissor(swapChainCommandBuffers[i], 0, 1, &scissor);
 		}
 	}

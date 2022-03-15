@@ -81,6 +81,33 @@ namespace Arcane {
 		}
 	}
 
+	SwapChainSupportDetails& VulkanPhysicalDevice::QuerySupportDetails(VkSurfaceKHR _surface)
+	{
+		// Get Swapchain Support Details
+		// -- Capabilities
+		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_PhysicalDevice, _surface, &m_SwapChainDetails.capabilities);
+
+		// -- Formats
+		uint32_t formatCount;
+		vkGetPhysicalDeviceSurfaceFormatsKHR(m_PhysicalDevice, _surface, &formatCount, nullptr);
+
+		if (formatCount != 0) {
+			m_SwapChainDetails.formats.resize(formatCount);
+			vkGetPhysicalDeviceSurfaceFormatsKHR(m_PhysicalDevice, _surface, &formatCount, m_SwapChainDetails.formats.data());
+		}
+
+		// -- Present Modes
+		uint32_t presentModeCount;
+		vkGetPhysicalDeviceSurfacePresentModesKHR(m_PhysicalDevice, _surface, &presentModeCount, nullptr);
+
+		if (presentModeCount != 0) {
+			m_SwapChainDetails.presentModes.resize(presentModeCount);
+			vkGetPhysicalDeviceSurfacePresentModesKHR(m_PhysicalDevice, _surface, &presentModeCount, m_SwapChainDetails.presentModes.data());
+		}
+
+		return m_SwapChainDetails;
+	}
+
 	VkPhysicalDevice VulkanPhysicalDevice::GetPhysicalDevice()
 	{
 		return m_PhysicalDevice;

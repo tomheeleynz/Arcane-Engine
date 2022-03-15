@@ -35,6 +35,7 @@ namespace Arcane {
 		VkPhysicalDevice GetPhysicalDevice();
 		QueueFamilyIndices& GetIndices();
 		SwapChainSupportDetails& GetSwapChainDetails() { return m_SwapChainDetails; }
+		SwapChainSupportDetails& QuerySupportDetails(VkSurfaceKHR _surface);
 	private:
 		VkPhysicalDevice m_PhysicalDevice;
 		QueueFamilyIndices m_Indices;

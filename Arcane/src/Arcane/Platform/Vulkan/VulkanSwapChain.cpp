@@ -58,12 +58,16 @@ namespace Arcane {
 
     void VulkanSwapChain::CreateSwapChain() 
     {
-        SwapChainSupportDetails& details = m_VulkanDevice->GetVulkanPhysicalDevice().GetSwapChainDetails();
+        SwapChainSupportDetails& details = m_VulkanDevice->GetVulkanPhysicalDevice().QuerySupportDetails(m_Surface);
         QueueFamilyIndices& indices = m_VulkanDevice->GetVulkanPhysicalDevice().GetIndices();
 
         VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(details.formats);
         VkPresentModeKHR presentMode = ChooseSwapPresentMode(details.presentModes);
         VkExtent2D extent = ChooseSwapExtent(details.capabilities);
+
+        m_Extent = extent;
+        m_Format = surfaceFormat.format;
+        m_PresentMode = presentMode;
 
         // Get Image Count
         m_ImageCount = details.capabilities.minImageCount + 1;
@@ -321,6 +325,9 @@ namespace Arcane {
         CreateImageViews();
         CreateRenderPass();
         CreateFramebuffers();
+        CreateCommandPool();
+        CreateCommandBuffers();
+
     }
 
     VkResult VulkanSwapChain::AcquireNextImage(VkSemaphore presentCompleteSemaphore, uint32_t* imageIndex)
@@ -375,6 +382,13 @@ namespace Arcane {
         VkResult present = QueuePresent(m_VulkanDevice->GetPresentQueue(), m_CurrentBuffer, m_RenderCompleteSemaphore);
         
         vkQueueWaitIdle(m_VulkanDevice->GetPresentQueue());
+
+
+        if (present != VK_SUCCESS || present == VK_SUBOPTIMAL_KHR) {
+            if (present == VK_ERROR_OUT_OF_DATE_KHR) {
+                RecreateSwapchain();
+            }
+        }
 
         m_CurrentBuffer = (m_CurrentBuffer + 1) % m_MaxFramesInFlight;
     }
