@@ -43,7 +43,11 @@ namespace Arcane {
 
 		// Recreate Swapchain
 
+		// Aquire Swapchain Image
+		VkResult AcquireNextImage(VkSemaphore presentCompleteSemaphore, uint32_t* imageIndex);
 
+		// Present Queue
+		VkResult QueuePresent(VkQueue queue, uint32_t imageIndex, VkSemaphore waitSemaphore);
 	private:
 		VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 		VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
@@ -89,5 +93,11 @@ namespace Arcane {
 		// Information Passed from vulkan context
 		VulkanDevice* m_VulkanDevice;
 		VkSurfaceKHR  m_Surface;
+
+		// Changing Swapchain Layout
+		VkSemaphore m_PresentCompleteSemaphore;
+		VkSemaphore m_RenderCompleteSemaphore;
+		std::vector<VkFence> m_WaitFences;
+		uint32_t m_CurrentBuffer;
 	};
 }

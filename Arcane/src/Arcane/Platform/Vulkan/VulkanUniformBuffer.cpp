@@ -33,7 +33,7 @@ namespace Arcane
 		bool foundUniformBuffer = false;
 
 		// Get The sizes for creating uniform buffers
-		for (UniformDescriptor* descriptor : descriptors) 
+		for (UniformDescriptor* descriptor : descriptors)
 		{
 			UniformDescriptorType currentType = descriptor->GetType();
 
@@ -54,41 +54,47 @@ namespace Arcane
 		m_UniformBuffers.resize(swapchain.GetSwapChainImagesSize());
 		m_UniformBuffersMemory.resize(swapchain.GetSwapChainImagesSize());
 
-		for (int i = 0; i < swapchain.GetSwapChainImagesSize(); i++) {
-			VkBufferCreateInfo bufferInfo{};
-			bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-			bufferInfo.size = uniformBufferSize;
-			bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-			bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		if (foundUniformBuffer) {
+			for (int i = 0; i < swapchain.GetSwapChainImagesSize(); i++) {
+				VkBufferCreateInfo bufferInfo{};
+				bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+				bufferInfo.size = uniformBufferSize;
+				bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+				bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-			if (vkCreateBuffer(logicalDevice, &bufferInfo, nullptr, &m_UniformBuffers[i]) != VK_SUCCESS) {
-				printf("Uniform Buffer Not Created\n");
-			}
-			else {
-				printf("Uniform Buffer Created\n");
-			}
-
-			if (foundUniformBuffer) {
-				VkMemoryRequirements memRequirements;
-				vkGetBufferMemoryRequirements(logicalDevice, m_UniformBuffers[i], &memRequirements);
-
-				VkMemoryAllocateInfo allocInfo{};
-				allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-				allocInfo.allocationSize = memRequirements.size;
-				allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-				if (vkAllocateMemory(logicalDevice, &allocInfo, nullptr, &m_UniformBuffersMemory[i]) != VK_SUCCESS) {
-					printf("Failed to allocated Uniform buffer memory\n");
+				if (vkCreateBuffer(logicalDevice, &bufferInfo, nullptr, &m_UniformBuffers[i]) != VK_SUCCESS) {
+					printf("Uniform Buffer Not Created\n");
 				}
 				else {
-					printf("Allocated Uniform buffer memory\n");
+					printf("Uniform Buffer Created\n");
 				}
 
-				vkBindBufferMemory(logicalDevice, m_UniformBuffers[i], m_UniformBuffersMemory[i], 0);
+				if (foundUniformBuffer) {
+					VkMemoryRequirements memRequirements;
+					vkGetBufferMemoryRequirements(logicalDevice, m_UniformBuffers[i], &memRequirements);
+
+					VkMemoryAllocateInfo allocInfo{};
+					allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+					allocInfo.allocationSize = memRequirements.size;
+					allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+					if (vkAllocateMemory(logicalDevice, &allocInfo, nullptr, &m_UniformBuffersMemory[i]) != VK_SUCCESS) {
+						printf("Failed to allocated Uniform buffer memory\n");
+					}
+					else {
+						printf("Allocated Uniform buffer memory\n");
+					}
+
+					vkBindBufferMemory(logicalDevice, m_UniformBuffers[i], m_UniformBuffersMemory[i], 0);
+				}
 			}
+			
+			m_DescriptorSet = new VulkanDescriptorSet(m_UniformBuffers, descriptors);
+		}
+		else {
+			m_DescriptorSet = new VulkanDescriptorSet(descriptors);
 		}
 
-		m_DescriptorSet = new VulkanDescriptorSet(m_UniformBuffers, descriptors);
 	}
 
 	void VulkanUniformBuffer::WriteData(void* data, uint32_t size)

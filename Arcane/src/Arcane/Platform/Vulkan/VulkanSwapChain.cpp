@@ -30,40 +30,44 @@ namespace Arcane {
         CreateCommandPool();
         CreateCommandBuffers();
 
-        // Create Semaphores and Fences
         VkSemaphoreCreateInfo semaphoreInfo{};
         semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+        semaphoreInfo.pNext = nullptr;
+        
+        if (vkCreateSemaphore(m_VulkanDevice->GetLogicalDevice(), &semaphoreInfo, nullptr, &m_PresentCompleteSemaphore) != VK_SUCCESS) {
+            printf("Present Complete Semaphore Not Created\n");
+        }
+
+        if (vkCreateSemaphore(m_VulkanDevice->GetLogicalDevice(), &semaphoreInfo, nullptr, &m_RenderCompleteSemaphore) != VK_SUCCESS) {
+            printf("Render Complete Semaphore Not Created\n");
+        }
+
 
         VkFenceCreateInfo fenceInfo{};
         fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
         fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-        m_ImageAvailableSemaphores.resize(m_MaxFramesInFlight);
-        m_RenderFinishedSemaphores.resize(m_MaxFramesInFlight);
-        m_InFlightFences.resize(m_MaxFramesInFlight);
-        m_ImagesInFlight.resize(m_SwapChainImages.size(), VK_NULL_HANDLE);
+        m_WaitFences.resize(m_CommandBuffers.size());
 
-        for (size_t i = 0; i < m_MaxFramesInFlight; i++) {
-            if (vkCreateSemaphore(m_VulkanDevice->GetLogicalDevice(), &semaphoreInfo, nullptr, &m_ImageAvailableSemaphores[i]) != VK_SUCCESS ||
-                vkCreateSemaphore(m_VulkanDevice->GetLogicalDevice(), &semaphoreInfo, nullptr, &m_RenderFinishedSemaphores[i]) != VK_SUCCESS ||
-                vkCreateFence(m_VulkanDevice->GetLogicalDevice(), &fenceInfo, nullptr, &m_InFlightFences[i]) != VK_SUCCESS) {
-
-                printf("Failed to create sync objects for a frame!\n");
-            }
-            else {
-                printf("Created sync objects for a frame!\n");
+        for (VkFence& fence : m_WaitFences) {
+            if (vkCreateFence(m_VulkanDevice->GetLogicalDevice(), &fenceInfo, nullptr, &fence)) {
+                printf("Fence Not Created\n");
             }
         }
     }
 
     void VulkanSwapChain::CreateSwapChain() 
     {
-        SwapChainSupportDetails& details = m_VulkanDevice->GetVulkanPhysicalDevice().GetSwapChainDetails();
+        SwapChainSupportDetails& details = m_VulkanDevice->GetVulkanPhysicalDevice().QuerySupportDetails(m_Surface);
         QueueFamilyIndices& indices = m_VulkanDevice->GetVulkanPhysicalDevice().GetIndices();
 
         VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(details.formats);
         VkPresentModeKHR presentMode = ChooseSwapPresentMode(details.presentModes);
         VkExtent2D extent = ChooseSwapExtent(details.capabilities);
+
+        m_Extent = extent;
+        m_Format = surfaceFormat.format;
+        m_PresentMode = presentMode;
 
         // Get Image Count
         m_ImageCount = details.capabilities.minImageCount + 1;
@@ -321,73 +325,71 @@ namespace Arcane {
         CreateImageViews();
         CreateRenderPass();
         CreateFramebuffers();
+        CreateCommandPool();
         CreateCommandBuffers();
+
     }
 
-    void VulkanSwapChain::SwapBuffers()
+    VkResult VulkanSwapChain::AcquireNextImage(VkSemaphore presentCompleteSemaphore, uint32_t* imageIndex)
+    {
+        Application& app = Application::Get();
+        VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
+        return vkAcquireNextImageKHR(_context->GetDevice().GetLogicalDevice(), m_SwapChain, UINT64_MAX, presentCompleteSemaphore, VK_NULL_HANDLE, imageIndex);
+    }
+
+    VkResult VulkanSwapChain::QueuePresent(VkQueue queue, uint32_t imageIndex, VkSemaphore waitSemaphore)
     {
         Application& app = Application::Get();
         VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
 
-        // Wait for fences
-        vkWaitForFences(_context->GetDevice().GetLogicalDevice(), 1, &m_InFlightFences[m_CurrentFrameIndex], VK_TRUE, UINT64_MAX);
-
-        uint32_t imageIndex;
-        VkResult result = vkAcquireNextImageKHR(_context->GetDevice().GetLogicalDevice(), m_SwapChain, UINT64_MAX, m_ImageAvailableSemaphores[m_CurrentFrameIndex], VK_NULL_HANDLE, &imageIndex);
-
-        if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-            RecreateSwapchain();
-            return;
-        }
-
-        if (m_ImagesInFlight[imageIndex] != VK_NULL_HANDLE) {
-            vkWaitForFences(_context->GetDevice().GetLogicalDevice(), 1, &m_ImagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
-        }
-
-        m_CurrentImageIndex = imageIndex;
-        m_ImagesInFlight[imageIndex] = m_InFlightFences[m_CurrentFrameIndex];
-
-        VkSubmitInfo submitInfo{};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
-        VkSemaphore waitSemaphores[] = { m_ImageAvailableSemaphores[m_CurrentFrameIndex] };
-        VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-        submitInfo.waitSemaphoreCount = 1;
-        submitInfo.pWaitSemaphores = waitSemaphores;
-        submitInfo.pWaitDstStageMask = waitStages;
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &m_CommandBuffers[imageIndex];
-
-        VkSemaphore signalSemaphores[] = { m_RenderFinishedSemaphores[m_CurrentFrameIndex] };
-        submitInfo.signalSemaphoreCount = 1;
-        submitInfo.pSignalSemaphores = signalSemaphores;
-
-        vkResetFences(_context->GetDevice().GetLogicalDevice(), 1, &m_InFlightFences[m_CurrentFrameIndex]);
-
-        if (vkQueueSubmit(_context->GetDevice().GetGraphicsQueue(), 1, &submitInfo, m_InFlightFences[m_CurrentFrameIndex]) != VK_SUCCESS) {
-            printf("Failed to submit draw command buffer\n");
-        }
-
-        VkPresentInfoKHR presentInfo{};
+        VkPresentInfoKHR presentInfo = {};
         presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-
-        presentInfo.waitSemaphoreCount = 1;
-        presentInfo.pWaitSemaphores = signalSemaphores;
-
-        VkSwapchainKHR swapChains[] = { m_SwapChain };
+        presentInfo.pNext = NULL;
         presentInfo.swapchainCount = 1;
-        presentInfo.pSwapchains = swapChains;
+        presentInfo.pSwapchains = &m_SwapChain;
         presentInfo.pImageIndices = &imageIndex;
-        presentInfo.pResults = nullptr;
 
-        result = vkQueuePresentKHR(_context->GetDevice().GetPresentQueue(), &presentInfo);
-
-        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
-            RecreateSwapchain();
+        if (waitSemaphore != VK_NULL_HANDLE)
+        {
+            presentInfo.pWaitSemaphores = &waitSemaphore;
+            presentInfo.waitSemaphoreCount = 1;
         }
 
-        vkQueueWaitIdle(_context->GetDevice().GetPresentQueue());
+        return vkQueuePresentKHR(_context->GetDevice().GetPresentQueue(), &presentInfo);
+    }
 
-        m_CurrentFrameIndex = (m_CurrentFrameIndex + 1) % m_MaxFramesInFlight;
+    void VulkanSwapChain::SwapBuffers()
+    {
+        VkResult result = AcquireNextImage(m_PresentCompleteSemaphore, &m_CurrentBuffer);
+
+        vkWaitForFences(m_VulkanDevice->GetLogicalDevice(), 1, &m_WaitFences[m_CurrentBuffer], VK_TRUE, UINT64_MAX);
+        vkResetFences(m_VulkanDevice->GetLogicalDevice(), 1, &m_WaitFences[m_CurrentBuffer]);
+
+
+        VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        VkSubmitInfo submitInfo = {};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.pWaitDstStageMask = &waitStageMask;               
+        submitInfo.pWaitSemaphores = &m_PresentCompleteSemaphore;     
+        submitInfo.waitSemaphoreCount = 1;                          
+        submitInfo.pSignalSemaphores = &m_RenderCompleteSemaphore;     
+        submitInfo.signalSemaphoreCount = 1;                       
+        submitInfo.pCommandBuffers = &m_CommandBuffers[m_CurrentBuffer]; 
+        submitInfo.commandBufferCount = 1;                          
+
+        vkQueueSubmit(m_VulkanDevice->GetPresentQueue(), 1, &submitInfo, m_WaitFences[m_CurrentBuffer]);
+
+        VkResult present = QueuePresent(m_VulkanDevice->GetPresentQueue(), m_CurrentBuffer, m_RenderCompleteSemaphore);
+        
+        vkQueueWaitIdle(m_VulkanDevice->GetPresentQueue());
+
+
+        if (present != VK_SUCCESS || present == VK_SUBOPTIMAL_KHR) {
+            if (present == VK_ERROR_OUT_OF_DATE_KHR) {
+                RecreateSwapchain();
+            }
+        }
+
+        m_CurrentBuffer = (m_CurrentBuffer + 1) % m_MaxFramesInFlight;
     }
 }
