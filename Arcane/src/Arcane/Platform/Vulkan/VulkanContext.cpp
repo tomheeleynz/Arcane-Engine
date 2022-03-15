@@ -22,6 +22,10 @@ namespace Arcane {
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 		void* pUserData) {
 
+		if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
+			std::cout << "validation layer: " << pCallbackData->pMessage << std::endl;
+		}
+
 		// std::cout << "validation layer: " << pCallbackData->pMessage << std::endl;
 
 		return VK_FALSE;

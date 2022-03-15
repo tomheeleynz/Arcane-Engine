@@ -84,7 +84,7 @@ void EditorLayer::OnAttach()
 	m_VertexBuffer->AddIndexBuffer(indexBuffer);
 
 	Arcane::RenderPassSpecs renderPassSpecs;
-	renderPassSpecs.SwapchainFramebuffer = false;
+	renderPassSpecs.SwapchainFramebuffer = true;
 	renderPassSpecs.TargetFramebuffer = m_ScreenFramebuffer;
 	m_RenderPass = Arcane::RenderPass::Create(renderPassSpecs);
 
@@ -104,7 +104,7 @@ void EditorLayer::OnAttach()
 	spec.uniformBuffer = m_UniformBuffer;
 
 	m_Pipeline = Arcane::Pipeline::Create(spec);
-	m_Viewport = Arcane::UI::AddTexture(m_ScreenFramebuffer);
+	//m_Viewport = Arcane::UI::AddTexture(m_ScreenFramebuffer);
 }
 
 void EditorLayer::OnDetach()
