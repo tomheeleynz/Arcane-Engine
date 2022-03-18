@@ -1,7 +1,9 @@
 #include "Renderer.h"
 
 // -- Vulkan Renderer
+#ifdef ARCANE_WIN32
 #include "Arcane/Platform/Vulkan/VulkanRenderer.h"
+#endif
 
 namespace Arcane {
 	static RendererAPI* s_RendererAPI = nullptr;
@@ -15,7 +17,10 @@ namespace Arcane {
 	{
 		switch (RendererAPI::Current())
 		{
+#ifdef ARCANE_WIN32
 		case RendererAPIType::Vulkan: return new VulkanRenderer();
+#endif
+        default: return nullptr;
 		}
 	}
 

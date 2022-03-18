@@ -3,7 +3,9 @@
 
 // Platform
 // -- Vulkam
+#ifdef ARCANE_WIN32
 #include "Arcane/Platform/Vulkan/VulkanUniformBuffer.h"
+#endif
 
 namespace Arcane
 {
@@ -11,7 +13,9 @@ namespace Arcane
 	{
 		switch (RendererAPI::Current())
 		{
+#ifdef ARCANE_WIN32
 		case RendererAPIType::Vulkan: return new VulkanUniformBuffer(descriptors);
+#endif
 		default:
 			break;
 		}

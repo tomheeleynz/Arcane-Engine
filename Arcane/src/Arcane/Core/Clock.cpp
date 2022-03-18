@@ -8,7 +8,7 @@ namespace Arcane
 	// Local Includes
 	
 	// This Includes
-	#include "clock.h"
+	#include "Clock.h"
 	
 	
 	// Implementation

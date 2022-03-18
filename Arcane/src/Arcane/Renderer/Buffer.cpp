@@ -3,7 +3,9 @@
 
 // Platform Specific
 // -- Vulkan
+#ifdef ARCANE_WIN32
 #include "Arcane/Platform/Vulkan/VulkanBuffer.h"
+#endif
 
 namespace Arcane {
 
@@ -14,7 +16,9 @@ namespace Arcane {
 	{
 		switch (RendererAPI::Current())
 		{
+#ifdef ARCANE_WIN32
 		case RendererAPIType::Vulkan: return new VulkanVertexBuffer(data, size);
+#endif
 		default: return nullptr;
 		}
 	}
@@ -26,7 +30,9 @@ namespace Arcane {
 	{
 		switch (RendererAPI::Current())
 		{
+#ifdef ARCANE_WIN32
 		case RendererAPIType::Vulkan: return new VulkanIndexBuffer(data, count);
+#endif
 		default: return nullptr;
 		}
 	}

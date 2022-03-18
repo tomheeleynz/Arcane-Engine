@@ -19,14 +19,14 @@ private:
 int main()
 {
 	// -- Set API to Vulkan
-	Arcane::RendererAPI::SetAPI(Arcane::RendererAPIType::Vulkan);
+	Arcane::RendererAPI::SetAPI(Arcane::RendererAPIType::Metal);
 
 	// Set Application Specifications
 	Arcane::ApplicationSpecifications specs;
 	specs.Name = "Arcane Engine";
 	specs.WindowWidth = 1600;
 	specs.WindowHeight = 1200;
-	specs.PushImguiLayer = true;
+	specs.PushImguiLayer = false;
 
 	// Create Vulkan Application
 	EnchantingTableApplication* app = new EnchantingTableApplication(specs);
