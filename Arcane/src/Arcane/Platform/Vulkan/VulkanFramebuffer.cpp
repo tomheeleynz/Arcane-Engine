@@ -29,7 +29,15 @@ namespace Arcane {
 
 		m_Specs = specs;
 
-		for (FramebufferAttachmentType element : specs.AttachmentSpecs.m_Attachments) {
+		Create();
+	}
+
+	void VulkanFramebuffer::Create()
+	{
+		Application& app = Application::Get();
+		VulkanContext* context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
+
+		for (FramebufferAttachmentType element : m_Specs.AttachmentSpecs.m_Attachments) {
 			switch (element) {
 				case FramebufferAttachmentType::COLOR:
 				{
@@ -40,8 +48,8 @@ namespace Arcane {
 					imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 					imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
 					imageCreateInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
-					imageCreateInfo.extent.width = specs.Width;
-					imageCreateInfo.extent.height = specs.Height;
+					imageCreateInfo.extent.width = m_Specs.Width;
+					imageCreateInfo.extent.height = m_Specs.Height;
 					imageCreateInfo.extent.depth = 1;
 					imageCreateInfo.mipLevels = 1;
 					imageCreateInfo.arrayLayers = 1;
@@ -178,8 +186,8 @@ namespace Arcane {
 			fbCreateInfo.renderPass = m_RenderPass;
 			fbCreateInfo.pAttachments = attachments;
 			fbCreateInfo.attachmentCount = 1;
-			fbCreateInfo.width = specs.Width;
-			fbCreateInfo.height = specs.Height;
+			fbCreateInfo.width = m_Specs.Width;
+			fbCreateInfo.height = m_Specs.Height;
 			fbCreateInfo.layers = 1;
 
 			if (vkCreateFramebuffer(context->GetDevice().GetLogicalDevice(), &fbCreateInfo, nullptr, &m_Framebuffer) != VK_SUCCESS) {
@@ -193,5 +201,12 @@ namespace Arcane {
 			m_ImageDescriptor.imageView = m_Attachments[0].ImageView;
 			m_ImageDescriptor.sampler = m_ImageSampler;
 		}
+	}
+
+	void VulkanFramebuffer::Resize(uint32_t width, uint32_t height)
+	{
+		m_Specs.Height = height;
+		m_Specs.Width = width;
+		Create();
 	}
 }

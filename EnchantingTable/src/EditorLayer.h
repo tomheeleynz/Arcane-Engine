@@ -2,6 +2,8 @@
 
 #include <imgui.h>
 #include <Arcane.h>
+#include <glm/glm.hpp>
+
 
 
 class EditorLayer : public Arcane::Layer
@@ -47,4 +49,8 @@ private:
 	Arcane::Texture* m_Texture;
 
 	ImTextureID m_Viewport;
+
+	glm::vec2 m_ViewportSize;
+
+
 };

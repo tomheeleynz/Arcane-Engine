@@ -33,6 +33,7 @@ namespace Arcane {
 	{
 	public:
 		virtual FramebufferSpecifications GetSpecs() = 0;
+		virtual void Resize(uint32_t width, uint32_t height) = 0;
 		static Framebuffer* Create(FramebufferSpecifications& specs);
 	private:
 

@@ -105,6 +105,7 @@ void EditorLayer::OnAttach()
 
 	m_Pipeline = Arcane::Pipeline::Create(spec);
 	m_Viewport = Arcane::UI::AddTexture(m_ScreenFramebuffer);
+	m_ViewportSize = {0, 0};
 }
 
 void EditorLayer::OnDetach()
@@ -159,6 +160,12 @@ void EditorLayer::OnImGuiRender()
 		ImGui::PopStyleVar(2);
 
 	ImGuiIO& io = ImGui::GetIO();
+	
+	// Compare framebuffer size to viewport size, resize if different
+	if (m_ScreenFramebuffer->GetSpecs().Width != m_ViewportSize.x || m_ScreenFramebuffer->GetSpecs().Height != m_ViewportSize.y)
+	{
+		// m_ScreenFramebuffer->Resize(m_ViewportSize.x, m_ViewportSize.y);
+	}
 
 	if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 	{
@@ -187,6 +194,9 @@ void EditorLayer::OnImGuiRender()
 	ImGui::Begin("Viewport");
 	{
 		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+
+		m_ViewportSize = { viewportSize.x, viewportSize.y };
+		
 		Arcane::UI::Image(m_Viewport, viewportSize);
 	}
 	ImGui::End();
