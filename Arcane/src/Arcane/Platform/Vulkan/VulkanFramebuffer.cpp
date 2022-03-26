@@ -28,6 +28,7 @@ namespace Arcane {
 		VulkanContext* context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
 
 		m_Specs = specs;
+		TestSpecs = &specs;
 
 		Create();
 	}
@@ -315,8 +316,15 @@ namespace Arcane {
 
 	void VulkanFramebuffer::Resize(uint32_t width, uint32_t height)
 	{
+		Application& app = Application::Get();
+		VulkanContext* context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
+		VkDevice device = context->GetDevice().GetLogicalDevice();
+
 		m_Specs.Height = height;
 		m_Specs.Width = width;
+		m_Specs.AttachmentSpecs.m_Attachments = {FramebufferAttachmentType::COLOR, FramebufferAttachmentType::DEPTH};
+
+		// Create new framebuffer
 		Create();
 	}
 }

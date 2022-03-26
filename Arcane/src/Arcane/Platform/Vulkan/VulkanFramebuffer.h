@@ -41,6 +41,7 @@ namespace Arcane {
 		std::vector<FrameBufferAttachment> m_Attachments;
 
 		FramebufferSpecifications m_Specs;
+		FramebufferSpecifications* TestSpecs;
 
 		uint32_t m_Width;
 		uint32_t m_Height;
