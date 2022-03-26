@@ -2,6 +2,8 @@
 
 #include <vulkan/vulkan.h>
 #include <vector>
+#include <map>
+
 
 #include "Arcane/Renderer/Framebuffer.h"
 
@@ -32,6 +34,10 @@ namespace Arcane {
 			VkImageView ImageView;
 		};
 
+		std::map<FramebufferAttachmentType, FrameBufferAttachment> m_AttachmentsMap;
+		std::map<FramebufferAttachmentType, VkAttachmentDescription> m_AttachmentDescriptionMap;
+		std::map<FramebufferAttachmentType, VkAttachmentReference> m_AttachmentReferenceMap;
+		
 		std::vector<FrameBufferAttachment> m_Attachments;
 
 		FramebufferSpecifications m_Specs;

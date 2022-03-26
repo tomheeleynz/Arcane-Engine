@@ -73,7 +73,8 @@ void EditorLayer::OnAttach()
 	screenFramebufferSpecs.ClearColor = { 0.2f, 0.3f, 0.3f, 1.0f };
 	
 	screenFramebufferSpecs.AttachmentSpecs = {
-		Arcane::FramebufferAttachmentType::COLOR
+		Arcane::FramebufferAttachmentType::COLOR,
+		Arcane::FramebufferAttachmentType::DEPTH
 	};
 
 	m_ScreenFramebuffer = Arcane::Framebuffer::Create(screenFramebufferSpecs);

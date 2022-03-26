@@ -1,3 +1,4 @@
+#include <iostream>
 #include "VulkanRenderer.h"
 #include "VulkanContext.h"
 #include "VulkanPipeline.h"
@@ -121,27 +122,26 @@ namespace Arcane {
 			
 			renderPassInfo.renderArea.offset = { 0, 0 };
 
-			VkClearValue clearColor;
+			std::array<VkClearValue, 2> clearValues;
 
 			if (renderToSwapchain) {
-				clearColor = { 
-					0.2f, 
-					0.3f, 
-					0.3f, 
-					1.0f 
-				};
+				clearValues[0].color = { { 0.2f, 0.3f, 0.3f, 1.0f }};
 			}
 			else {
-				clearColor = {
+				clearValues[0].color = {{
 					frameBuffer->GetSpecs().ClearColor.r,
 					frameBuffer->GetSpecs().ClearColor.g,
 					frameBuffer->GetSpecs().ClearColor.b,
 					frameBuffer->GetSpecs().ClearColor.a
-				};
+				}};
 			}
 
-			renderPassInfo.clearValueCount = 1;
-			renderPassInfo.pClearValues = &clearColor;
+			clearValues[1].depthStencil = {1.0f, 0};
+
+			
+
+			renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+			renderPassInfo.pClearValues = clearValues.data();
 			vkCmdBeginRenderPass(swapChainCommandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 			// Set Viewport
