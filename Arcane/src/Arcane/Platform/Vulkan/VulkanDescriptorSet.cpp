@@ -27,10 +27,16 @@ namespace Arcane
 				uboBinding.binding = bindingCount;
 				uboBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 				uboBinding.descriptorCount = 1;
-				uboBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+				if (descriptor->GetLocation() == UniformDescriptorLocation::VERTEX)
+					uboBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+				else
+					uboBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
 				uboBinding.pImmutableSamplers = nullptr;
 
 				layoutBindings.push_back(uboBinding);
+				bindingCount++;
 				break;
 			}
 			case UniformDescriptorType::TextureSampler:
@@ -43,6 +49,7 @@ namespace Arcane
 				samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
 				layoutBindings.push_back(samplerLayoutBinding);
+				bindingCount++;
 				break;
 			}
 			default:

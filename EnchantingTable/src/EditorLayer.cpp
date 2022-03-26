@@ -15,15 +15,10 @@ struct TestVertex
 	glm::vec2 texCoord;
 };
 
-struct ScreenVertex
-{
-	glm::vec3 position;
-	glm::vec2 texCoord;
-};
-
 struct UniformBufferObject
 {
-	glm::vec3 color;
+	glm::mat4 proj;
+	glm::mat4 view;
 };
 
 EditorLayer::EditorLayer()
@@ -90,10 +85,16 @@ void EditorLayer::OnAttach()
 	m_RenderPass = Arcane::RenderPass::Create(renderPassSpecs);
 
 	m_TestSampler = new Arcane::TextureSampler(m_Texture);
-	m_TestSampler->SetBinding(0);
+	m_TestSampler->SetBinding(1);
+	m_TestSampler->SetLocation(Arcane::UniformDescriptorLocation::FRAGMENT);
+
+	m_ColorObject = new Arcane::UniformObject(sizeof(UniformBufferObject));
+	m_ColorObject->SetBinding(0);
+	m_ColorObject->SetLocation(Arcane::UniformDescriptorLocation::VERTEX);
 
 	// Create Uniform Buffer
 	m_UniformBuffer = Arcane::UniformBuffer::Create({
+		m_ColorObject,
 		m_TestSampler
 	});
 
@@ -115,6 +116,15 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnUpdate(float deltaTime)
 {
+	UniformBufferObject cameraObject;
+	
+	cameraObject.proj = glm::perspective(glm::radians(45.0f), 1600.0f / 1200.0f, 0.1f, 10.0f);
+	cameraObject.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	
+	m_ColorObject->WriteData((void*)&cameraObject);
+	m_UniformBuffer->WriteData(m_ColorObject);
+
+
 	// Geometry Pass (is actually getting rendererd)
 	{
 		Arcane::Renderer::BeginRenderPass(m_RenderPass);
