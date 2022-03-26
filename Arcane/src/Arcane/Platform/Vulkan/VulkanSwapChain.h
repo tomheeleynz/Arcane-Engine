@@ -19,7 +19,7 @@ namespace Arcane {
 		std::vector<VkFramebuffer> GetSwapChainFramebuffers() { return m_SwapChainFramebuffers; }
 
 		uint32_t GetSwapChainImagesSize() { return m_SwapChainImages.size(); }
-		uint32_t GetImageIndex() { return m_CurrentImageIndex; }
+		uint32_t GetImageIndex() { return m_CurrentBuffer; }
 		uint32_t GetFrameIndex() { return m_CurrentFrameIndex; }
 		uint32_t GetMaxFranesInFlight() { return m_MaxFramesInFlight; }
 

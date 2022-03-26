@@ -14,6 +14,12 @@ namespace Arcane
 		TextureSampler
 	};
 
+	enum class UniformDescriptorLocation
+	{
+		VERTEX,
+		FRAGMENT
+	};
+
 	class UniformDescriptor
 	{
 	public:
@@ -25,9 +31,14 @@ namespace Arcane
 		uint32_t GetBinding() { return m_BindNum; }
 
 		UniformDescriptorType GetType() { return m_Type; }
+
+
+		void SetLocation(UniformDescriptorLocation location) { m_Location = location; }
+		UniformDescriptorLocation GetLocation() { return m_Location; }
 	private:
 		uint32_t m_BindNum = -1;
 		UniformDescriptorType m_Type;
+		UniformDescriptorLocation m_Location;
 	};
 
 	class UniformObject : public UniformDescriptor

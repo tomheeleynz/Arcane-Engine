@@ -15,15 +15,10 @@ struct TestVertex
 	glm::vec2 texCoord;
 };
 
-struct ScreenVertex
-{
-	glm::vec3 position;
-	glm::vec2 texCoord;
-};
-
 struct UniformBufferObject
 {
-	glm::vec3 color;
+	glm::mat4 proj;
+	glm::mat4 view;
 };
 
 EditorLayer::EditorLayer()
@@ -50,17 +45,34 @@ void EditorLayer::OnAttach()
 		Arcane::VertexType::float2
 	});
 
+	// Working on anticlockwise direction
 	// Test Vertices
 	std::vector<TestVertex> vertices = { 
-		{{-0.5f, -0.5f,0.0f}, {1.0f, 0.5f, 0.2f}, {1.0f, 0.0f}},
-		{{0.5f, -0.5f, 0.0f}, {1.0f, 0.5f, 0.2f}, {0.0f, 0.0f}},
-		{{0.5f, 0.5f,  0.0f}, {1.0f, 0.5f, 0.2f}, {0.0f, 1.0f}},
-		{{-0.5f, 0.5f, 0.0f}, {1.0f, 0.5f, 0.2f}, {1.0f, 1.0f}}
+		{{-0.5f, -0.5f,0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}}, // Top Left
+		{{0.5f, -0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}}, // Top Right 
+		{{0.5f, 0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}}, // Bottom Right
+		{{-0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},  // Bottom Left
+
+		{{-0.5f, -0.5f,-0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}}, // Top Left
+		{{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}}, // Top Right 
+		{{0.5f, 0.5f,  -0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}}, // Bottom Right
+		{{-0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},  //Bottom Left
 	};
 
 
 	std::vector<uint32_t> indices = {
-		0, 1, 2, 2, 3, 0
+		0, 3, 1, 
+		1, 3, 2,
+		1, 2, 6, 
+		1, 6, 5,
+		1, 5, 0,
+		5, 4, 0,
+		3, 2, 6,
+		6, 7, 3,
+		4, 7, 3,
+		7, 3, 0,
+		4, 7, 5,
+		7, 6, 5
 	};
 	
 	// Setup framebuffer
@@ -73,7 +85,8 @@ void EditorLayer::OnAttach()
 	screenFramebufferSpecs.ClearColor = { 0.2f, 0.3f, 0.3f, 1.0f };
 	
 	screenFramebufferSpecs.AttachmentSpecs = {
-		Arcane::FramebufferAttachmentType::COLOR
+		Arcane::FramebufferAttachmentType::COLOR,
+		Arcane::FramebufferAttachmentType::DEPTH
 	};
 
 	m_ScreenFramebuffer = Arcane::Framebuffer::Create(screenFramebufferSpecs);
@@ -89,11 +102,16 @@ void EditorLayer::OnAttach()
 	m_RenderPass = Arcane::RenderPass::Create(renderPassSpecs);
 
 	m_TestSampler = new Arcane::TextureSampler(m_Texture);
-	m_TestSampler->SetBinding(0);
+	m_TestSampler->SetBinding(1);
+	m_TestSampler->SetLocation(Arcane::UniformDescriptorLocation::FRAGMENT);
+
+	m_ColorObject = new Arcane::UniformObject(sizeof(UniformBufferObject));
+	m_ColorObject->SetBinding(0);
+	m_ColorObject->SetLocation(Arcane::UniformDescriptorLocation::VERTEX);
 
 	// Create Uniform Buffer
 	m_UniformBuffer = Arcane::UniformBuffer::Create({
-		m_TestSampler
+		m_ColorObject
 	});
 
 	// Test Pipeline
@@ -114,6 +132,15 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnUpdate(float deltaTime)
 {
+	UniformBufferObject cameraObject;
+	
+	cameraObject.proj = glm::perspective(glm::radians(45.0f), 1600.0f / 1200.0f, 0.1f, 10.0f);
+	cameraObject.view = glm::lookAt(glm::vec3(1.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	
+	m_ColorObject->WriteData((void*)&cameraObject);
+	m_UniformBuffer->WriteData(m_ColorObject);
+
+
 	// Geometry Pass (is actually getting rendererd)
 	{
 		Arcane::Renderer::BeginRenderPass(m_RenderPass);
@@ -162,7 +189,8 @@ void EditorLayer::OnImGuiRender()
 	ImGuiIO& io = ImGui::GetIO();
 	
 	// Compare framebuffer size to viewport size, resize if different
-	if (m_ScreenFramebuffer->GetSpecs().Width != m_ViewportSize.x || m_ScreenFramebuffer->GetSpecs().Height != m_ViewportSize.y)
+	if ((m_ScreenFramebuffer->GetSpecs().Width != m_ViewportSize.x || 
+		m_ScreenFramebuffer->GetSpecs().Height != m_ViewportSize.y) && m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f)
 	{
 		// m_ScreenFramebuffer->Resize(m_ViewportSize.x, m_ViewportSize.y);
 	}
