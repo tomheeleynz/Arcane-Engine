@@ -124,6 +124,9 @@ void EditorLayer::OnAttach()
 	m_Pipeline = Arcane::Pipeline::Create(spec);
 	m_Viewport = Arcane::UI::AddTexture(m_ScreenFramebuffer);
 	m_ViewportSize = {0, 0};
+
+	m_ActiveScene = new Arcane::Scene("Test Scene");
+	m_ActiveScene->CreateEntity("My New Entity");
 }
 
 void EditorLayer::OnDetach()
@@ -139,6 +142,8 @@ void EditorLayer::OnUpdate(float deltaTime)
 	
 	m_ColorObject->WriteData((void*)&cameraObject);
 	m_UniformBuffer->WriteData(m_ColorObject);
+
+	m_ActiveScene->OnUpdate();
 
 
 	// Geometry Pass (is actually getting rendererd)

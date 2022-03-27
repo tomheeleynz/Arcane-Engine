@@ -52,5 +52,7 @@ private:
 
 	glm::vec2 m_ViewportSize;
 
+	Arcane::Scene* m_ActiveScene;
+
 
 };
