@@ -4,6 +4,7 @@ project(Arcane)
 
 file(GLOB CORE_FILES "src/Arcane/Core/*.cpp"  "src/Arcane/Core/*.h")
 file(GLOB RENDERER_FILES "src/Arcane/Renderer/*.h" "src/Arcane/Renderer/*.cpp")
+file(GLOB ECS_FILES "src/Arcane/ECS/*.h" "src/Arcane/ECS/*.cpp")
 
 if (WIN32 OR (UNIX AND NOT APPLE))
 	# Find Vulkan
@@ -30,10 +31,18 @@ if (APPLE)
 endif()
 
 # Create Library
-add_library(${PROJECT_NAME} STATIC ${CORE_FILES} ${RENDERER_FILES} ${PLATFORM_FILES} ${IMGUI_FILES})
+add_library(
+	${PROJECT_NAME}
+	STATIC 
+	${CORE_FILES} 
+	${RENDERER_FILES} 
+	${PLATFORM_FILES} 
+	${IMGUI_FILES}
+	${ECS_FILES}
+)
 
 # Link Source Directories
-target_include_directories(${PROJECT_NAME} PUBLIC "src" "vendor/glm" "vendor/stb" )
+target_include_directories(${PROJECT_NAME} PUBLIC "src" "vendor/glm" "vendor/stb" "vendor/entt/single_include")
 
 # Link Libraries
 target_link_libraries(${PROJECT_NAME} ${LIBS})
