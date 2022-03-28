@@ -10,3 +10,9 @@
 [submodule "Arcane/vendor/stb"]
 	path = Arcane/vendor/stb
 	url = https://github.com/tomheeleynz/stb.git
+[submodule "Arcane/vendor/entt"]
+	path = Arcane/vendor/entt
+	url = https://github.com/skypjack/entt.git
+[submodule "Arcane/vendor/json"]
+	path = Arcane/vendor/json
+	url = https://github.com/nlohmann/json.git

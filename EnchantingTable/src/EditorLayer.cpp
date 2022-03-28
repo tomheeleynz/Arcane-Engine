@@ -140,6 +140,7 @@ void EditorLayer::OnUpdate(float deltaTime)
 	m_ColorObject->WriteData((void*)&cameraObject);
 	m_UniformBuffer->WriteData(m_ColorObject);
 
+	m_ActiveScene->OnUpdate();
 
 	// Geometry Pass (is actually getting rendererd)
 	{
@@ -201,6 +202,19 @@ void EditorLayer::OnImGuiRender()
 		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 	}
 
+	ImGui::BeginMenuBar();
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Open"))
+				OpenScene();
+
+			ImGui::EndMenu();
+		}
+
+		ImGui::EndMenuBar();
+	}
+
 	ImGui::Begin("Scene Panel");
 	{
 	}
@@ -232,4 +246,19 @@ void EditorLayer::OnImGuiRender()
 	
 	//End Dockspace
 	ImGui::End();
+}
+
+void EditorLayer::OpenScene()
+{
+	std::string filename = Arcane::FileDialog::OpenFile();
+
+	if (!filename.empty()) {
+		Arcane::SceneDeserializer deserializer(filename);
+		m_ActiveScene = deserializer.Deserialize();
+	}
+}
+
+void EditorLayer::SaveScene()
+{
+
 }
