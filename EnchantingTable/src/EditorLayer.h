@@ -16,6 +16,8 @@ public:
 
 	void OnUpdate(float deltaTime) override;
 	void OnImGuiRender() override;
+
+	void OpenScene();
 private:
 	Arcane::Framebuffer* m_ScreenFramebuffer;
 	Arcane::Shader* m_Shader;

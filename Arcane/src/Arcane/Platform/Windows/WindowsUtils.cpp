@@ -35,7 +35,7 @@ namespace Arcane
 				return ofn.lpstrFile;
 			}
 
-			return "";
+			return std::string();
 		}
 	}
 }

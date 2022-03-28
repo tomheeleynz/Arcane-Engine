@@ -31,6 +31,9 @@
 /////////////////////////////////////////////////////
 #include "Arcane/ECS/Entity.h"
 #include "Arcane/Scene/Scene.h"
+#include "Arcane/Scene/SceneDeserializer.h"
+#include "Arcane/Scene/SceneSerializer.h"
+
 
 /////////////////////////////////////////////////////
 ////////// Utils

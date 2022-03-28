@@ -124,9 +124,6 @@ void EditorLayer::OnAttach()
 	m_Pipeline = Arcane::Pipeline::Create(spec);
 	m_Viewport = Arcane::UI::AddTexture(m_ScreenFramebuffer);
 	m_ViewportSize = {0, 0};
-
-	m_ActiveScene = new Arcane::Scene("Test Scene");
-	m_ActiveScene->CreateEntity("My New Entity");
 }
 
 void EditorLayer::OnDetach()
@@ -205,6 +202,19 @@ void EditorLayer::OnImGuiRender()
 		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 	}
 
+	ImGui::BeginMenuBar();
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Open"))
+				OpenScene();
+
+			ImGui::EndMenu();
+		}
+
+		ImGui::EndMenuBar();
+	}
+
 	ImGui::Begin("Scene Panel");
 	{
 	}
@@ -236,4 +246,14 @@ void EditorLayer::OnImGuiRender()
 	
 	//End Dockspace
 	ImGui::End();
+}
+
+void EditorLayer::OpenScene()
+{
+	std::string filename = Arcane::FileDialog::OpenFile();
+
+	if (!filename.empty()) {
+		Arcane::SceneDeserializer deserializer(filename);
+		m_ActiveScene = deserializer.Deserialize();
+	}
 }

@@ -4,9 +4,8 @@
 
 namespace Arcane
 {
-	Scene::Scene(std::string name)
+	Scene::Scene()
 	{
-		m_Name = name;
 	}
 
 	Entity* Scene::CreateEntity(std::string name)
