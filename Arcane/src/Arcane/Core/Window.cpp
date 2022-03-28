@@ -21,6 +21,11 @@ namespace Arcane {
 
 		m_Context = GraphicsContext::Create();
 
+		// Mouse Coords
+		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos) {
+			InputManager::SetMouseCoords((float)xpos, (float)ypos);
+		});
+
 		// Key callback
 		// Window Key Down Key Press
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
