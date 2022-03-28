@@ -10,12 +10,19 @@ namespace Arcane
 
 	Scene* SceneDeserializer::Deserialize()
 	{
+		Scene* newScene = new Scene();
+
+		// Read Json File
 		nlohmann::json jsonObject;
 		std::ifstream i(m_Filepath);
 		i >> jsonObject;
 
-		// Parse Actual File
-		std::cout << jsonObject["name"] << std::endl;
+		// Set name of scene
+		newScene->SetName(jsonObject["name"]);
+
+		
+
+
 
 		return nullptr;
 	}

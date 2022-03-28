@@ -257,3 +257,8 @@ void EditorLayer::OpenScene()
 		m_ActiveScene = deserializer.Deserialize();
 	}
 }
+
+void EditorLayer::SaveScene()
+{
+
+}

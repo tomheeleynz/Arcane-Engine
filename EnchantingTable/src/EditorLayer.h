@@ -18,6 +18,7 @@ public:
 	void OnImGuiRender() override;
 
 	void OpenScene();
+	void SaveScene();
 private:
 	Arcane::Framebuffer* m_ScreenFramebuffer;
 	Arcane::Shader* m_Shader;
