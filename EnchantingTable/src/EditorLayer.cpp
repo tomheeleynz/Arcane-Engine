@@ -145,7 +145,6 @@ void EditorLayer::OnUpdate(float deltaTime)
 
 	m_ActiveScene->OnUpdate();
 
-
 	// Geometry Pass (is actually getting rendererd)
 	{
 		Arcane::Renderer::BeginRenderPass(m_RenderPass);

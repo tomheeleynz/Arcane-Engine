@@ -13,3 +13,6 @@
 [submodule "Arcane/vendor/entt"]
 	path = Arcane/vendor/entt
 	url = https://github.com/skypjack/entt.git
+[submodule "Arcane/vendor/json"]
+	path = Arcane/vendor/json
+	url = https://github.com/nlohmann/json.git
