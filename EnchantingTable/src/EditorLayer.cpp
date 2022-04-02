@@ -127,10 +127,12 @@ void EditorLayer::OnAttach()
 	m_Viewport = Arcane::UI::AddTexture(m_ScreenFramebuffer);
 	m_ViewportSize = {0, 0};
 
+
+	// Create Panels
 	m_ScenePanel = new ScenePanel();
 	m_ScenePanel->SetContext(m_ActiveScene);
 
-	
+	m_EntityPanel = new EntityPanel();
 }
 
 void EditorLayer::OnDetach()
@@ -224,11 +226,8 @@ void EditorLayer::OnImGuiRender()
 
 	m_ScenePanel->Update();
 
-	ImGui::Begin("Entity Panel");
-	{
-	
-	}
-	ImGui::End();
+	m_EntityPanel->SetContext(m_ScenePanel->GetSelectedEntity());
+	m_EntityPanel->Update();
 
 	ImGui::Begin("File Browser");
 	{

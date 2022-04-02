@@ -12,6 +12,9 @@ public:
 	void Update();
 
 	void DrawNode(Arcane::Entity& entity);
+
+	Arcane::Entity& GetSelectedEntity() { return m_SelectedEntity; }
 private:
 	Arcane::Scene* m_Context = nullptr;
+	Arcane::Entity m_SelectedEntity;
 };

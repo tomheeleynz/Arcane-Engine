@@ -7,6 +7,7 @@
 
 // Panels
 #include "Panels/ScenePanel.h"
+#include "Panels/EntityPanel.h"
 
 class EditorLayer : public Arcane::Layer
 {
@@ -45,4 +46,5 @@ private:
 
 	// Panels
 	ScenePanel* m_ScenePanel;
+	EntityPanel* m_EntityPanel;
 };
