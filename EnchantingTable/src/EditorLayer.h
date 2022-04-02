@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 
 
+// Panels
+#include "Panels/ScenePanel.h"
 
 class EditorLayer : public Arcane::Layer
 {
@@ -34,9 +36,13 @@ private:
 	Arcane::Framebuffer* m_Framebuffer;
 	Arcane::Texture* m_Texture;
 
+	// Viewport Window
 	ImTextureID m_Viewport;
-
 	glm::vec2 m_ViewportSize;
 
+	// Scene
 	Arcane::Scene* m_ActiveScene;
+
+	// Panels
+	ScenePanel* m_ScenePanel;
 };

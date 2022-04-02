@@ -9,7 +9,6 @@
 #include "Window.h"
 #include "Arcane/ImGui/ImGuiLayer.h"
 
-
 namespace Arcane {
 
 	struct ApplicationSpecifications

@@ -6,13 +6,14 @@ file(GLOB CORE_FILES "src/Arcane/Core/*.cpp"  "src/Arcane/Core/*.h")
 file(GLOB RENDERER_FILES "src/Arcane/Renderer/*.h" "src/Arcane/Renderer/*.cpp")
 file(GLOB ECS_FILES "src/Arcane/ECS/*.h" "src/Arcane/ECS/*.cpp")
 file(GLOB SCENE_FILES "src/Arcane/Scene/*.h" "src/Arcane/Scene/*.cpp")
+file(GLOB UTIL_FILES "src/Arcane/Utils/*.h")
 
 if (WIN32 OR (UNIX AND NOT APPLE))
 	# Find Vulkan
 	find_package(Vulkan REQUIRED)
 
 	# Set Libraries
-	set(LIBS glfw imgui ${Vulkan_LIBRARIES})
+	set(LIBS glfw imgui ${Vulkan_LIBRARIES} assimp)
 
 	# Set Vulkan engine files
 	file(GLOB VULKAN_FILES "src/Arcane/Platform/Vulkan/*.h" "src/Arcane/Platform/Vulkan/*.cpp")
@@ -21,7 +22,9 @@ if (WIN32 OR (UNIX AND NOT APPLE))
 	if (WIN32)
 		message(STATUS "Compiling for windows")
 		
-		set(PLATFORM_FILES ${VULKAN_FILES})
+		file(GLOB WINDOWS_UTILS "src/Arcane/Platform/Windows/*.h"  "src/Arcane/Platform/Windows/*.cpp" )
+
+		set(PLATFORM_FILES ${VULKAN_FILES} ${WINDOWS_UTILS})
 	else()
 		message(STATUS "Compiling for linux")
 	endif()
@@ -41,6 +44,7 @@ add_library(
 	${IMGUI_FILES}
 	${ECS_FILES}
 	${SCENE_FILES}
+	${UTIL_FILES}
 )
 
 # Link Source Directories
