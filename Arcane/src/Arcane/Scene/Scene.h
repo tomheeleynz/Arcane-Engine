@@ -5,6 +5,7 @@
 
 
 #include "Arcane/ECS/Component.h"
+#include "Arcane/Renderer/SceneRenderer.h"
 
 namespace Arcane
 {
@@ -24,8 +25,11 @@ namespace Arcane
 		
 		// Making Registry Public for ease
 		entt::registry m_Registry;
+
+		void SetSceneRenderer(SceneRenderer* sceneRenderer) { m_SceneRenderer = sceneRenderer; }
 	private:
 		std::string m_Name;
+		SceneRenderer* m_SceneRenderer;
 		friend class Entity;
 	};
 }

@@ -23,26 +23,13 @@ public:
 	void OpenScene();
 	void SaveScene();
 private:
-	Arcane::Framebuffer* m_ScreenFramebuffer;
-	Arcane::Shader* m_Shader;
-	Arcane::RenderPass* m_RenderPass;
-	Arcane::VertexDescriptor* m_VertexDescriptor;
-	Arcane::VertexBuffer* m_VertexBuffer;
-	Arcane::Pipeline* m_Pipeline;
-
-	// Test Uniform Buffer
-	Arcane::UniformBuffer* m_UniformBuffer;
-	Arcane::UniformObject* m_ColorObject;
-	Arcane::TextureSampler* m_TestSampler;
-	Arcane::Framebuffer* m_Framebuffer;
-	Arcane::Texture* m_Texture;
-
 	// Viewport Window
 	ImTextureID m_Viewport;
 	glm::vec2 m_ViewportSize;
 
 	// Scene
 	Arcane::Scene* m_ActiveScene;
+	Arcane::SceneRenderer* m_SceneRenderer;
 
 	// Panels
 	ScenePanel* m_ScenePanel;

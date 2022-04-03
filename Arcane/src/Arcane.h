@@ -19,6 +19,7 @@
 #include "Arcane/Renderer/UniformBuffer.h"
 #include "Arcane/Renderer/Texture.h"
 #include "Arcane/Renderer/Framebuffer.h"
+#include "Arcane/Renderer/SceneRenderer.h"
 
 /////////////////////////////////////////////////////
 ////////// ImGui

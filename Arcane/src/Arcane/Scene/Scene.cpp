@@ -6,6 +6,7 @@ namespace Arcane
 {
 	Scene::Scene()
 	{
+		m_SceneRenderer = nullptr;
 	}
 
 	Entity* Scene::CreateEntity(std::string name)
@@ -18,5 +19,6 @@ namespace Arcane
 
 	void Scene::OnUpdate()
 	{
+		m_SceneRenderer->RenderScene();
 	}
 }
