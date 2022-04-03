@@ -35,7 +35,6 @@ namespace Arcane
 				if (name == "Transform") 
 				{
 					TransformComponent newComponent;
-
 				}
 				else if (name == "Mesh") 
 				{
