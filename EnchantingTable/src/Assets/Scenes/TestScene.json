@@ -8,7 +8,11 @@
           "name": "Transform",
           "position": [ 0.0, 0.0, 0.0 ],
           "rotation": [ 0.0, 0.0, 1.0 ],
-          "scale": [1.0, 1.0, 1.0]
+          "scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "name": "Mesh",
+          "filepath": "\\D:\\Engine-Development\\ArcaneEngine\\EnchantingTable\\src\\Assets\\Models\\Mandalorian.fbx"
         }
       ]
     }

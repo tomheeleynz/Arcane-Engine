@@ -16,3 +16,6 @@
 [submodule "Arcane/vendor/json"]
 	path = Arcane/vendor/json
 	url = https://github.com/nlohmann/json.git
+[submodule "Arcane/vendor/assimp"]
+	path = Arcane/vendor/assimp
+	url = https://github.com/tomheeleynz/assimp.git

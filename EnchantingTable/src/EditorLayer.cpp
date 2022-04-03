@@ -28,6 +28,8 @@ EditorLayer::EditorLayer()
 
 void EditorLayer::OnAttach()
 {
+	m_ActiveScene = new Arcane::Scene();
+
 	//////////////////////////////////////////////////////////
 	//// Geometry Renderpass
 	//////////////////////////////////////////////////////////
@@ -124,6 +126,13 @@ void EditorLayer::OnAttach()
 	m_Pipeline = Arcane::Pipeline::Create(spec);
 	m_Viewport = Arcane::UI::AddTexture(m_ScreenFramebuffer);
 	m_ViewportSize = {0, 0};
+
+
+	// Create Panels
+	m_ScenePanel = new ScenePanel();
+	m_ScenePanel->SetContext(m_ActiveScene);
+
+	m_EntityPanel = new EntityPanel();
 }
 
 void EditorLayer::OnDetach()
@@ -215,16 +224,10 @@ void EditorLayer::OnImGuiRender()
 		ImGui::EndMenuBar();
 	}
 
-	ImGui::Begin("Scene Panel");
-	{
-	}
-	ImGui::End();
+	m_ScenePanel->Update();
 
-	ImGui::Begin("Entity Panel");
-	{
-	
-	}
-	ImGui::End();
+	m_EntityPanel->SetContext(m_ScenePanel->GetSelectedEntity());
+	m_EntityPanel->Update();
 
 	ImGui::Begin("File Browser");
 	{
@@ -255,6 +258,7 @@ void EditorLayer::OpenScene()
 	if (!filename.empty()) {
 		Arcane::SceneDeserializer deserializer(filename);
 		m_ActiveScene = deserializer.Deserialize();
+		m_ScenePanel->SetContext(m_ActiveScene);
 	}
 }
 

@@ -17,6 +17,9 @@ add_subdirectory("Arcane/vendor/glfw")
 # -- ImGui
 add_subdirectory("Arcane/vendor/imgui")
 
+# -- Assimp
+add_subdirectory("Arcane/vendor/assimp")
+
 # -- Set Global Properties
 set_property(TARGET Arcane PROPERTY CXX_STANDARD 17)
 set_property(TARGET EnchantingTable PROPERTY CXX_STANDARD 17)

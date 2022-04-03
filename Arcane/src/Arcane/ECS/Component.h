@@ -3,14 +3,25 @@
 #include <string>
 #include <glm/glm.hpp>
 
-struct TagComponent
-{
-	std::string tag;
-};
+#include "Arcane/Renderer/Mesh.h"
 
-struct TransformComponent
+namespace Arcane 
 {
-	glm::vec3 pos;
-	glm::vec3 rot;
-	glm::vec3 scale;
-};
+	struct TagComponent
+	{
+		std::string tag;
+	};
+
+	struct TransformComponent
+	{
+		glm::vec3 pos;
+		glm::vec3 rot;
+		glm::vec3 scale;
+	};
+
+	struct MeshComponent
+	{
+		Mesh* mesh;
+		std::string filepath;
+	};
+}

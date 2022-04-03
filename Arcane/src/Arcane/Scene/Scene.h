@@ -21,9 +21,11 @@ namespace Arcane
 
 		void SetName(std::string name) { m_Name = name; }
 		std::string GetName() { return m_Name;  }
+		
+		// Making Registry Public for ease
+		entt::registry m_Registry;
 	private:
 		std::string m_Name;
-		entt::registry m_Registry;
 		friend class Entity;
 	};
 }
