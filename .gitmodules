@@ -19,3 +19,7 @@
 [submodule "Arcane/vendor/assimp"]
 	path = Arcane/vendor/assimp
 	url = https://github.com/tomheeleynz/assimp.git
+
+[submodule "Arcane/vendor/SPIRV-Reflect"]
+	path = Arcane/vendor/SPIRV-Reflect
+	url = https://github.com/tomheeleynz/SPIRV-Reflect.git
