@@ -1,5 +1,8 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
+
 #include "Framebuffer.h"
 #include "Shader.h"
 #include "RenderPass.h"
@@ -7,6 +10,7 @@
 #include "VertexDescriptor.h"
 #include "Renderer.h"
 #include "Mesh.h"
+#include "UniformBuffer.h"
 
 namespace Arcane
 {
@@ -15,12 +19,14 @@ namespace Arcane
 	public:
 		SceneRenderer();
 
-		void CompositeRenderPass();
+
 		Framebuffer* GetFinalRenderFramebuffer();
 
 		void RenderScene();
+
 		void SubmitMesh(Mesh* mesh);
 	private:
-
+		void CompositeRenderPass();
+		void GeometryPass();
 	};
 }

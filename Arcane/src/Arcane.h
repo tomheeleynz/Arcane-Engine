@@ -20,6 +20,7 @@
 #include "Arcane/Renderer/Texture.h"
 #include "Arcane/Renderer/Framebuffer.h"
 #include "Arcane/Renderer/SceneRenderer.h"
+#include "Arcane/Renderer/Camera.h"
 
 /////////////////////////////////////////////////////
 ////////// ImGui
@@ -34,7 +35,6 @@
 #include "Arcane/Scene/Scene.h"
 #include "Arcane/Scene/SceneDeserializer.h"
 #include "Arcane/Scene/SceneSerializer.h"
-
 
 /////////////////////////////////////////////////////
 ////////// Utils

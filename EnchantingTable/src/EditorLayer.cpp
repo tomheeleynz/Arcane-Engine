@@ -119,7 +119,8 @@ void EditorLayer::OnImGuiRender()
 	}
 	ImGui::End();
 	
-
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+	
 	ImGui::Begin("Viewport");
 	{
 		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
@@ -129,6 +130,8 @@ void EditorLayer::OnImGuiRender()
 		Arcane::UI::Image(m_Viewport, viewportSize);
 	}
 	ImGui::End();
+	
+	ImGui::PopStyleVar();
 
 	
 	//End Dockspace

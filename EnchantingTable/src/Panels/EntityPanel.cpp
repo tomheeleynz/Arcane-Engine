@@ -55,5 +55,5 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	DrawComponent<TransformComponent>("Transform", entity, [](auto& component) {
 	
 	});
-}yo
+}
 
