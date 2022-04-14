@@ -74,6 +74,12 @@ namespace Arcane {
 				break;
 			}
 		});
+
+		// Scroll Callback
+		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xoffset, double yoffset) {
+			InputManager::SetScrollOffsets((float)xoffset, (float)yoffset);
+
+		});
 	}
 
 	void Window::ProcessEvents()

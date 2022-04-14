@@ -30,6 +30,7 @@ void EditorLayer::OnAttach()
 {
 	m_ActiveScene = new Arcane::Scene();
 	m_SceneRenderer = new Arcane::SceneRenderer();
+	
 	m_ActiveScene->SetSceneRenderer(m_SceneRenderer);
 	
 	m_Viewport = Arcane::UI::AddTexture(m_SceneRenderer->GetFinalRenderFramebuffer());
@@ -40,6 +41,14 @@ void EditorLayer::OnAttach()
 	m_ScenePanel->SetContext(m_ActiveScene);
 
 	m_EntityPanel = new EntityPanel();
+
+	// Setup Camera
+	m_EditorCamera = new Arcane::PerspectiveCamera(512, 512, 45.0f);
+	m_ActiveScene->SetSceneCamera(m_EditorCamera);
+	
+	// Setup Camera Controller
+	m_EditorCameraController = new PerspectiveController();
+	m_EditorCameraController->SetCamera(m_EditorCamera);
 }
 
 void EditorLayer::OnDetach()
@@ -48,6 +57,7 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnUpdate(float deltaTime)
 {
+
 	m_ActiveScene->OnUpdate();
 }
 
@@ -123,6 +133,10 @@ void EditorLayer::OnImGuiRender()
 	
 	ImGui::Begin("Viewport");
 	{
+		if (ImGui::IsWindowHovered()) {
+			m_EditorCameraController->OnUpdate();
+		}
+
 		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
 
 		m_ViewportSize = { viewportSize.x, viewportSize.y };

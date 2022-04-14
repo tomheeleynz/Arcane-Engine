@@ -7,6 +7,7 @@ static void DrawComponent(std::string name, Arcane::Entity entity, UIFunction ui
 	using namespace Arcane;
 	if (entity.HasComponent<T>())
 	{
+		ImGui::Text(name.c_str());
 		auto& component = entity.GetComponent<T>();
 		uiFunction(component);
 	}
@@ -53,7 +54,6 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	}
 
 	DrawComponent<TransformComponent>("Transform", entity, [](auto& component) {
-	
 	});
 }
 

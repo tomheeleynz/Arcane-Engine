@@ -3,6 +3,15 @@
 namespace Arcane
 {
 	//////////////////////////////////////////////////////////
+	//// Base Camera
+	//////////////////////////////////////////////////////////
+	void Camera::SetViewData(ViewData& data)
+	{
+		m_ViewData = data;
+		m_View = glm::lookAt(data.CameraPosition, data.CameraLookDir, data.CameraUpDir);
+	}
+
+	//////////////////////////////////////////////////////////
 	//// Orthographic Camera
 	//////////////////////////////////////////////////////////
 	OrthoCamera::OrthoCamera(uint32_t width, uint32_t height)
@@ -14,7 +23,7 @@ namespace Arcane
 		
 		m_View = glm::lookAt(
 			m_ViewData.CameraPosition,
-			m_ViewData.CameraPosition + m_ViewData.CameraLookDir,
+			m_ViewData.CameraLookDir,
 			m_ViewData.CameraUpDir
 		);
 	}
@@ -30,7 +39,7 @@ namespace Arcane
 
 		m_View = glm::lookAt(
 			m_ViewData.CameraPosition,
-			m_ViewData.CameraPosition + m_ViewData.CameraLookDir,
+			m_ViewData.CameraLookDir,
 			m_ViewData.CameraUpDir
 		);
 	}
