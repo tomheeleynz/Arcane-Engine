@@ -14,14 +14,19 @@ namespace Arcane
 
 	struct TransformComponent
 	{
-		glm::vec3 pos;
-		glm::vec3 rot;
-		glm::vec3 scale;
+		glm::vec3 pos = {0.0f, 0.0f, 0.0f};
+		glm::vec3 rot = {0.0f, 0.0f, 0.0f};
+		glm::vec3 scale = {0.01f, 0.01f, 0.01f };
 	};
 
 	struct MeshComponent
 	{
 		Mesh* mesh;
 		std::string filepath;
+	};
+
+	struct MeshRendererComponent
+	{
+
 	};
 }

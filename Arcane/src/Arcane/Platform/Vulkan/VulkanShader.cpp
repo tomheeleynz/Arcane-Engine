@@ -44,6 +44,8 @@ namespace Arcane {
 			else {
 				printf("Vertex shader created\n");
 			}
+
+			m_VertexByteCode = vertexShaderFile;
 		}
 
 		// Create Fragment Shader
@@ -60,6 +62,69 @@ namespace Arcane {
 			}
 			else {
 				printf("Fragment shader created\n");
+			}
+
+			m_FragmentByteCode = fragmentShaderFile;
+		}
+
+
+	}
+
+	void VulkanShader::Reflect() 
+	{
+		// Reflect Vertex Module
+		{
+			SpvReflectShaderModule module;
+
+			SpvReflectResult result = spvReflectCreateShaderModule(
+				m_VertexByteCode.size(),
+				m_VertexByteCode.data(),
+				&module
+			);
+
+			if (result != SPV_REFLECT_RESULT_SUCCESS) {
+				printf("Vertex Reflect Module not created\n");
+			}
+
+			uint32_t bindingCount = 0;
+			std::vector<SpvReflectDescriptorBinding*> bindings;
+			result = spvReflectEnumerateDescriptorBindings(&module, &bindingCount, NULL);
+			
+			if (result != SPV_REFLECT_RESULT_SUCCESS) {
+				printf("No Binding Descriptors found\n");
+			}
+
+			bindings.resize(bindingCount);
+			result = spvReflectEnumerateDescriptorBindings(&module, &bindingCount, bindings.data());
+
+			if (result != SPV_REFLECT_RESULT_SUCCESS) {
+				printf("Bindings Not Retreived\n");
+			}
+
+		}
+
+		// Reflect Fragment Module
+		{
+			SpvReflectShaderModule module;
+
+			SpvReflectResult result = spvReflectCreateShaderModule(
+				m_VertexByteCode.size(),
+				m_VertexByteCode.data(),
+				&module
+			);
+
+			if (result != SPV_REFLECT_RESULT_SUCCESS) {
+				printf("Vertex Reflect Module not created\n");
+			}
+
+			uint32_t descriptorCount = 0;
+			result = spvReflectEnumerateDescriptorSets(&module, &descriptorCount, nullptr);
+
+			if (result != SPV_REFLECT_RESULT_SUCCESS) {
+				printf("Cant Reflect Descriptor Sets\n");
+			}
+			else {
+				printf("Descriptor Sets %d\n", descriptorCount);
 			}
 		}
 	}

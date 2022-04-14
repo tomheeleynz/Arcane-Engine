@@ -8,6 +8,7 @@
 // Panels
 #include "Panels/ScenePanel.h"
 #include "Panels/EntityPanel.h"
+#include "Controllers/PerspectiveController.h"
 
 class EditorLayer : public Arcane::Layer
 {
@@ -34,4 +35,8 @@ private:
 	// Panels
 	ScenePanel* m_ScenePanel;
 	EntityPanel* m_EntityPanel;
+
+	// Editor Camera
+	Arcane::PerspectiveCamera* m_EditorCamera;
+	PerspectiveController* m_EditorCameraController;
 };

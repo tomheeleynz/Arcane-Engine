@@ -24,6 +24,8 @@ namespace Arcane {
 		// Render Quad Functions
 		void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline) override;
 		void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, UniformBuffer* uniformBuffer);
+
+		void RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, UniformBuffer* uniformBuffer) override;
 	private:
 
 	};

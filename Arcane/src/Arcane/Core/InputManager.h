@@ -33,6 +33,7 @@ namespace Arcane {
         static std::pair<float, float> GetMouseCoords();
         static bool GetMouseKeyPressed(int mouseKey);
         static bool GetMouseKeyReleased(int mouseKey);
+        static glm::vec2 GetScrollOffsets();
 
         // Setters
         // -- Keys
@@ -43,7 +44,7 @@ namespace Arcane {
         static void SetMouseCoords(float _x, float _y);
         static void SetMouseKeyPressed(int key);
         static void SetMouseKeyReleased(int key);
-
+        static void SetScrollOffsets(float x, float y);
     private:
         // Non-Static Implementations
         // Getters
@@ -57,6 +58,7 @@ namespace Arcane {
         std::pair<float, float> GetMouseCoordsImpl();
         bool GetMouseKeyPressedImpl(int mouseKey);
         bool GetMouseKeyReleasedImpl(int mouseKey);
+        glm::vec2 GetScrollOffsetsImpl();
 
         // Setters
         // -- Keys
@@ -67,12 +69,15 @@ namespace Arcane {
         void SetMouseCoordsImpl(float _x, float _y);
         void SetMouseKeyPressedImpl(int key);
         void SetMouseKeyReleasedImpl(int key);
-
+        void SetScrollOffsetsImpl(float x, float y);
     private:
         InputManager();
+
         static InputManager* s_Instance;
         InputState state[255];
+        
         MouseKeyState mouseState[3];
         glm::vec2 m_MouseCoords;
+        glm::vec2 m_ScrollOffsets = {0.0f, 0.0f};
     };
 }

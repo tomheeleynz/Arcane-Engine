@@ -49,6 +49,24 @@ namespace Arcane {
         return GetInstance()->GetMouseKeyReleasedImpl(mouseKey);
     }
 
+    glm::vec2 InputManager::GetScrollOffsets() {
+        return GetInstance()->GetScrollOffsetsImpl();
+    }
+
+    void InputManager::SetScrollOffsets(float x, float y) {
+        GetInstance()->SetScrollOffsetsImpl(x, y);
+    }
+
+    glm::vec2 InputManager::GetScrollOffsetsImpl() {
+        glm::vec2 currentOffset = m_ScrollOffsets;
+        m_ScrollOffsets = { 0.0f, 0.0f };
+        return currentOffset;
+    }
+
+    void InputManager::SetScrollOffsetsImpl(float x, float y) {
+        m_ScrollOffsets = {x, y};
+    }
+
     std::pair<float, float> InputManager::GetMouseCoordsImpl()
     {
         return std::pair<float, float>(m_MouseCoords.x, m_MouseCoords.y);

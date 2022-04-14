@@ -19,6 +19,16 @@ namespace Arcane
 
 	void Scene::OnUpdate()
 	{
+		// Render Mesh
+		{
+			auto view = m_Registry.view<MeshComponent, TransformComponent>();
+			for (auto& entity : view) 
+			{
+				auto& mesh = view.get<MeshComponent>(entity);
+				auto& transform = view.get<TransformComponent>(entity);
+				m_SceneRenderer->SubmitMesh(mesh.mesh, transform);
+			}
+		}
 		m_SceneRenderer->RenderScene();
 	}
 }

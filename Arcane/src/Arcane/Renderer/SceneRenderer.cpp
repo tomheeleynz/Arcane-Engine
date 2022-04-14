@@ -8,6 +8,12 @@ namespace Arcane
 		glm::vec2 texture;
 	};
 
+	struct MVP {
+		glm::mat4 proj;
+		glm::mat4 view;
+		glm::mat4 model;
+	};
+
 	struct SceneRendererData
 	{
 		// Composite Render Pass
@@ -24,9 +30,20 @@ namespace Arcane
 		// Geomerty Renderpass 
 		Framebuffer* GeometryFramebuffer;
 		RenderPass* GeometryRenderPass;
+		Pipeline* GeometryPipeline;
+		UniformBuffer* GeometryUniformBuffer;
+		UniformObject* MvpObject;
+		Shader* GeometryShader;
+		VertexDescriptor* GeometryVertexDescriptor;
 
 		// Meshes to be rendererd
-		std::vector<Mesh*> m_Meshes;
+		std::vector<Mesh*> Meshes;
+
+		// Transform for meshes
+		std::vector<TransformComponent> MeshTransforms;
+
+		// Camera to render with
+		Camera* SceneCamera;
 	};
 
 	static SceneRendererData s_Data;
@@ -40,7 +57,7 @@ namespace Arcane
 			FramebufferAttachmentType::DEPTH
 		};
 		
-		geometryFramebufferSpecs.ClearColor = { 1.0f, 0.0f, 0.0f, 1.0f };
+		geometryFramebufferSpecs.ClearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 		geometryFramebufferSpecs.Width = 512;
 		geometryFramebufferSpecs.Height = 512;
 		s_Data.GeometryFramebuffer = Framebuffer::Create(geometryFramebufferSpecs);
@@ -50,9 +67,34 @@ namespace Arcane
 		geometryRenderpassSpecs.TargetFramebuffer = s_Data.GeometryFramebuffer;
 		s_Data.GeometryRenderPass = RenderPass::Create(geometryRenderpassSpecs);
 
+		s_Data.GeometryShader = Shader::Create(
+			".\\src\\Assets\\Shaders\\MeshVert.spv",
+			".\\src\\Assets\\Shaders\\MeshFrag.spv"
+		);
+
+		s_Data.GeometryVertexDescriptor = VertexDescriptor::Create({
+			VertexType::float3,
+			VertexType::float3,
+			VertexType::float2
+		});
+
+		s_Data.MvpObject = new UniformObject(sizeof(MVP));
+		s_Data.MvpObject->SetBinding(0);
+		s_Data.MvpObject->SetLocation(UniformDescriptorLocation::VERTEX);
+
+		s_Data.GeometryUniformBuffer = UniformBuffer::Create({
+			s_Data.MvpObject
+		});
+
+		PipelineSpecification geometrySpecs;
+		geometrySpecs.renderPass = s_Data.GeometryRenderPass;
+		geometrySpecs.shader = s_Data.GeometryShader;
+		geometrySpecs.descriptor = s_Data.GeometryVertexDescriptor;
+		geometrySpecs.uniformBuffer = s_Data.GeometryUniformBuffer;
+		s_Data.GeometryPipeline = Pipeline::Create(geometrySpecs);
+
 		// Setup Composite Renderpass
 		FramebufferSpecifications compositeFramebufferSpecs;
-		
 		compositeFramebufferSpecs.AttachmentSpecs = {
 			FramebufferAttachmentType::COLOR,
 			FramebufferAttachmentType::DEPTH
@@ -81,8 +123,8 @@ namespace Arcane
 		};
 
 		std::vector<uint32_t> screenIndices = {
-			0, 3, 2,
-			1, 2, 3
+			0, 3, 1,
+			1, 3, 2
 		};
 
 		s_Data.CompositeVertexBuffer = VertexBuffer::Create(screenVertices.data(), screenVertices.size() * sizeof(ScreenVertex));
@@ -126,9 +168,26 @@ namespace Arcane
 
 	void SceneRenderer::GeometryPass()
 	{
+		// Create Uniform Buffer Object
+		MVP CurrentMVP;
+		CurrentMVP.view = s_Data.SceneCamera->GetView();
+		CurrentMVP.proj = s_Data.SceneCamera->GetProject();
+
 		Renderer::BeginRenderPass(s_Data.GeometryRenderPass);
 		{	
+			for (int i = 0; i < s_Data.Meshes.size(); i++) 
+			{
+				// Create Transform Component
+				TransformComponent& currentMeshComponent = s_Data.MeshTransforms[i];
+				glm::mat4 model = glm::translate(glm::mat4(1), currentMeshComponent.pos) * glm::scale(glm::mat4(1), currentMeshComponent.scale);
+				CurrentMVP.model = model;
+				s_Data.MvpObject->WriteData((void*)&CurrentMVP);
 
+				// Write to uniform object
+				s_Data.GeometryUniformBuffer->WriteData(s_Data.MvpObject);
+
+				Renderer::RenderMesh(s_Data.Meshes[i]->GetVertexBuffer(), s_Data.GeometryPipeline, s_Data.GeometryUniformBuffer);
+			}
 		}
 		Renderer::EndRenderPass(s_Data.GeometryRenderPass);
 	}
@@ -137,10 +196,19 @@ namespace Arcane
 	{
 		GeometryPass();
 		CompositeRenderPass();
+
+		s_Data.Meshes.clear();
+		s_Data.MeshTransforms.clear();
 	}
 
-	void SceneRenderer::SubmitMesh(Mesh* mesh) 
+	void SceneRenderer::SubmitMesh(Mesh* mesh, TransformComponent& transform) 
 	{
-		s_Data.m_Meshes.push_back(mesh);
+		s_Data.Meshes.push_back(mesh);
+		s_Data.MeshTransforms.push_back(transform);
+	}
+
+	void SceneRenderer::SetCamera(Camera* camera)
+	{
+		s_Data.SceneCamera = camera;
 	}
 }
