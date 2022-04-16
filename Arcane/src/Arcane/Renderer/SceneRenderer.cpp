@@ -36,6 +36,13 @@ namespace Arcane
 		Shader* GeometryShader;
 		VertexDescriptor* GeometryVertexDescriptor;
 
+		// -- Grid (rendered in geometry pipeline)
+		Pipeline* GridPipleine;
+		Shader* GridShader;
+		VertexDescriptor* GridVertexDescriptor;
+		VertexBuffer* GridVertexBuffer;
+		IndexBuffer* GridIndexBuffer;
+
 		// Meshes to be rendererd
 		std::vector<Mesh*> Meshes;
 
@@ -50,7 +57,9 @@ namespace Arcane
 
 	SceneRenderer::SceneRenderer()
 	{
-		// Setup Geometry Renderpass
+		///////////////////////////////////////////////////////////////
+		//// Geometry Renderpass
+		///////////////////////////////////////////////////////////////
 		FramebufferSpecifications geometryFramebufferSpecs;
 		geometryFramebufferSpecs.AttachmentSpecs = {
 			FramebufferAttachmentType::COLOR,
@@ -93,7 +102,45 @@ namespace Arcane
 		geometrySpecs.uniformBuffer = s_Data.GeometryUniformBuffer;
 		s_Data.GeometryPipeline = Pipeline::Create(geometrySpecs);
 
-		// Setup Composite Renderpass
+		///////////////////////////////////////////////////////////////
+		//// Grid (Part of Geo Pass)
+		///////////////////////////////////////////////////////////////
+		s_Data.GridShader = Shader::Create(
+			".\\src\\Assets\\Shaders\\GridVert.spv",
+			".\\src\\Assets\\Shaders\\GridFrag.spv"
+		);
+
+		s_Data.GridVertexDescriptor = VertexDescriptor::Create({
+			VertexType::float3	
+		});
+
+		std::vector<glm::vec3> gridVertices = {
+			{-1.0f,-1.0f ,0.0f}, // Top Left
+			{ 1.0f,-1.0f, 0.0f}, // Top Right 
+			{ 1.0f, 1.0f, 0.0f}, // Bottom Right
+			{-1.0f, 1.0f, 0.0f} // Bottom Left
+		};
+
+		std::vector<uint32_t> gridIndices = {
+			0, 3, 1,
+			1, 3, 2
+		};
+
+		s_Data.GridVertexBuffer = VertexBuffer::Create(gridVertices.data(), sizeof(glm::vec3) * gridVertices.size());
+		s_Data.GridIndexBuffer = IndexBuffer::Create(gridIndices.data(), gridIndices.size());
+		s_Data.GridVertexBuffer->AddIndexBuffer(s_Data.GridIndexBuffer);
+
+		PipelineSpecification gridSpecs;
+		gridSpecs.renderPass = s_Data.GeometryRenderPass;
+		gridSpecs.descriptor = s_Data.GridVertexDescriptor;
+		gridSpecs.shader = s_Data.GridShader;
+		gridSpecs.uniformBuffer = s_Data.GeometryUniformBuffer;
+		s_Data.GridPipleine = Pipeline::Create(gridSpecs);
+
+
+		///////////////////////////////////////////////////////////////
+		//// Composite Renderpass
+		///////////////////////////////////////////////////////////////
 		FramebufferSpecifications compositeFramebufferSpecs;
 		compositeFramebufferSpecs.AttachmentSpecs = {
 			FramebufferAttachmentType::COLOR,
@@ -188,6 +235,9 @@ namespace Arcane
 
 				Renderer::RenderMesh(s_Data.Meshes[i]->GetVertexBuffer(), s_Data.GeometryPipeline, s_Data.GeometryUniformBuffer);
 			}
+			s_Data.MvpObject->WriteData((void*)&CurrentMVP);
+			s_Data.GeometryUniformBuffer->WriteData(s_Data.MvpObject);
+			Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, s_Data.GeometryUniformBuffer);
 		}
 		Renderer::EndRenderPass(s_Data.GeometryRenderPass);
 	}
