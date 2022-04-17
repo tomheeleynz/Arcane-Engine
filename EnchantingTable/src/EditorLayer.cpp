@@ -64,7 +64,7 @@ void EditorLayer::OnUpdate(float deltaTime)
 		(fbSpecs.Width != m_ViewportSize.x || fbSpecs.Height != m_ViewportSize.y))
 	{
 		// Resize Framebuffer
-		m_SceneRenderer->GetFinalRenderFramebuffer()->Resize(m_ViewportSize.x, m_ViewportSize.y);
+		m_SceneRenderer->ResizeScene(m_ViewportSize.x, m_ViewportSize.y);
 
 		// Resize Camera
 		m_EditorCamera->OnResize(m_ViewportSize.x, m_ViewportSize.y);
