@@ -29,6 +29,9 @@ namespace Arcane
 
 		VertexBuffer* GetVertexBuffer() { return m_VertexBuffer; }
 	private:
+		void ProcessNode(aiNode* node, const aiScene* scene);
+		void ProcessMesh(aiMesh* mesh, const aiScene* scene);
+	private:
 		std::vector<MeshVertex> m_Vertices;
 		std::vector<uint32_t> m_Indices;
 		
