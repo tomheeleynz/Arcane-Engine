@@ -43,4 +43,10 @@ namespace Arcane
 			m_ViewData.CameraUpDir
 		);
 	}
+
+	void PerspectiveCamera::OnResize(uint32_t width, uint32_t height)
+	{
+		SetSize(width, height);
+		m_Projection = glm::perspective(glm::radians(m_Angle), (float)width/(float)height, 0.1f, 10000.0f);
+	}
 }

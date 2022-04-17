@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Arcane.h>
+#include <glm/gtc/type_ptr.hpp>
 
 class EntityPanel
 {

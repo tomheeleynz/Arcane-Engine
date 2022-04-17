@@ -316,14 +316,28 @@ namespace Arcane {
 
 	void VulkanFramebuffer::Resize(uint32_t width, uint32_t height)
 	{
+		// Get Logical Device
 		Application& app = Application::Get();
 		VulkanContext* context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
 		VkDevice device = context->GetDevice().GetLogicalDevice();
 
+		// Set Specs
 		m_Specs.Height = height;
 		m_Specs.Width = width;
 		m_Specs.AttachmentSpecs.m_Attachments = {FramebufferAttachmentType::COLOR, FramebufferAttachmentType::DEPTH};
 
+		// Clear Things
+		m_Attachments.clear();
+		m_AttachmentsMap.clear();
+		m_AttachmentDescriptionMap.clear();
+		m_AttachmentReferenceMap.clear();
+
+		// Destroy Renderpass
+		vkDestroyRenderPass(device, m_RenderPass, nullptr);
+
+		// Delete framebuffer
+		vkDestroyFramebuffer(device, m_Framebuffer, nullptr);
+		
 		// Create new framebuffer
 		Create();
 	}
