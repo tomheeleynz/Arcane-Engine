@@ -263,7 +263,7 @@ namespace Arcane
 	}
 
 	void SceneRenderer::ResizeScene(uint32_t width, uint32_t height) {
-		s_Data.GeometryFramebuffer->Resize(width, height);
+		// s_Data.GeometryFramebuffer->Resize(width, height);
 		s_Data.CompositeFramebuffer->Resize(width, height);
 	}
 }

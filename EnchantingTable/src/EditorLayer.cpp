@@ -5,7 +5,6 @@
 #include <imgui.h>
 #include <backends/imgui_impl_vulkan.h>
 #include <Arcane/Platform/Vulkan/VulkanFramebuffer.h>
-
 #include "EditorLayer.h"
 
 struct TestVertex

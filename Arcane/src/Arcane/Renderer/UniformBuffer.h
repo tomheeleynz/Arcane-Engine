@@ -82,6 +82,9 @@ namespace Arcane
 
 		Framebuffer* GetFramebuffer() { return m_Framebuffer; };
 		Texture* GetTexture() { return m_Texture; }
+
+		void SetTexture(Texture* texture) { m_Texture = texture; }
+		void SetFramebuffer(Framebuffer* framebuffer) { m_Framebuffer = framebuffer; }
 	private:
 		Texture* m_Texture = nullptr;
 		Framebuffer* m_Framebuffer = nullptr;
