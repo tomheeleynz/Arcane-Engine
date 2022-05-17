@@ -5,7 +5,6 @@
 #include <imgui.h>
 #include <backends/imgui_impl_vulkan.h>
 #include <Arcane/Platform/Vulkan/VulkanFramebuffer.h>
-
 #include "EditorLayer.h"
 
 struct TestVertex
@@ -57,6 +56,20 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnUpdate(float deltaTime)
 {
+	Arcane::FramebufferSpecifications fbSpecs = m_SceneRenderer->GetFinalRenderFramebuffer()->GetSpecs();
+
+	if (m_ViewportSize.x > 0.0f &&
+		m_ViewportSize.y > 0.0f &&
+		(fbSpecs.Width != m_ViewportSize.x || fbSpecs.Height != m_ViewportSize.y))
+	{
+		// Resize Framebuffer
+		m_SceneRenderer->ResizeScene(m_ViewportSize.x, m_ViewportSize.y);
+
+		// Resize Camera
+		m_EditorCamera->OnResize(m_ViewportSize.x, m_ViewportSize.y);
+
+		m_Viewport = Arcane::UI::AddTexture(m_SceneRenderer->GetFinalRenderFramebuffer());
+	}
 
 	m_ActiveScene->OnUpdate();
 }
@@ -104,6 +117,10 @@ void EditorLayer::OnImGuiRender()
 		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
 		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 	}
+
+
+	// Resize Framebuffer if necessary
+
 
 	ImGui::BeginMenuBar();
 	{

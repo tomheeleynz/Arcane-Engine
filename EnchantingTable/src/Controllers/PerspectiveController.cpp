@@ -12,8 +12,8 @@ void PerspectiveController::OnUpdate()
 		glm::vec4 position = glm::vec4(m_Camera->GetViewData().CameraPosition, 1);
 		glm::vec4 pivot = glm::vec4(m_Camera->GetViewData().CameraLookDir, 1);
 
-		float deltaX = ((2 * 3.14159) / 512.0f);
-		float deltaY = (3.14159 / 512.0f);
+		float deltaX = ((2 * 3.14159) / m_Camera->GetSize().x);
+		float deltaY = (3.14159 / m_Camera->GetSize().y);
 
 		glm::vec2 MousePos = { Arcane::InputManager::GetMouseCoords().first,Arcane::InputManager::GetMouseCoords().second};
 		

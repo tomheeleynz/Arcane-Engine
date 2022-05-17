@@ -28,6 +28,8 @@ namespace Arcane
 
 		void SetCamera(Camera* camera);
 		void SubmitMesh(Mesh* mesh, TransformComponent& component);
+
+		void ResizeScene(uint32_t width, uint32_t height);
 	private:
 		void CompositeRenderPass();
 		void GeometryPass();
