@@ -1,14 +1,10 @@
-#include "VulkanContext.h"
+#include <iostream>
 
+#include "VulkanContext.h"
 #include "Arcane/Core/Application.h"
 #include "VulkanDevice.h"
 #include "VulkanSwapChain.h"
-#include <iostream>
-
-#define VK_USE_PLATFORM_WIN32_KHR
-#include <GLFW/glfw3.h>
-#define GLFW_EXPOSE_NATIVE_WIN32
-#include <GLFW/glfw3native.h>
+#include "Arcane/Renderer/ContextUtils.h"
 
 #ifdef NDEBUG
 	const bool enableValidationLayers = false;

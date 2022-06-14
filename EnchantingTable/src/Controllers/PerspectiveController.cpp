@@ -44,7 +44,8 @@ void PerspectiveController::OnUpdate()
 
 		m_LastMousePos = MousePos;
 	}
-	else if (Arcane::InputManager::GetKeyReleased(0)) {
+	
+	if (Arcane::InputManager::GetMouseKeyReleased(0)) {
 		m_FirstUpdate = true;
 	}
 
