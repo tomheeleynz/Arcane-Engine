@@ -21,6 +21,7 @@
 #include "Arcane/Renderer/Framebuffer.h"
 #include "Arcane/Renderer/SceneRenderer.h"
 #include "Arcane/Renderer/Camera.h"
+#include "Arcane/Renderer/DescriptorSet.h"
 
 /////////////////////////////////////////////////////
 ////////// ImGui
