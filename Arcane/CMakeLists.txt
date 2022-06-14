@@ -21,20 +21,21 @@ if (WIN32 OR (UNIX AND NOT APPLE))
 	file(GLOB VULKAN_FILES "src/Arcane/Platform/Vulkan/*.h" "src/Arcane/Platform/Vulkan/*.cpp")
 	file(GLOB IMGUI_FILES "src/Arcane/ImGui/ImGuiLayer.h" "src/Arcane/ImGui/ImGuiLayer.cpp" "src/Arcane/ImGui/PlatformImGui.h"  "src/Arcane/ImGui/PlatformImGui.cpp")
 
-
-
 	if (WIN32)
+		add_definitions(-DARCANE_WIN32)
 		message(STATUS "Compiling for windows")
 		
 		file(GLOB WINDOWS_UTILS "src/Arcane/Platform/Windows/*.h"  "src/Arcane/Platform/Windows/*.cpp" )
 
 		set(PLATFORM_FILES ${VULKAN_FILES} ${WINDOWS_UTILS})
 	else()
+		add_definitions(-DARCANE_LINUX)
 		message(STATUS "Compiling for linux")
 	endif()
 endif()
 
 if (APPLE)
+	add_definitions(-DARCANE_APPLE)
 	message(STATUS "Compiling for apple")
 endif()
 
