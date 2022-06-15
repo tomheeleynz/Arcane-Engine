@@ -3,6 +3,8 @@
 #include <iostream>
 #include <initializer_list>
 
+#include "UniformBuffer.h"
+
 namespace Arcane
 {
 	enum class DescriptorType
@@ -27,6 +29,7 @@ namespace Arcane
 	class DescriptorSet
 	{
 	public:
+		virtual void AddUniformBuffer(UniformBuffer* buffer, uint32_t setNum, uint32_t bindingNum) = 0;
 		static DescriptorSet* Create(DescriptorSetSpecs& setSpecs, std::initializer_list<DescriptorLayoutSpecs> layoutSpecs);
 	private:
 

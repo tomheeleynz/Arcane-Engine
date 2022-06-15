@@ -8,17 +8,19 @@ namespace Arcane
 		glm::vec2 texture;
 	};
 
-	struct MVP {
+	struct CameraData {
 		glm::mat4 proj;
 		glm::mat4 view;
-		glm::mat4 model;
 	};
 
 	struct SceneRendererData
 	{
+		// Global Render Data
+		DescriptorSet* GlobalDescriptorSet;
+		UniformBuffer* GlobalUniformBuffer;
+
 		// Composite Render Pass
 		UniformBuffer* CompositeUniformBuffer;
-		TextureSampler* CompositeTextureSampler;
 		Framebuffer* CompositeFramebuffer;
 		RenderPass* CompositeRenderPass;
 		Pipeline* CompositeRenderPipeline;
@@ -32,7 +34,6 @@ namespace Arcane
 		RenderPass* GeometryRenderPass;
 		Pipeline* GeometryPipeline;
 		UniformBuffer* GeometryUniformBuffer;
-		UniformObject* MvpObject;
 		Shader* GeometryShader;
 		VertexDescriptor* GeometryVertexDescriptor;
 
@@ -57,6 +58,26 @@ namespace Arcane
 
 	SceneRenderer::SceneRenderer()
 	{
+		///////////////////////////////////////////////////////////////
+		//// Global Render Data
+		///////////////////////////////////////////////////////////////
+		
+		// -- Create Descripor Set
+		//DescriptorSetSpecs globalDescriptorSetSpecs;
+		//globalDescriptorSetSpecs.SetNumber = 0;
+		//s_Data.GlobalDescriptorSet = DescriptorSet::Create(
+		//	globalDescriptorSetSpecs, {
+		//		{0, 1, DescriptorType::UNIFORM_BUFFER, "Camera Data"}
+		//	}
+		//);
+
+		//// -- Create Uniform Buffer, then add to descriptor set
+		//s_Data.GlobalUniformBuffer = UniformBuffer::Create(sizeof(CameraData));
+		//s_Data.GlobalDescriptorSet->AddUniformBuffer(
+		//	s_Data.GlobalUniformBuffer, 0, 0
+		//);
+
+
 		///////////////////////////////////////////////////////////////
 		//// Geometry Renderpass
 		///////////////////////////////////////////////////////////////
@@ -85,14 +106,6 @@ namespace Arcane
 			VertexType::float3,
 			VertexType::float3,
 			VertexType::float2
-		});
-
-		s_Data.MvpObject = new UniformObject(sizeof(MVP));
-		s_Data.MvpObject->SetBinding(0);
-		s_Data.MvpObject->SetLocation(UniformDescriptorLocation::VERTEX);
-
-		s_Data.GeometryUniformBuffer = UniformBuffer::Create({
-			s_Data.MvpObject
 		});
 
 		PipelineSpecification geometrySpecs;
@@ -182,14 +195,6 @@ namespace Arcane
 			VertexType::float3,
 			VertexType::float2
 		});
-		
-		TextureSampler* CompositeTextureSampler = new TextureSampler(s_Data.GeometryFramebuffer);
-		CompositeTextureSampler->SetBinding(0);
-		CompositeTextureSampler->SetLocation(UniformDescriptorLocation::FRAGMENT);
-
-		s_Data.CompositeUniformBuffer = UniformBuffer::Create({
-			CompositeTextureSampler
-		});
 
 		PipelineSpecification compositePipelineSpecs;
 		compositePipelineSpecs.shader = s_Data.CompositeShader;
@@ -208,42 +213,30 @@ namespace Arcane
 	{
 		Renderer::BeginRenderPass(s_Data.CompositeRenderPass);
 		{
-			Renderer::RenderQuad(s_Data.CompositeVertexBuffer, s_Data.CompositeRenderPipeline, s_Data.CompositeUniformBuffer);
+			// Renderer::RenderQuad(s_Data.CompositeVertexBuffer, s_Data.CompositeRenderPipeline, s_Data.CompositeUniformBuffer);
 		}
 		Renderer::EndRenderPass(s_Data.CompositeRenderPass);
 	}
 
 	void SceneRenderer::GeometryPass()
 	{
-		// Create Uniform Buffer Object
-		MVP CurrentMVP;
-		CurrentMVP.view = s_Data.SceneCamera->GetView();
-		CurrentMVP.proj = s_Data.SceneCamera->GetProject();
-
 		Renderer::BeginRenderPass(s_Data.GeometryRenderPass);
 		{	
 			for (int i = 0; i < s_Data.Meshes.size(); i++) 
 			{
-				// Create Transform Component
-				TransformComponent& currentMeshComponent = s_Data.MeshTransforms[i];
-				glm::mat4 model = glm::translate(glm::mat4(1), currentMeshComponent.pos) * glm::scale(glm::mat4(1), currentMeshComponent.scale);
-				CurrentMVP.model = model;
-				s_Data.MvpObject->WriteData((void*)&CurrentMVP);
-
-				// Write to uniform object
-				s_Data.GeometryUniformBuffer->WriteData(s_Data.MvpObject);
-
-				Renderer::RenderMesh(s_Data.Meshes[i]->GetVertexBuffer(), s_Data.GeometryPipeline, s_Data.GeometryUniformBuffer);
+				// Renderer::RenderMesh(s_Data.Meshes[i]->GetVertexBuffer(), s_Data.GeometryPipeline, s_Data.GeometryUniformBuffer);
 			}
-			s_Data.MvpObject->WriteData((void*)&CurrentMVP);
-			s_Data.GeometryUniformBuffer->WriteData(s_Data.MvpObject);
-			Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, s_Data.GeometryUniformBuffer);
+			//Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, s_Data.GeometryUniformBuffer);
 		}
 		Renderer::EndRenderPass(s_Data.GeometryRenderPass);
 	}
 
 	void SceneRenderer::RenderScene()
 	{
+		// Write to Uniform Buffer every frame
+		////////////////////////////////////////
+
+
 		GeometryPass();
 		CompositeRenderPass();
 

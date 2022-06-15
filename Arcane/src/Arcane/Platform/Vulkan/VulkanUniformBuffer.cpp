@@ -31,7 +31,12 @@ namespace Arcane
 
 		void* tempData;
 		vkMapMemory(logicalDevice, m_UniformBuffersMemory[swapchain.GetImageIndex()], 0, size, 0, &tempData);
-		memcpy(tempData, data,  size);
+		memcpy(tempData, data, size);
 		vkUnmapMemory(logicalDevice, m_UniformBuffersMemory[swapchain.GetImageIndex()]);
+	}
+
+	uint32_t VulkanUniformBuffer::GetSize() 
+	{
+		return m_Size;
 	}
 }

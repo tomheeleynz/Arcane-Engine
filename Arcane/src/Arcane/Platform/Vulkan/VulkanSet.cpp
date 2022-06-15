@@ -1,6 +1,7 @@
 #include "Arcane/Core/Application.h"
 #include "VulkanContext.h"
 #include "VulkanSet.h"
+#include "VulkanUniformBuffer.h"
 
 namespace Arcane
 {
@@ -62,6 +63,39 @@ namespace Arcane
 				printf("Failed to allocate descripor set\n");
 			}
 		}
+	}
 
+	void VulkanSet::AddUniformBuffer(UniformBuffer* buffer, uint32_t setNumber, uint32_t bindingNumber)
+	{
+		// Get Image Count
+		Application& app = Application::Get();
+		VulkanContext* context = static_cast<VulkanContext*>(Application::Get().GetWindow().GetContext());
+		VulkanSwapChain& swapchain = context->GetSwapChain();
+		uint32_t imageCount = swapchain.GetSwapChainImagesSize();
+		VulkanUniformBuffer* vulkanBuffer = static_cast<VulkanUniformBuffer*>(buffer);
+
+		// Get Uniform Buffers
+		std::vector<VkBuffer> buffers = vulkanBuffer->GetUniformBuffers();
+
+		for (int i = 0; i < imageCount; i++) {
+			// Write to descriptor sets
+			VkDescriptorBufferInfo bufferInfo{};
+			bufferInfo.buffer = buffers[i];
+			bufferInfo.offset = 0;
+			bufferInfo.range = vulkanBuffer->GetSize();
+			
+			// Create a descriptor write, then update descriptor set
+			VkWriteDescriptorSet descriptorWrite{};
+			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptorWrite.dstSet = m_DescriptorSets[i];
+			descriptorWrite.dstBinding = bindingNumber;
+			descriptorWrite.dstArrayElement = 0;
+			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			descriptorWrite.descriptorCount = 1;
+			descriptorWrite.pBufferInfo = &bufferInfo;
+
+			// Update Descriptor Sets
+			vkUpdateDescriptorSets(context->GetDevice().GetLogicalDevice(), 1, &descriptorWrite, 0, nullptr);
+		}
 	}
 }

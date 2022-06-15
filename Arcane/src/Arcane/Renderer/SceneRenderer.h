@@ -13,6 +13,7 @@
 #include "Mesh.h"
 #include "UniformBuffer.h"
 #include "Camera.h"
+#include "DescriptorSet.h"
 
 namespace Arcane
 {
