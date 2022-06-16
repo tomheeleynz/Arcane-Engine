@@ -3,7 +3,6 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 #include "Arcane/Renderer/UniformBuffer.h"
-#include "VulkanDescriptorSet.h"
 
 namespace Arcane
 {

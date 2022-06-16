@@ -48,17 +48,6 @@ void EditorLayer::OnAttach()
 	// Setup Camera Controller
 	m_EditorCameraController = new PerspectiveController();
 	m_EditorCameraController->SetCamera(m_EditorCamera);
-
-	// Test Descriptor Set Api
-	Arcane::DescriptorSetSpecs setSpecs;
-	setSpecs.SetNumber = 0;
-
-	Arcane::DescriptorSet* TestSet = Arcane::DescriptorSet::Create(
-		setSpecs,{ 
-			{0, 1, Arcane::DescriptorType::UNIFORM_BUFFER, "Test Buffer"},
-			{0, 2, Arcane::DescriptorType::SAMPLER, "Test Sampler"}
-		}
-	);
 }
 
 void EditorLayer::OnDetach()

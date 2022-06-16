@@ -4,6 +4,7 @@
 #include "Pipeline.h"
 #include "RenderPass.h"
 #include "UniformBuffer.h"
+#include "DescriptorSet.h"
 
 namespace Arcane {
 
@@ -30,10 +31,10 @@ namespace Arcane {
 
 		// -- Without Uniform Buffer
 		virtual void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline) = 0;
-		virtual void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, UniformBuffer* uniformBuffer) = 0;
+		virtual void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, DescriptorSet* descriptorSet) = 0;
 
 		// Mesh
-		virtual void RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, UniformBuffer* uniformBuffer) = 0;
+		virtual void RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, DescriptorSet* descriptorSet) = 0;
 
 		// Static Renderer Functions
 		static void SetAPI(RendererAPIType api);

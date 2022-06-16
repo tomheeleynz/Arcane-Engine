@@ -7,6 +7,7 @@
 #include "VulkanVertexDescriptor.h"
 #include "VulkanUniformBuffer.h"
 #include "VulkanFramebuffer.h"
+#include "VulkanSet.h"
 
 namespace Arcane {
 	VulkanPipeline::VulkanPipeline(PipelineSpecification& spec)
@@ -18,7 +19,7 @@ namespace Arcane {
 		Window& window = app.GetWindow();
 		VulkanContext* _context = static_cast<VulkanContext*>(window.GetContext());
 		VkDevice logicalDevice = _context->GetDevice().GetLogicalDevice();
-		
+
 		// Get Vertex Binding Descriptions
 		VkVertexInputBindingDescription bindingDescription = static_cast<VulkanVertexDescriptor*>(spec.descriptor)->GetBindingDescription();
 		auto attributeDescriptions = static_cast<VulkanVertexDescriptor*>(spec.descriptor)->GetAttributeDescriptions();
@@ -59,7 +60,7 @@ namespace Arcane {
 		viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 		viewportState.viewportCount = 1;
 		viewportState.scissorCount = 1;
-		
+
 		// Set Viewport and Scissor as dynamic state
 		VkDynamicState dynamicStates[] = {
 			VK_DYNAMIC_STATE_VIEWPORT,
@@ -71,7 +72,7 @@ namespace Arcane {
 		dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 		dynamicStateInfo.pNext = nullptr;
 		dynamicStateInfo.flags = 0;
-		dynamicStateInfo.dynamicStateCount = sizeof(dynamicStates)  / sizeof(VkDynamicState);
+		dynamicStateInfo.dynamicStateCount = sizeof(dynamicStates) / sizeof(VkDynamicState);
 		dynamicStateInfo.pDynamicStates = &dynamicStates[0];
 
 		// Rasterizer
@@ -130,10 +131,15 @@ namespace Arcane {
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 
-		if (spec.uniformBuffer != nullptr) {
-			auto vulkanUniformBufferLayout = static_cast<VulkanUniformBuffer*>(spec.uniformBuffer)->GetLayout();
-			pipelineLayoutInfo.setLayoutCount = 1;
-			pipelineLayoutInfo.pSetLayouts = &vulkanUniformBufferLayout;
+		std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
+		if (spec.DescriptorSets.size() != 0) {
+			for (int i = 0; i < spec.DescriptorSets.size(); i++) {
+				VulkanSet* vulkanDescriptorSet = static_cast<VulkanSet*>(spec.DescriptorSets[0]);
+				VkDescriptorSetLayout descriptorSet = vulkanDescriptorSet->GetLayout();
+				descriptorSetLayouts.push_back(descriptorSet);
+			}
+			pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts.size();
+			pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
 		}
 
 		if (vkCreatePipelineLayout(logicalDevice, &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS) {
@@ -142,7 +148,6 @@ namespace Arcane {
 		else {
 			printf("Pipeline Layout Created\n");
 		}
-
 
 		VkRenderPass renderPass = VK_NULL_HANDLE;
 

@@ -7,6 +7,7 @@
 #include "VulkanRenderPass.h"
 #include "VulkanFramebuffer.h"
 #include "Arcane/Core/Application.h"
+#include "VulkanSet.h"
 
 namespace Arcane {
 
@@ -229,7 +230,7 @@ namespace Arcane {
 	}
 
 
-	void VulkanRenderer::RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, UniformBuffer* uniformBuffer)
+	void VulkanRenderer::RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, DescriptorSet* descriptorSet)
 	{
 		Application& app = Application::Get();
 
@@ -245,7 +246,8 @@ namespace Arcane {
 		uint32_t indiceCount = indexBuffer->GetCount();
 		VkBuffer vulkanIndexBuffer = static_cast<VulkanIndexBuffer*>(indexBuffer)->GetIndexBuffer();
 
-		VulkanUniformBuffer* vulkanUniformBuffer = static_cast<VulkanUniformBuffer*>(uniformBuffer);
+		// VulkanUniformBuffer* vulkanUniformBuffer = static_cast<VulkanUniformBuffer*>(uniformBuffer);
+		VulkanSet* vulkanSet = static_cast<VulkanSet*>(descriptorSet);
 
 		std::vector<VkCommandBuffer> swapChainBuffers = swapChain.GetCommandBuffers();
 
@@ -259,7 +261,7 @@ namespace Arcane {
 			vkCmdBindVertexBuffers(swapChainBuffers[i], 0, 1, vertexBuffers, offsets);
 
 			// Bind Descriptor Sets
-			vkCmdBindDescriptorSets(swapChainBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline->GetLayout(), 0, 1, &vulkanUniformBuffer->GetDescriptorSets()[i], 0, nullptr);
+			vkCmdBindDescriptorSets(swapChainBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline->GetLayout(), 0, 1, &vulkanSet->GetDescriptorSets()[i], 0, nullptr);
 
 			// Bind Index Buffer
 			vkCmdBindIndexBuffer(swapChainBuffers[i], vulkanIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
@@ -269,7 +271,7 @@ namespace Arcane {
 		}
 	}
 
-	void VulkanRenderer::RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, UniformBuffer* uniformBuffer)
+	void VulkanRenderer::RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, DescriptorSet* descriptorSet)
 	{
 		Application& app = Application::Get();
 
@@ -285,7 +287,8 @@ namespace Arcane {
 		uint32_t indiceCount = indexBuffer->GetCount();
 		VkBuffer vulkanIndexBuffer = static_cast<VulkanIndexBuffer*>(indexBuffer)->GetIndexBuffer();
 
-		VulkanUniformBuffer* vulkanUniformBuffer = static_cast<VulkanUniformBuffer*>(uniformBuffer);
+		VulkanSet* vulkanSet = static_cast<VulkanSet*>(descriptorSet);
+		// VulkanUniformBuffer* vulkanUniformBuffer = static_cast<VulkanUniformBuffer*>(uniformBuffer);
 
 		std::vector<VkCommandBuffer> swapChainBuffers = swapChain.GetCommandBuffers();
 
@@ -299,7 +302,7 @@ namespace Arcane {
 			vkCmdBindVertexBuffers(swapChainBuffers[i], 0, 1, vertexBuffers, offsets);
 			
 			// Bind Descriptor Sets
-			vkCmdBindDescriptorSets(swapChainBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline->GetLayout(), 0, 1, &vulkanUniformBuffer->GetDescriptorSets()[i], 0, nullptr);
+			vkCmdBindDescriptorSets(swapChainBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline->GetLayout(), 0, 1, &vulkanSet->GetDescriptorSets()[i], 0, nullptr);
 
 			// Bind Index Buffer
 			vkCmdBindIndexBuffer(swapChainBuffers[i], vulkanIndexBuffer, 0, VK_INDEX_TYPE_UINT32);

@@ -15,7 +15,8 @@ namespace Arcane
 		// Size of uniform buffer
 		VkDeviceSize bufferSize = size;
 		m_UniformBuffers.resize(imageCount);
-		m_UniformBuffers.resize(imageCount);
+		m_UniformBuffersMemory.resize(imageCount);
+		m_Size = size;
 
 		for (int i = 0; i < imageCount; i++) {
 			// Create Uniform Buffer

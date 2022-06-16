@@ -22,10 +22,10 @@ namespace Arcane {
 		// Render Functions
 		static void RenderTriangle(VertexBuffer* buffer, Pipeline* pipeline);
 		static void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline);
-		static void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, UniformBuffer* uniformBuffer);
+		static void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, DescriptorSet* descriptorSet);
 
 		// Render Mesh
-		static void RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, UniformBuffer* uniformBuffer);
+		static void RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, DescriptorSet* uniformBuffer);
 	private:
 	};
 }

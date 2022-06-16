@@ -63,19 +63,20 @@ namespace Arcane
 		///////////////////////////////////////////////////////////////
 		
 		// -- Create Descripor Set
-		//DescriptorSetSpecs globalDescriptorSetSpecs;
-		//globalDescriptorSetSpecs.SetNumber = 0;
-		//s_Data.GlobalDescriptorSet = DescriptorSet::Create(
-		//	globalDescriptorSetSpecs, {
-		//		{0, 1, DescriptorType::UNIFORM_BUFFER, "Camera Data"}
-		//	}
-		//);
+		DescriptorSetSpecs globalDescriptorSetSpecs;
+		globalDescriptorSetSpecs.SetNumber = 0;
+		s_Data.GlobalDescriptorSet = DescriptorSet::Create(
+			globalDescriptorSetSpecs, {
+				{0, 1, DescriptorType::UNIFORM_BUFFER, "Camera Data"}
+			}
+		);
 
-		//// -- Create Uniform Buffer, then add to descriptor set
-		//s_Data.GlobalUniformBuffer = UniformBuffer::Create(sizeof(CameraData));
-		//s_Data.GlobalDescriptorSet->AddUniformBuffer(
-		//	s_Data.GlobalUniformBuffer, 0, 0
-		//);
+		// -- Create Uniform Buffer, then add to descriptor set
+		s_Data.GlobalUniformBuffer = UniformBuffer::Create(sizeof(CameraData));
+		
+		s_Data.GlobalDescriptorSet->AddUniformBuffer(
+			s_Data.GlobalUniformBuffer, 0, 0
+		);
 
 
 		///////////////////////////////////////////////////////////////
@@ -112,7 +113,7 @@ namespace Arcane
 		geometrySpecs.renderPass = s_Data.GeometryRenderPass;
 		geometrySpecs.shader = s_Data.GeometryShader;
 		geometrySpecs.descriptor = s_Data.GeometryVertexDescriptor;
-		geometrySpecs.uniformBuffer = s_Data.GeometryUniformBuffer;
+		geometrySpecs.DescriptorSets = {s_Data.GlobalDescriptorSet};
 		s_Data.GeometryPipeline = Pipeline::Create(geometrySpecs);
 
 		///////////////////////////////////////////////////////////////
@@ -147,7 +148,6 @@ namespace Arcane
 		gridSpecs.renderPass = s_Data.GeometryRenderPass;
 		gridSpecs.descriptor = s_Data.GridVertexDescriptor;
 		gridSpecs.shader = s_Data.GridShader;
-		gridSpecs.uniformBuffer = s_Data.GeometryUniformBuffer;
 		s_Data.GridPipleine = Pipeline::Create(gridSpecs);
 
 
@@ -200,7 +200,6 @@ namespace Arcane
 		compositePipelineSpecs.shader = s_Data.CompositeShader;
 		compositePipelineSpecs.renderPass = s_Data.CompositeRenderPass;
 		compositePipelineSpecs.descriptor = s_Data.CompositeVertexDescriptor;
-		compositePipelineSpecs.uniformBuffer = s_Data.CompositeUniformBuffer;
 		s_Data.CompositeRenderPipeline = Pipeline::Create(compositePipelineSpecs);
 	}
 
@@ -226,7 +225,7 @@ namespace Arcane
 			{
 				// Renderer::RenderMesh(s_Data.Meshes[i]->GetVertexBuffer(), s_Data.GeometryPipeline, s_Data.GeometryUniformBuffer);
 			}
-			//Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, s_Data.GeometryUniformBuffer);
+			// Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, s_Data.GeometryUniformBuffer);
 		}
 		Renderer::EndRenderPass(s_Data.GeometryRenderPass);
 	}

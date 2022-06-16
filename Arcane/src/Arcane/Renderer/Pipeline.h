@@ -1,9 +1,10 @@
 #pragma once
+#include <vector>
 
 #include "Shader.h"
 #include "RenderPass.h"
 #include "VertexDescriptor.h"
-#include "UniformBuffer.h"
+#include "DescriptorSet.h"
 
 namespace Arcane {
 	struct PipelineSpecification
@@ -11,7 +12,7 @@ namespace Arcane {
 		Shader* shader = nullptr;
 		RenderPass* renderPass = nullptr;
 		VertexDescriptor* descriptor = nullptr;
-		UniformBuffer* uniformBuffer = nullptr;
+		std::vector<DescriptorSet*> DescriptorSets;
 	};
 
 	class Pipeline

@@ -59,13 +59,13 @@ namespace Arcane {
 		s_RendererAPI->RenderQuad(buffer, pipeline);
 	}
 
-	void Renderer::RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, UniformBuffer* uniformBuffer)
+	void Renderer::RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, DescriptorSet* descriptorSet)
 	{
-		s_RendererAPI->RenderQuad(buffer, pipeline, uniformBuffer);
+		s_RendererAPI->RenderQuad(buffer, pipeline, descriptorSet);
 	}
 
-	void Renderer::RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, UniformBuffer* uniformBuffer) 
+	void Renderer::RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, DescriptorSet* descriptorSet)
 	{
-		s_RendererAPI->RenderMesh(buffer, pipeline, uniformBuffer);
+		s_RendererAPI->RenderMesh(buffer, pipeline, descriptorSet);
 	}
 }

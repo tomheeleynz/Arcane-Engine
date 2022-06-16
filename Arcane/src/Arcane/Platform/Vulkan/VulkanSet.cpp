@@ -19,6 +19,7 @@ namespace Arcane
 			VkDescriptorSetLayoutBinding binding{};
 			binding.binding = spec.Binding;
 			binding.descriptorCount = spec.DescriptorCount;
+			binding.pImmutableSamplers = nullptr;
 			
 			// Switch on the type
 			switch (spec.Type)
