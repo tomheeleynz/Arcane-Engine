@@ -20,7 +20,7 @@ namespace Arcane
 		UniformBuffer* GlobalUniformBuffer;
 
 		// Composite Render Pass
-		UniformBuffer* CompositeUniformBuffer;
+		DescriptorSet* CompositeDescriptorSet;
 		Framebuffer* CompositeFramebuffer;
 		RenderPass* CompositeRenderPass;
 		Pipeline* CompositeRenderPipeline;
@@ -61,19 +61,18 @@ namespace Arcane
 		///////////////////////////////////////////////////////////////
 		//// Global Render Data
 		///////////////////////////////////////////////////////////////
-		
+		printf("----------- Creating Global Data\n");
 		// -- Create Descripor Set
 		DescriptorSetSpecs globalDescriptorSetSpecs;
 		globalDescriptorSetSpecs.SetNumber = 0;
 		s_Data.GlobalDescriptorSet = DescriptorSet::Create(
 			globalDescriptorSetSpecs, {
-				{0, 1, DescriptorType::UNIFORM_BUFFER, "Camera Data"}
+				{0, 1, DescriptorType::UNIFORM_BUFFER, "Camera Data", DescriptorLocation::VERTEX}
 			}
 		);
 
 		// -- Create Uniform Buffer, then add to descriptor set
 		s_Data.GlobalUniformBuffer = UniformBuffer::Create(sizeof(CameraData));
-		
 		s_Data.GlobalDescriptorSet->AddUniformBuffer(
 			s_Data.GlobalUniformBuffer, 0, 0
 		);
@@ -82,6 +81,7 @@ namespace Arcane
 		///////////////////////////////////////////////////////////////
 		//// Geometry Renderpass
 		///////////////////////////////////////////////////////////////
+		printf("----------- Creating Geo Renderpass\n");
 		FramebufferSpecifications geometryFramebufferSpecs;
 		geometryFramebufferSpecs.AttachmentSpecs = {
 			FramebufferAttachmentType::COLOR,
@@ -148,12 +148,14 @@ namespace Arcane
 		gridSpecs.renderPass = s_Data.GeometryRenderPass;
 		gridSpecs.descriptor = s_Data.GridVertexDescriptor;
 		gridSpecs.shader = s_Data.GridShader;
+		gridSpecs.DescriptorSets = {s_Data.GlobalDescriptorSet};
 		s_Data.GridPipleine = Pipeline::Create(gridSpecs);
 
 
 		///////////////////////////////////////////////////////////////
 		//// Composite Renderpass
 		///////////////////////////////////////////////////////////////
+		printf("----------- Creating Composite Renderpass\n");
 		FramebufferSpecifications compositeFramebufferSpecs;
 		compositeFramebufferSpecs.AttachmentSpecs = {
 			FramebufferAttachmentType::COLOR,
@@ -196,10 +198,20 @@ namespace Arcane
 			VertexType::float2
 		});
 
+		// Create per pass Descriptor
+		DescriptorSetSpecs compositeSetSpecs;
+		compositeSetSpecs.SetNumber = 1;
+		s_Data.CompositeDescriptorSet = DescriptorSet::Create(compositeSetSpecs, {
+			{0, 1, DescriptorType::SAMPLER, "Geo Framebuffer Texture", DescriptorLocation::FRAGMENT}
+		});
+
+		s_Data.CompositeDescriptorSet->AddImageSampler(s_Data.GeometryFramebuffer, 1, 0);
+
 		PipelineSpecification compositePipelineSpecs;
 		compositePipelineSpecs.shader = s_Data.CompositeShader;
 		compositePipelineSpecs.renderPass = s_Data.CompositeRenderPass;
 		compositePipelineSpecs.descriptor = s_Data.CompositeVertexDescriptor;
+		compositePipelineSpecs.DescriptorSets = { s_Data.CompositeDescriptorSet };
 		s_Data.CompositeRenderPipeline = Pipeline::Create(compositePipelineSpecs);
 	}
 
@@ -212,29 +224,28 @@ namespace Arcane
 	{
 		Renderer::BeginRenderPass(s_Data.CompositeRenderPass);
 		{
-			// Renderer::RenderQuad(s_Data.CompositeVertexBuffer, s_Data.CompositeRenderPipeline, s_Data.CompositeUniformBuffer);
+			Renderer::RenderQuad(s_Data.CompositeVertexBuffer, s_Data.CompositeRenderPipeline, {s_Data.CompositeDescriptorSet});
 		}
 		Renderer::EndRenderPass(s_Data.CompositeRenderPass);
 	}
 
 	void SceneRenderer::GeometryPass()
 	{
+		// Update any per pass resources
 		Renderer::BeginRenderPass(s_Data.GeometryRenderPass);
 		{	
-			for (int i = 0; i < s_Data.Meshes.size(); i++) 
-			{
-				// Renderer::RenderMesh(s_Data.Meshes[i]->GetVertexBuffer(), s_Data.GeometryPipeline, s_Data.GeometryUniformBuffer);
-			}
-			// Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, s_Data.GeometryUniformBuffer);
+			Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, {s_Data.GlobalDescriptorSet});
 		}
 		Renderer::EndRenderPass(s_Data.GeometryRenderPass);
 	}
 
 	void SceneRenderer::RenderScene()
 	{
-		// Write to Uniform Buffer every frame
-		////////////////////////////////////////
-
+		// Write to uniform buffer
+		CameraData currentFrameCameraData;
+		currentFrameCameraData.proj = s_Data.SceneCamera->GetProject();
+		currentFrameCameraData.view = s_Data.SceneCamera->GetView();
+		s_Data.GlobalUniformBuffer->WriteData((void*)&currentFrameCameraData, sizeof(CameraData));
 
 		GeometryPass();
 		CompositeRenderPass();

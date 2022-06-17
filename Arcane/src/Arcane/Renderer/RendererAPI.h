@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 #include "Buffer.h"
 #include "Pipeline.h"
@@ -31,10 +32,10 @@ namespace Arcane {
 
 		// -- Without Uniform Buffer
 		virtual void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline) = 0;
-		virtual void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, DescriptorSet* descriptorSet) = 0;
+		virtual void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets) = 0;
 
 		// Mesh
-		virtual void RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, DescriptorSet* descriptorSet) = 0;
+		virtual void RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets) = 0;
 
 		// Static Renderer Functions
 		static void SetAPI(RendererAPIType api);

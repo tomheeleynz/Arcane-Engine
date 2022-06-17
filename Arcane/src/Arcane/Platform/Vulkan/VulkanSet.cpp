@@ -2,11 +2,15 @@
 #include "VulkanContext.h"
 #include "VulkanSet.h"
 #include "VulkanUniformBuffer.h"
+#include "VulkanTexture.h"
+#include "VulkanFramebuffer.h"
 
 namespace Arcane
 {
 	VulkanSet::VulkanSet(DescriptorSetSpecs& specs, std::initializer_list<DescriptorLayoutSpecs> layoutSpecs)
 	{
+		m_SetNumber = specs.SetNumber;
+
 		Application& app = Application::Get();
 		VulkanContext* context = static_cast<VulkanContext*>(Application::Get().GetWindow().GetContext());
 		VulkanSwapChain& swapchain = context->GetSwapChain();
@@ -20,6 +24,18 @@ namespace Arcane
 			binding.binding = spec.Binding;
 			binding.descriptorCount = spec.DescriptorCount;
 			binding.pImmutableSamplers = nullptr;
+
+			switch (spec.Location)
+			{
+			case DescriptorLocation::VERTEX:
+				binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+				break;
+			case DescriptorLocation::FRAGMENT:
+				binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+				break;
+			default:
+				break;
+			}
 			
 			// Switch on the type
 			switch (spec.Type)
@@ -94,6 +110,67 @@ namespace Arcane
 			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			descriptorWrite.descriptorCount = 1;
 			descriptorWrite.pBufferInfo = &bufferInfo;
+
+			// Update Descriptor Sets
+			vkUpdateDescriptorSets(context->GetDevice().GetLogicalDevice(), 1, &descriptorWrite, 0, nullptr);
+		}
+	}
+
+	void VulkanSet::AddImageSampler(Texture* texture, uint32_t setNumber, uint32_t bindingNumber)
+	{
+		Application& app = Application::Get();
+		VulkanContext* context = static_cast<VulkanContext*>(Application::Get().GetWindow().GetContext());
+		VulkanSwapChain& swapchain = context->GetSwapChain();
+		uint32_t imageCount = swapchain.GetSwapChainImagesSize();
+
+		VulkanTexture* vulkanTexture = static_cast<VulkanTexture*>(texture);
+		
+		VkDescriptorImageInfo imageInfo{};
+		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		imageInfo.imageView = vulkanTexture->GetImageDescriptorInfo().imageView;
+		imageInfo.sampler = vulkanTexture->GetImageDescriptorInfo().sampler;
+
+
+		for (int i = 0; i < imageCount; i++) {
+			// Create a descriptor write, then update descriptor set
+			VkWriteDescriptorSet descriptorWrite{};
+			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptorWrite.dstSet = m_DescriptorSets[i];
+			descriptorWrite.dstBinding = bindingNumber;
+			descriptorWrite.dstArrayElement = 0;
+			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			descriptorWrite.descriptorCount = 1;
+			descriptorWrite.pImageInfo = &imageInfo;
+
+			// Update Descriptor Sets
+			vkUpdateDescriptorSets(context->GetDevice().GetLogicalDevice(), 1, &descriptorWrite, 0, nullptr);
+		}
+	}
+
+	void VulkanSet::AddImageSampler(Framebuffer* framebuffer, uint32_t setNumber, uint32_t bindingNumber)
+	{
+		Application& app = Application::Get();
+		VulkanContext* context = static_cast<VulkanContext*>(Application::Get().GetWindow().GetContext());
+		VulkanSwapChain& swapchain = context->GetSwapChain();
+		uint32_t imageCount = swapchain.GetSwapChainImagesSize();
+
+		VulkanFramebuffer* vulkanFamebuffer = static_cast<VulkanFramebuffer*>(framebuffer);
+	
+		VkDescriptorImageInfo imageInfo{};
+		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		imageInfo.imageView = vulkanFamebuffer->GetDescriptor().imageView;
+		imageInfo.sampler = vulkanFamebuffer->GetDescriptor().sampler;
+
+		for (int i = 0; i < imageCount; i++) {
+			// Create a descriptor write, then update descriptor set
+			VkWriteDescriptorSet descriptorWrite{};
+			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptorWrite.dstSet = m_DescriptorSets[i];
+			descriptorWrite.dstBinding = bindingNumber;
+			descriptorWrite.dstArrayElement = 0;
+			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			descriptorWrite.descriptorCount = 1;
+			descriptorWrite.pImageInfo = &imageInfo;
 
 			// Update Descriptor Sets
 			vkUpdateDescriptorSets(context->GetDevice().GetLogicalDevice(), 1, &descriptorWrite, 0, nullptr);

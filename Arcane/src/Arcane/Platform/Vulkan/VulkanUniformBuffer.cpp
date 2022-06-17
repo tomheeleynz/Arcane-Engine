@@ -29,11 +29,16 @@ namespace Arcane
 		VulkanContext* context = static_cast<VulkanContext*>(Application::Get().GetWindow().GetContext());
 		VulkanSwapChain& swapchain = context->GetSwapChain();
 		VkDevice logicalDevice = context->GetDevice().GetLogicalDevice();
+		uint32_t imageCount = swapchain.GetSwapChainImagesSize();
 
-		void* tempData;
-		vkMapMemory(logicalDevice, m_UniformBuffersMemory[swapchain.GetImageIndex()], 0, size, 0, &tempData);
-		memcpy(tempData, data, size);
-		vkUnmapMemory(logicalDevice, m_UniformBuffersMemory[swapchain.GetImageIndex()]);
+
+		for (int i = 0; i < imageCount; i++) {
+			void* tempData;
+			vkMapMemory(logicalDevice, m_UniformBuffersMemory[i], 0, size, 0, &tempData);
+			memcpy(tempData, data, size);
+			vkUnmapMemory(logicalDevice, m_UniformBuffersMemory[i]);
+		}
+
 	}
 
 	uint32_t VulkanUniformBuffer::GetSize() 
