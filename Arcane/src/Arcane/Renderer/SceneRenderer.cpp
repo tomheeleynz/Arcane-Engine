@@ -13,6 +13,10 @@ namespace Arcane
 		glm::mat4 view;
 	};
 
+	struct Model {
+		glm::mat4 transform;
+	};
+
 	struct SceneRendererData
 	{
 		// Global Render Data
@@ -33,7 +37,8 @@ namespace Arcane
 		Framebuffer* GeometryFramebuffer;
 		RenderPass* GeometryRenderPass;
 		Pipeline* GeometryPipeline;
-		UniformBuffer* GeometryUniformBuffer;
+		DescriptorSet* ObjectDescriptorSet;
+		UniformBuffer* ObjectUniformBuffer;
 		Shader* GeometryShader;
 		VertexDescriptor* GeometryVertexDescriptor;
 
@@ -108,12 +113,25 @@ namespace Arcane
 			VertexType::float3,
 			VertexType::float2
 		});
+		
+		// Create Object Descriptor Set
+		DescriptorSetSpecs objectDescriptorSetSpecs;
+		objectDescriptorSetSpecs.SetNumber = 1;
+		s_Data.ObjectDescriptorSet = DescriptorSet::Create(
+			objectDescriptorSetSpecs, {
+				{0, 1, DescriptorType::UNIFORM_BUFFER, "Model", DescriptorLocation::VERTEX}
+			}
+		);
 
+		s_Data.ObjectUniformBuffer = UniformBuffer::Create(sizeof(Model));
+		s_Data.ObjectDescriptorSet->AddUniformBuffer(s_Data.ObjectUniformBuffer, 1, 0);
+
+		// Create Pipeline
 		PipelineSpecification geometrySpecs;
 		geometrySpecs.renderPass = s_Data.GeometryRenderPass;
 		geometrySpecs.shader = s_Data.GeometryShader;
 		geometrySpecs.descriptor = s_Data.GeometryVertexDescriptor;
-		geometrySpecs.DescriptorSets = {s_Data.GlobalDescriptorSet};
+		geometrySpecs.DescriptorSets = {s_Data.GlobalDescriptorSet, s_Data.ObjectDescriptorSet};
 		s_Data.GeometryPipeline = Pipeline::Create(geometrySpecs);
 
 		///////////////////////////////////////////////////////////////
@@ -143,6 +161,16 @@ namespace Arcane
 		s_Data.GridVertexBuffer = VertexBuffer::Create(gridVertices.data(), sizeof(glm::vec3) * gridVertices.size());
 		s_Data.GridIndexBuffer = IndexBuffer::Create(gridIndices.data(), gridIndices.size());
 		s_Data.GridVertexBuffer->AddIndexBuffer(s_Data.GridIndexBuffer);
+
+		// Create Descriptor Sets
+		DescriptorSetSpecs objectSetSpecs;
+		objectSetSpecs.SetNumber = 1;
+		s_Data.ObjectDescriptorSet = DescriptorSet::Create(objectSetSpecs, {
+			{0, 1, DescriptorType::UNIFORM_BUFFER, "Transform Data", DescriptorLocation::VERTEX}
+		});
+		s_Data.ObjectUniformBuffer = UniformBuffer::Create(sizeof(Model));
+		s_Data.ObjectDescriptorSet->AddUniformBuffer(s_Data.ObjectUniformBuffer, 1, 0);
+
 
 		PipelineSpecification gridSpecs;
 		gridSpecs.renderPass = s_Data.GeometryRenderPass;
@@ -234,6 +262,20 @@ namespace Arcane
 		// Update any per pass resources
 		Renderer::BeginRenderPass(s_Data.GeometryRenderPass);
 		{	
+			for (int i = 0; i < s_Data.Meshes.size(); i++)
+			{
+				// Create Transform Component
+				TransformComponent& currentMeshComponent = s_Data.MeshTransforms[i];
+
+				// Create Model Matrix
+				Model currentTransform;
+				currentTransform.transform = glm::translate(glm::mat4(1), currentMeshComponent.pos) * glm::scale(glm::mat4(1), currentMeshComponent.scale);
+
+				// Write to uniform buffer
+				s_Data.ObjectUniformBuffer->WriteData((void*)&currentTransform, sizeof(Model));
+
+				Renderer::RenderMesh(s_Data.Meshes[i]->GetVertexBuffer(), s_Data.GeometryPipeline, {s_Data.GlobalDescriptorSet, s_Data.ObjectDescriptorSet});
+			}
 			Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, {s_Data.GlobalDescriptorSet});
 		}
 		Renderer::EndRenderPass(s_Data.GeometryRenderPass);

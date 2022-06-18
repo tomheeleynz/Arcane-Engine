@@ -3,15 +3,7 @@
 
 namespace Arcane
 {
-	static const uint32_t s_MeshImportFlags =
-		aiProcess_CalcTangentSpace |        // Create binormals/tangents just in case
-		aiProcess_Triangulate |             // Make sure we're triangles
-		aiProcess_SortByPType |             // Split meshes by primitive type
-		aiProcess_GenNormals |              // Make sure we have legit normals
-		aiProcess_GenUVCoords |             // Convert UVs if required 
-		aiProcess_OptimizeMeshes |          // Batch draws where possible
-		aiProcess_JoinIdenticalVertices |
-		aiProcess_ValidateDataStructure;    // Validation
+	static const uint32_t s_MeshImportFlags = aiProcess_Triangulate | aiProcess_FlipUVs;
 
 	Mesh::Mesh(std::string filepath)
 	{

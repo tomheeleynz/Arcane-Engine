@@ -134,7 +134,7 @@ namespace Arcane {
 		std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
 		if (spec.DescriptorSets.size() != 0) {
 			for (int i = 0; i < spec.DescriptorSets.size(); i++) {
-				VulkanSet* vulkanDescriptorSet = static_cast<VulkanSet*>(spec.DescriptorSets[0]);
+				VulkanSet* vulkanDescriptorSet = static_cast<VulkanSet*>(spec.DescriptorSets[i]);
 				VkDescriptorSetLayout descriptorSet = vulkanDescriptorSet->GetLayout();
 				descriptorSetLayouts.push_back(descriptorSet);
 			}

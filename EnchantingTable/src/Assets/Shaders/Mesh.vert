@@ -5,13 +5,17 @@ layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTexCoord;
 
 // Global Frame data
-layout (set = 0, binding = 0) uniform MVP {
+layout (set = 0, binding = 0) uniform Camera {
 	mat4 proj;
 	mat4 view;
-} mvp;
+} camera;
 
+// Per object data
+layout (set = 1, binding = 0) uniform Model {
+	mat4 transform;
+} model;
 
 void main() {
-	gl_Position = vec4(aPos, 1.0);
+	gl_Position = camera.proj * camera.view * model.transform * vec4(aPos, 1.0);
 }
 
