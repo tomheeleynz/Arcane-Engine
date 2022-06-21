@@ -10,7 +10,7 @@ namespace Arcane
 		Assimp::Importer importer;
 		
 		const aiScene* scene = importer.ReadFile(
-			"D:\\Engine-Development\\ArcaneEngine\\EnchantingTable\\src\\Assets\\Models\\Backpack.fbx", s_MeshImportFlags
+			"C:\\Projects\\Arcane-Engine\\EnchantingTable\\src\\Assets\\Models\\Cube.fbx", s_MeshImportFlags
 		);
 
 		if (!scene) {
@@ -18,11 +18,11 @@ namespace Arcane
 		}
 		else {
 			ProcessNode(scene->mRootNode, scene);
-		}
 
-		m_VertexBuffer = VertexBuffer::Create(m_Vertices.data(), sizeof(MeshVertex) * m_Vertices.size());
-		m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), m_Indices.size());
-		m_VertexBuffer->AddIndexBuffer(m_IndexBuffer);
+			m_VertexBuffer = VertexBuffer::Create(m_Vertices.data(), sizeof(MeshVertex) * m_Vertices.size());
+			m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), m_Indices.size());
+			m_VertexBuffer->AddIndexBuffer(m_IndexBuffer);
+		}
 	}
 
 	void Mesh::ProcessNode(aiNode* node, const aiScene* scene)

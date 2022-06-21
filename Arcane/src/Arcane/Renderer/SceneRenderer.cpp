@@ -286,6 +286,10 @@ namespace Arcane
 		// Write to uniform buffer
 		CameraData currentFrameCameraData;
 		currentFrameCameraData.proj = s_Data.SceneCamera->GetProject();
+		
+		// Need to to this for vulkan coord system
+		currentFrameCameraData.proj[1][1] *= -1;
+
 		currentFrameCameraData.view = s_Data.SceneCamera->GetView();
 		s_Data.GlobalUniformBuffer->WriteData((void*)&currentFrameCameraData, sizeof(CameraData));
 
