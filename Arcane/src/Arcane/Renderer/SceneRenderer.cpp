@@ -11,6 +11,7 @@ namespace Arcane
 	struct CameraData {
 		glm::mat4 proj;
 		glm::mat4 view;
+		glm::vec3 cameraPosition;
 	};
 
 	struct Model {
@@ -264,6 +265,8 @@ namespace Arcane
 		{	
 			for (int i = 0; i < s_Data.Meshes.size(); i++)
 			{
+				Mesh* currentMesh = s_Data.Meshes[i];
+
 				// Create Transform Component
 				TransformComponent& currentMeshComponent = s_Data.MeshTransforms[i];
 
@@ -274,7 +277,11 @@ namespace Arcane
 				// Write to uniform buffer
 				s_Data.ObjectUniformBuffer->WriteData((void*)&currentTransform, sizeof(Model));
 
-				Renderer::RenderMesh(s_Data.Meshes[i]->GetVertexBuffer(), s_Data.GeometryPipeline, {s_Data.GlobalDescriptorSet, s_Data.ObjectDescriptorSet});
+				for (int j = 0; j < currentMesh->GetSubMeshes().size(); j++) {
+					SubMesh* currentSubMesh = currentMesh->GetSubMeshes()[j];
+					Renderer::RenderMesh(currentSubMesh->GetVertexBuffer(), s_Data.GeometryPipeline, {s_Data.GlobalDescriptorSet, s_Data.ObjectDescriptorSet});
+				}
+
 			}
 			Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, {s_Data.GlobalDescriptorSet});
 		}
@@ -291,6 +298,7 @@ namespace Arcane
 		currentFrameCameraData.proj[1][1] *= -1;
 
 		currentFrameCameraData.view = s_Data.SceneCamera->GetView();
+		currentFrameCameraData.cameraPosition = s_Data.SceneCamera->GetPosition();
 		s_Data.GlobalUniformBuffer->WriteData((void*)&currentFrameCameraData, sizeof(CameraData));
 
 		GeometryPass();

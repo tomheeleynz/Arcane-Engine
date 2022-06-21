@@ -2,40 +2,15 @@
 
 namespace Arcane
 {
-	SubMesh::SubMesh(aiMesh* submesh)
+	SubMesh::SubMesh(std::vector<MeshVertex> vertices, std::vector<uint32_t> indices)
 	{
-		// Get Vertices
-		for (int i = 0; i < submesh->mNumVertices; i++) {
-			SubMeshVertex newVertex;
-			
-			// Get Position
-			newVertex.position = { 
-				submesh->mVertices[i].x,
-				submesh->mVertices[i].y,
-				submesh->mVertices[i].z
-			};
+		// Create Vertex Buffer
+		m_VertexBuffer = VertexBuffer::Create(vertices.data(), vertices.size() * sizeof(MeshVertex));
 
-			// Get Normal
-			newVertex.normal = {
-				submesh->mNormals[i].x,
-				submesh->mNormals[i].y,
-				submesh->mNormals[i].z
-			};
+		// Create Index Buffer
+		m_IndexBuffer = IndexBuffer::Create(indices.data(), indices.size());
 
-			newVertex.texture = {
-				submesh->mTextureCoords[0][i].x,
-				submesh->mTextureCoords[0][i].y
-			};
-
-			m_Vertices.push_back(newVertex);
-		}
-
-		for (int i = 0; i < submesh->mNumFaces; i++) {
-			aiFace face = submesh->mFaces[i];
-
-			for (int j = 0; j < face.mNumIndices; j++) {
-				m_Indices.push_back(face.mIndices[j]);
-			}
-		}
+		// Add Index Buffer to Vertex Buffer
+		m_VertexBuffer->AddIndexBuffer(m_IndexBuffer);
 	}
 }

@@ -5,6 +5,7 @@ layout (location = 0) in vec3 aPos;
 layout (set = 0, binding = 0) uniform MVP {
 	mat4 proj;
 	mat4 view;
+	vec3 cameraPosition;
 } mvp;
 
 layout (location = 0) out vec3 nearPoint;

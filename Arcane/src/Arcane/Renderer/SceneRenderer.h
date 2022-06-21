@@ -1,8 +1,6 @@
 #pragma once
 
 #include <glm/glm.hpp>
-
-
 #include "Arcane/ECS/Component.h"
 #include "Framebuffer.h"
 #include "Shader.h"
@@ -21,7 +19,6 @@ namespace Arcane
 	{
 	public:
 		SceneRenderer();
-
 
 		Framebuffer* GetFinalRenderFramebuffer();
 

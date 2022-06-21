@@ -7,87 +7,84 @@ namespace Arcane
 
 	Mesh::Mesh(std::string filepath)
 	{
-		Assimp::Importer importer;
-		
-		const aiScene* scene = importer.ReadFile(
-			"C:\\Projects\\Arcane-Engine\\EnchantingTable\\src\\Assets\\Models\\Cube.fbx", s_MeshImportFlags
+		Assimp::Importer import;
+		const aiScene* scene = import.ReadFile(
+			"C:\\Projects\\Arcane-Engine\\EnchantingTable\\src\\Assets\\Models\\Backpack.fbx", 
+			s_MeshImportFlags
 		);
 
-		if (!scene) {
-			std::cout << importer.GetErrorString() << std::endl;
+		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+		{
+			std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
+			return;
 		}
-		else {
-			ProcessNode(scene->mRootNode, scene);
 
-			m_VertexBuffer = VertexBuffer::Create(m_Vertices.data(), sizeof(MeshVertex) * m_Vertices.size());
-			m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), m_Indices.size());
-			m_VertexBuffer->AddIndexBuffer(m_IndexBuffer);
-		}
+		ProcessNode(scene->mRootNode, scene);
 	}
 
 	void Mesh::ProcessNode(aiNode* node, const aiScene* scene)
 	{
-		for (unsigned int i = 0; i < node->mNumMeshes; i++) {
+		// process all the node's meshes (if any)
+		for (unsigned int i = 0; i < node->mNumMeshes; i++)
+		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-			ProcessMesh(mesh, scene);
+			m_SubMeshes.push_back(ProcessMesh(mesh, scene));
 		}
-
-		for (unsigned int i = 0; i < node->mNumChildren; i++) {
+		// then do the same for each of its children
+		for (unsigned int i = 0; i < node->mNumChildren; i++)
+		{
 			ProcessNode(node->mChildren[i], scene);
 		}
 	}
 
 
-	void Mesh::ProcessMesh(aiMesh* mesh, const aiScene* scene)
+	SubMesh* Mesh::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	{
-		// Process Mesh into Submeshes
-		for (int i = 0; i < mesh->mNumVertices; i++) {
-			MeshVertex newVertex;
+        std::vector<MeshVertex> vertices;
+        std::vector<uint32_t> indices;
 
-			newVertex.vertex = {
-				mesh->mVertices[i].x,
-				mesh->mVertices[i].y,
-				mesh->mVertices[i].z
-			};
+        // walk through each of the mesh's vertices
+        for (unsigned int i = 0; i < mesh->mNumVertices; i++)
+        {
+            MeshVertex vertex;
+            glm::vec3 vector;
+            // positions
+            vector.x = mesh->mVertices[i].x;
+            vector.y = mesh->mVertices[i].y;
+            vector.z = mesh->mVertices[i].z;
+            vertex.position = vector;
 
-			newVertex.normal = {
-				mesh->mNormals[i].x,
-				mesh->mNormals[i].y,
-				mesh->mNormals[i].z
-			};
+            // normals
+            if (mesh->HasNormals())
+            {
+                vector.x = mesh->mNormals[i].x;
+                vector.y = mesh->mNormals[i].y;
+                vector.z = mesh->mNormals[i].z;
+                vertex.normal = vector;
+            }
 
-			if (mesh->mTextureCoords[0])
-			{
-				newVertex.texture = {
-					mesh->mTextureCoords[0][i].x,
-					mesh->mTextureCoords[0][i].y
-				};
-			}
-			else {
-				newVertex.texture = {0.0f, 0.0f};
-			}
+            // texture coordinates
+            if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
+            {
+                glm::vec2 vec;
+                vec.x = mesh->mTextureCoords[0][i].x;
+                vec.y = mesh->mTextureCoords[0][i].y;
+                vertex.texture = vec;
+     
+            }
+            else
+                vertex.texture = glm::vec2(0.0f, 0.0f);
 
-			m_Vertices.push_back(newVertex);
-		}
+            vertices.push_back(vertex);
+        }
+        
+        for (unsigned int i = 0; i < mesh->mNumFaces; i++)
+        {
+            aiFace face = mesh->mFaces[i];
+            for (unsigned int j = 0; j < face.mNumIndices; j++)
+                indices.push_back(face.mIndices[j]);
+        }
 
-		for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
-			aiFace face = mesh->mFaces[i];
-
-			for (unsigned j = 0; j < face.mNumIndices; j++) {
-				m_Indices.push_back(face.mIndices[j]);
-			}
-		}
-
+        return new SubMesh(vertices, indices);
 	}
-
-	Material* Mesh::GetMaterial()
-	{
-		return m_Material;
-	}
-
-	void Mesh::SetMaterial(Material* material) 
-	{
-		m_Material = material;
-	}
-
 }
