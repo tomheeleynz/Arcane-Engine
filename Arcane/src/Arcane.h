@@ -41,3 +41,4 @@
 ////////// Utils
 /////////////////////////////////////////////////////
 #include "Arcane/Utils/Utils.h"
+#include "Arcane/Utils/FileWatcher.h"

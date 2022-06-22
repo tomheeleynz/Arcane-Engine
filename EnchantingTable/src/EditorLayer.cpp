@@ -40,6 +40,7 @@ void EditorLayer::OnAttach()
 	m_ScenePanel->SetContext(m_ActiveScene);
 
 	m_EntityPanel = new EntityPanel();
+	m_FileBrowserPanel = new FileBrowserPanel();
 
 	// Setup Camera
 	m_EditorCamera = new Arcane::PerspectiveCamera(512, 512, 45.0f);
@@ -139,13 +140,9 @@ void EditorLayer::OnImGuiRender()
 
 	m_EntityPanel->SetContext(m_ScenePanel->GetSelectedEntity());
 	m_EntityPanel->Update();
-
-	ImGui::Begin("File Browser");
-	{
-		
-	}
-	ImGui::End();
 	
+	m_FileBrowserPanel->OnUpdate();
+
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	
 	ImGui::Begin("Viewport");

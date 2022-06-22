@@ -272,7 +272,9 @@ namespace Arcane
 
 				// Create Model Matrix
 				Model currentTransform;
-				currentTransform.transform = glm::translate(glm::mat4(1), currentMeshComponent.pos) * glm::scale(glm::mat4(1), currentMeshComponent.scale);
+				currentTransform.transform = glm::translate(glm::mat4(1), currentMeshComponent.pos) *
+					glm::rotate(glm::mat4(1), glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f)) * 
+					glm::scale(glm::mat4(1), currentMeshComponent.scale);
 
 				// Write to uniform buffer
 				s_Data.ObjectUniformBuffer->WriteData((void*)&currentTransform, sizeof(Model));

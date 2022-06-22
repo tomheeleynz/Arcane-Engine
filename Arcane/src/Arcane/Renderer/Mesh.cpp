@@ -9,7 +9,7 @@ namespace Arcane
 	{
 		Assimp::Importer import;
 		const aiScene* scene = import.ReadFile(
-			"C:\\Projects\\Arcane-Engine\\EnchantingTable\\src\\Assets\\Models\\Backpack.fbx", 
+			"C:\\Projects\\Arcane-Engine\\EnchantingTable\\src\\Assets\\Models\\MyModel.fbx", 
 			s_MeshImportFlags
 		);
 

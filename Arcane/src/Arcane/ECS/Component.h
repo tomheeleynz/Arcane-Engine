@@ -16,7 +16,7 @@ namespace Arcane
 	{
 		glm::vec3 pos = {0.0f, 0.0f, 0.0f};
 		glm::vec3 rot = {0.0f, 0.0f, 0.0f};
-		glm::vec3 scale = {0.1f, 0.1f, 0.1f };
+		glm::vec3 scale = {1.0f, 1.0f, 1.0f };
 	};
 
 	struct MeshComponent

@@ -8,6 +8,7 @@
 // Panels
 #include "Panels/ScenePanel.h"
 #include "Panels/EntityPanel.h"
+#include "Panels/FileBrowser.h"
 #include "Controllers/PerspectiveController.h"
 
 class EditorLayer : public Arcane::Layer
@@ -35,6 +36,7 @@ private:
 	// Panels
 	ScenePanel* m_ScenePanel;
 	EntityPanel* m_EntityPanel;
+	FileBrowserPanel* m_FileBrowserPanel;
 
 	// Editor Camera
 	Arcane::PerspectiveCamera* m_EditorCamera;
