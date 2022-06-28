@@ -104,10 +104,7 @@ namespace Arcane
 		geometryRenderpassSpecs.TargetFramebuffer = s_Data.GeometryFramebuffer;
 		s_Data.GeometryRenderPass = RenderPass::Create(geometryRenderpassSpecs);
 
-		s_Data.GeometryShader = Shader::Create(
-			".\\src\\Assets\\Shaders\\MeshVert.spv",
-			".\\src\\Assets\\Shaders\\MeshFrag.spv"
-		);
+		s_Data.GeometryShader = ShaderLibrary::GetShader("Mesh");
 
 		s_Data.GeometryVertexDescriptor = VertexDescriptor::Create({
 			VertexType::float3,
@@ -138,10 +135,7 @@ namespace Arcane
 		///////////////////////////////////////////////////////////////
 		//// Grid (Part of Geo Pass)
 		///////////////////////////////////////////////////////////////
-		s_Data.GridShader = Shader::Create(
-			".\\src\\Assets\\Shaders\\GridVert.spv",
-			".\\src\\Assets\\Shaders\\GridFrag.spv"
-		);
+		s_Data.GridShader = ShaderLibrary::GetShader("Grid");
 
 		s_Data.GridVertexDescriptor = VertexDescriptor::Create({
 			VertexType::float3	
@@ -201,10 +195,7 @@ namespace Arcane
 		compositeSpecs.TargetFramebuffer = s_Data.CompositeFramebuffer;
 		s_Data.CompositeRenderPass = RenderPass::Create(compositeSpecs);
 
-		s_Data.CompositeShader = Shader::Create(
-			".\\src\\Assets\\Shaders\\ScreenVert.spv",
-			".\\src\\Assets\\Shaders\\ScreenFrag.spv"
-		);
+		s_Data.CompositeShader = ShaderLibrary::GetShader("Screen");
 
 		std::vector<ScreenVertex> screenVertices = {
 			{{-1.0f,-1.0f,0.0f}, {1.0f, 0.0f}}, // Top Left

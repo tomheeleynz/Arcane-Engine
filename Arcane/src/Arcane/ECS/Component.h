@@ -27,6 +27,6 @@ namespace Arcane
 
 	struct MeshRendererComponent
 	{
-
+		Material* material;
 	};
 }

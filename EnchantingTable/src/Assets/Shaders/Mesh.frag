@@ -6,6 +6,11 @@ layout(location = 2) in vec3 fragCameraPos;
 
 layout(location = 0) out vec4 Color;
 
+// Material Structure
+layout (set = 2, binding = 0) Material {
+	vec3 color;
+} material;
+
 void main() {
 	// Single Light Color
 	vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);

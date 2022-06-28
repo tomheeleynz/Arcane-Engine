@@ -58,5 +58,19 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		ImGui::InputFloat3("Scale", glm::value_ptr(component.scale));
 		ImGui::InputFloat3("Rotation", glm::value_ptr(component.rot));
 	});
+
+	if (entity.HasComponent<MeshComponent>()) 
+	{
+		DrawComponent<MeshComponent>("Mesh", entity, [](auto& component) {
+			
+		});
+	}
+
+	if (entity.HasComponent<MeshRendererComponent>())
+	{
+		DrawComponent<MeshRendererComponent>("Mesh Renderer", entity, [](auto& component) {
+			
+		});
+	}
 }
 

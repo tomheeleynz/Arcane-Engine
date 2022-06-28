@@ -8,9 +8,6 @@ namespace Arcane
 	{
 	public:
 		VulkanMaterial(Shader* shader);
-
-		Shader* GetShader() override;
-		void SetShader(Shader* shader) override;
 	private:
 		Shader* m_Shader;
 	};
