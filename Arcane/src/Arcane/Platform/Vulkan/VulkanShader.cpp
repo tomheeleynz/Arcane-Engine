@@ -72,60 +72,65 @@ namespace Arcane {
 
 	void VulkanShader::Reflect() 
 	{
-		// Reflect Vertex Module
-		{
-			SpvReflectShaderModule module;
-
-			SpvReflectResult result = spvReflectCreateShaderModule(
-				m_VertexByteCode.size(),
-				m_VertexByteCode.data(),
-				&module
-			);
-
-			if (result != SPV_REFLECT_RESULT_SUCCESS) {
-				printf("Vertex Reflect Module not created\n");
-			}
-
-			uint32_t bindingCount = 0;
-			std::vector<SpvReflectDescriptorBinding*> bindings;
-			result = spvReflectEnumerateDescriptorBindings(&module, &bindingCount, NULL);
-			
-			if (result != SPV_REFLECT_RESULT_SUCCESS) {
-				printf("No Binding Descriptors found\n");
-			}
-
-			bindings.resize(bindingCount);
-			result = spvReflectEnumerateDescriptorBindings(&module, &bindingCount, bindings.data());
-
-			if (result != SPV_REFLECT_RESULT_SUCCESS) {
-				printf("Bindings Not Retreived\n");
-			}
-
-		}
-
 		// Reflect Fragment Module
 		{
 			SpvReflectShaderModule module;
 
 			SpvReflectResult result = spvReflectCreateShaderModule(
-				m_VertexByteCode.size(),
-				m_VertexByteCode.data(),
+				m_FragmentByteCode.size(),
+				m_FragmentByteCode.data(),
 				&module
 			);
 
 			if (result != SPV_REFLECT_RESULT_SUCCESS) {
-				printf("Vertex Reflect Module not created\n");
+				printf("Failed to Create Reflect Module\n");
 			}
 
-			uint32_t descriptorCount = 0;
-			result = spvReflectEnumerateDescriptorSets(&module, &descriptorCount, nullptr);
-
+			uint32_t count = 0;
+			result = spvReflectEnumerateDescriptorSets(&module, &count, nullptr);
+			
 			if (result != SPV_REFLECT_RESULT_SUCCESS) {
-				printf("Cant Reflect Descriptor Sets\n");
+				printf("Failed to enum descriptor sets\n");
 			}
-			else {
-				printf("Descriptor Sets %d\n", descriptorCount);
+
+			std::vector<SpvReflectDescriptorSet*> sets(count);
+			result = spvReflectEnumerateDescriptorSets(&module, &count, sets.data());
+			
+			if (result != SPV_REFLECT_RESULT_SUCCESS) {
+				printf("Failed to load reflect descriptor sets\n");
 			}
+
+			// Get the material set, which will be set 2 binding 0
+			for (int i = 0; i < sets.size(); i++) 
+			{
+				SpvReflectDescriptorSet* reflectSet = sets[i];
+			
+				
+				// Get into the bindings,
+				// Material will be binding 0
+				for (int j = 0; j < reflectSet->binding_count; j++) {
+					SpvReflectDescriptorBinding* binding = reflectSet->bindings[j];
+					
+					if (binding->binding == 0) {
+						// Get stuff in the material block
+						SpvReflectTypeDescription* description = binding->type_description;
+						
+						for (int k = 0; k < description->member_count; k++) {
+							SpvReflectTypeDescription memberDesc = description->members[k];
+							ShaderVariable newVariable;
+							newVariable.Name = memberDesc.struct_member_name;
+							
+							if (memberDesc.traits.numeric.vector.component_count == 3) {
+								newVariable.Type = ShaderVariableType::Vector3;
+							}
+
+							m_ShaderVariables.push_back(newVariable);
+						}
+					}
+				}
+			}
+
+
 		}
 	}
 }

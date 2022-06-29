@@ -7,7 +7,7 @@ layout(location = 2) in vec3 fragCameraPos;
 layout(location = 0) out vec4 Color;
 
 // Material Structure
-layout (set = 2, binding = 0) Material {
+layout (set = 2, binding = 0) uniform Material {
 	vec3 color;
 } material;
 

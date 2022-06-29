@@ -12,6 +12,7 @@ namespace Arcane {
 	{
 	public:
 		VulkanShader(std::string vertexShader, std::string fragmentShader);
+		virtual std::vector<ShaderVariable> GetShaderVariables() { return m_ShaderVariables; };
 
 		VkShaderModule GetVertexShaderModule() { return m_VertexShaderModule; }
 		VkShaderModule GetFragmentShaderModule() { return m_FragShaderModule; }
@@ -22,5 +23,7 @@ namespace Arcane {
 
 		std::vector<char> m_VertexByteCode;
 		std::vector<char> m_FragmentByteCode;
+
+		std::vector<ShaderVariable> m_ShaderVariables;
 	};
 }

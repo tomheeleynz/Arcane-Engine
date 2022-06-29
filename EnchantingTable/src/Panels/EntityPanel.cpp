@@ -69,7 +69,17 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	if (entity.HasComponent<MeshRendererComponent>())
 	{
 		DrawComponent<MeshRendererComponent>("Mesh Renderer", entity, [](auto& component) {
+			std::vector<Arcane::ShaderVariable> shaderVariables = component.material->GetShaderVariables();
 			
+			for (Arcane::ShaderVariable variable : shaderVariables)
+			{
+				ImGui::Text(variable.Name.c_str());
+
+				glm::vec3 color = glm::vec3(0.0f, 0.0f, 0.0f);
+				if (variable.Type == Arcane::ShaderVariableType::Vector3){
+					ImGui::InputFloat3("Vec3", glm::value_ptr(color));
+				}
+			}
 		});
 	}
 }

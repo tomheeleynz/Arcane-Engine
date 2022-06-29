@@ -2,9 +2,22 @@
 
 #include <string>
 #include <map>
+#include <vector>
 
 namespace Arcane 
 {
+	enum class ShaderVariableType
+	{
+		Vector3,
+		Sampler
+	};
+
+	struct ShaderVariable
+	{
+		std::string Name;
+		ShaderVariableType Type;
+	};
+
 	/////////////////////////////////////////////////////////////
 	//// Shader
 	/////////////////////////////////////////////////////////////
@@ -12,6 +25,7 @@ namespace Arcane
 	{
 	public:
 
+		virtual std::vector<ShaderVariable> GetShaderVariables() = 0;
 		static Shader* Create(std::string vertexShader, std::string fragmentShader);
 	private:
 
