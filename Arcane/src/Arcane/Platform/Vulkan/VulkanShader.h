@@ -7,7 +7,9 @@
 
 #include "Arcane/Renderer/Shader.h"
 
-namespace Arcane {
+namespace Arcane 
+{
+
 	class VulkanShader : public Shader
 	{
 	public:
@@ -16,7 +18,12 @@ namespace Arcane {
 
 		VkShaderModule GetVertexShaderModule() { return m_VertexShaderModule; }
 		VkShaderModule GetFragmentShaderModule() { return m_FragShaderModule; }
+
+		std::vector<VkDescriptorSet> GetAllDescriptorSets() { return m_DescriptorSets; }
+		
 		void Reflect();
+	private:
+		void ReflectModule(std::vector<char> byteCode, VkShaderModule module);
 	private:
 		VkShaderModule m_VertexShaderModule;
 		VkShaderModule m_FragShaderModule;
@@ -25,5 +32,6 @@ namespace Arcane {
 		std::vector<char> m_FragmentByteCode;
 
 		std::vector<ShaderVariable> m_ShaderVariables;
+		std::vector<VkDescriptorSet> m_DescriptorSets;
 	};
 }
