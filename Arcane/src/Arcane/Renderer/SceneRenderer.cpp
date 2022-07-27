@@ -93,7 +93,7 @@ namespace Arcane
 			FramebufferAttachmentType::COLOR,
 			FramebufferAttachmentType::DEPTH
 		};
-		
+
 		geometryFramebufferSpecs.ClearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 		geometryFramebufferSpecs.Width = 512;
 		geometryFramebufferSpecs.Height = 512;
@@ -110,8 +110,8 @@ namespace Arcane
 			VertexType::float3,
 			VertexType::float3,
 			VertexType::float2
-		});
-		
+			});
+
 		// Create Object Descriptor Set
 		DescriptorSetSpecs objectDescriptorSetSpecs;
 		objectDescriptorSetSpecs.SetNumber = 1;
@@ -129,7 +129,12 @@ namespace Arcane
 		geometrySpecs.renderPass = s_Data.GeometryRenderPass;
 		geometrySpecs.shader = s_Data.GeometryShader;
 		geometrySpecs.descriptor = s_Data.GeometryVertexDescriptor;
-		geometrySpecs.DescriptorSets = {s_Data.GlobalDescriptorSet, s_Data.ObjectDescriptorSet};
+
+		if (s_Data.GeometryShader->GetMaterialDescriptor() != nullptr)
+			geometrySpecs.DescriptorSets = {s_Data.GlobalDescriptorSet, s_Data.ObjectDescriptorSet, s_Data.GeometryShader->GetMaterialDescriptor()};
+		else 
+			geometrySpecs.DescriptorSets = { s_Data.GlobalDescriptorSet, s_Data.ObjectDescriptorSet };
+		
 		s_Data.GeometryPipeline = Pipeline::Create(geometrySpecs);
 
 		///////////////////////////////////////////////////////////////

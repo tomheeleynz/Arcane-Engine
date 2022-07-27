@@ -18,8 +18,7 @@ namespace Arcane
 
 		VkShaderModule GetVertexShaderModule() { return m_VertexShaderModule; }
 		VkShaderModule GetFragmentShaderModule() { return m_FragShaderModule; }
-
-		std::vector<VkDescriptorSet> GetAllDescriptorSets() { return m_DescriptorSets; }
+		DescriptorSet* GetMaterialDescriptor() override;
 		
 		void Reflect();
 	private:
@@ -28,10 +27,11 @@ namespace Arcane
 		VkShaderModule m_VertexShaderModule;
 		VkShaderModule m_FragShaderModule;
 
+		DescriptorSet* m_MaterialSet = nullptr;
+
 		std::vector<char> m_VertexByteCode;
 		std::vector<char> m_FragmentByteCode;
 
 		std::vector<ShaderVariable> m_ShaderVariables;
-		std::vector<VkDescriptorSet> m_DescriptorSets;
 	};
 }

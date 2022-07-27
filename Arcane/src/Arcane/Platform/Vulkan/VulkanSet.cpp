@@ -82,6 +82,81 @@ namespace Arcane
 		}
 	}
 
+	VulkanSet::VulkanSet(DescriptorSetSpecs& specs, std::vector<DescriptorLayoutSpecs> layoutSpecs)
+	{
+		m_SetNumber = specs.SetNumber;
+
+		Application& app = Application::Get();
+		VulkanContext* context = static_cast<VulkanContext*>(Application::Get().GetWindow().GetContext());
+		VulkanSwapChain& swapchain = context->GetSwapChain();
+		VkDevice logicalDevice = static_cast<VulkanContext*>(app.GetWindow().GetContext())->GetDevice().GetLogicalDevice();
+
+		// Iterate through Layouts, create bindings for each
+		// Manage the counts of each set
+		std::vector<VkDescriptorSetLayoutBinding> bindings;
+		for (DescriptorLayoutSpecs spec : layoutSpecs) {
+			VkDescriptorSetLayoutBinding binding{};
+			binding.binding = spec.Binding;
+			binding.descriptorCount = spec.DescriptorCount;
+			binding.pImmutableSamplers = nullptr;
+
+			switch (spec.Location)
+			{
+			case DescriptorLocation::VERTEX:
+				binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+				break;
+			case DescriptorLocation::FRAGMENT:
+				binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+				break;
+			default:
+				break;
+			}
+
+			// Switch on the type
+			switch (spec.Type)
+			{
+			case DescriptorType::UNIFORM_BUFFER:
+				binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+				break;
+			case DescriptorType::SAMPLER:
+				binding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				break;
+			default:
+				break;
+			}
+
+			bindings.push_back(binding);
+		}
+
+		// Actually Create Descriptor set
+		VkDescriptorSetLayoutCreateInfo setInfo = {};
+		setInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		setInfo.pNext = nullptr;
+		setInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+		setInfo.pBindings = bindings.data();
+
+		if (vkCreateDescriptorSetLayout(logicalDevice, &setInfo, nullptr, &m_DescriptorSetLayout) != VK_SUCCESS) {
+			printf("Uniform Descriptor Layout Not Created\n");
+		}
+
+		// Get Descriptor Pool from context
+		VkDescriptorPool descriptorPool = context->GetPool();
+		uint32_t imageCount = swapchain.GetSwapChainImagesSize();
+		m_DescriptorSets.resize(imageCount);
+		for (int i = 0; i < imageCount; i++) {
+			VkDescriptorSetAllocateInfo allocInfo = {};
+			allocInfo.pNext = nullptr;
+			allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+			allocInfo.descriptorPool = descriptorPool;
+			allocInfo.descriptorSetCount = 1;
+			allocInfo.pSetLayouts = &m_DescriptorSetLayout;
+
+			if (vkAllocateDescriptorSets(logicalDevice, &allocInfo, &m_DescriptorSets[i]) != VK_SUCCESS) {
+				printf("Failed to allocate descripor set\n");
+			}
+		}
+	}
+
 	void VulkanSet::AddUniformBuffer(UniformBuffer* buffer, uint32_t setNumber, uint32_t bindingNumber)
 	{
 		// Get Image Count

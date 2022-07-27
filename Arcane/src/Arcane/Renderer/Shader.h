@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include "DescriptorSet.h"
 
 namespace Arcane 
 {
@@ -24,7 +25,7 @@ namespace Arcane
 	class Shader
 	{
 	public:
-
+		virtual DescriptorSet* GetMaterialDescriptor() = 0;
 		virtual std::vector<ShaderVariable> GetShaderVariables() = 0;
 		static Shader* Create(std::string vertexShader, std::string fragmentShader);
 	private:

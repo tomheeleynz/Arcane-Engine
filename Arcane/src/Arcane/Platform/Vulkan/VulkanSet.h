@@ -10,12 +10,12 @@ namespace Arcane
 	{
 	public:
 		VulkanSet(DescriptorSetSpecs& specs, std::initializer_list<DescriptorLayoutSpecs> layoutSpecs);
+		VulkanSet(DescriptorSetSpecs& specs, std::vector<DescriptorLayoutSpecs> layoutSpecs);
 
 		// Virtual Functions
 		void AddUniformBuffer(UniformBuffer* buffer, uint32_t setNumber, uint32_t bindingNumber) override;
 		void AddImageSampler(Texture* texture, uint32_t setNumber, uint32_t bindingNumber) override;
 		void AddImageSampler(Framebuffer* framebuffer, uint32_t setNumber, uint32_t bindingNumber) override;
-
 
 		// Get Descriptor Set Layout
 		VkDescriptorSetLayout GetLayout() { return m_DescriptorSetLayout; }

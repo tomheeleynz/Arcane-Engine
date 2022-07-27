@@ -15,4 +15,13 @@ namespace Arcane
 		default: return nullptr;
 		}
 	}
+
+	DescriptorSet* DescriptorSet::Create(DescriptorSetSpecs& setSpecs, std::vector<DescriptorLayoutSpecs> layoutSpecs)
+	{
+		switch (RendererAPI::Current())
+		{
+		case RendererAPIType::Vulkan: return new VulkanSet(setSpecs, layoutSpecs);
+		default: return nullptr;
+		}
+	}
 }

@@ -1,4 +1,5 @@
 #include "Arcane/Core/Application.h"
+#include "Arcane/Renderer/DescriptorSet.h"
 #include "VulkanShader.h"
 #include "VulkanContext.h"
 
@@ -80,11 +81,13 @@ namespace Arcane {
 		Reflect();
 	}
 
+	DescriptorSet* VulkanShader::GetMaterialDescriptor()
+	{
+		return m_MaterialSet;
+	}
+
 	void VulkanShader::Reflect() 
 	{
-		// Reflect Vertex Module
-		ReflectModule(m_VertexByteCode, m_VertexShaderModule);
-
 		// Reflect Fragment Module
 		ReflectModule(m_FragmentByteCode, m_FragShaderModule);
 	}
@@ -131,64 +134,37 @@ namespace Arcane {
 
 			for (int i = 0; i < sets.size(); i++) {
 				SpvReflectDescriptorSet* reflectSet = sets[i];
-				DescriptorSetLayoutData newData;
+				// DescriptorSetLayoutData newData;
 
-				// Resize binding stuff
-				newData.Bindings.resize(reflectSet->binding_count);
-				for (int j = 0; j < reflectSet->binding_count; j++) {
-					// Get the reflected binding
-					const SpvReflectDescriptorBinding& reflBinding = *(reflectSet->bindings[j]);
+				if (reflectSet->set == 2)
+				{
+					DescriptorSetSpecs newSetSpecs;
+					newSetSpecs.SetNumber = reflectSet->set;
 
-					// Get Descriptor Binding
-					VkDescriptorSetLayoutBinding& binding = newData.Bindings[j];
+					std::vector<DescriptorLayoutSpecs> bindings;
+					bindings.resize(reflectSet->binding_count);
 
-					// Load data into descriptor binding
-					binding.binding = reflBinding.binding;
-					binding.descriptorType = static_cast<VkDescriptorType>(reflBinding.descriptor_type);
-					binding.descriptorCount = 1;
-					binding.pImmutableSamplers = nullptr;
-					for (uint32_t i_dim = 0; i_dim < reflBinding.array.dims_count; ++i_dim) {
-						binding.descriptorCount *= reflBinding.array.dims[i_dim];
-					}
-					binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-				}
+					for (int j = 0; j < reflectSet->binding_count; j++) {
+						// Get the reflected binding
+						const SpvReflectDescriptorBinding& reflBinding = *(reflectSet->bindings[j]);
 
-				// Load other stuff 
-				newData.SetNumber = reflectSet->set;
-				newData.CreateInfo = {};
-				newData.CreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-				newData.CreateInfo.bindingCount = reflectSet->binding_count;
-				newData.CreateInfo.pBindings = newData.Bindings.data();
-				newData.CreateInfo.flags = 0;
-
-				// Actuall Create the descriptor set layout
-				if (vkCreateDescriptorSetLayout(logicalDevice, &newData.CreateInfo, nullptr, &newData.Layout) != VK_SUCCESS) {
-					printf("Reflected Shader Descriptor Set layout not created\n");
-				}
-
-				setLayouts.push_back(newData);
-			}
-
-			VkDescriptorPool descriptorPool = _context->GetPool();
-			// Create descriptor sets
-			for (int i = 0; i < setLayouts.size(); i++) {
-				DescriptorSetLayoutData& setLayout = setLayouts[i];
-
-				for (int j = 0; j < imageCount; j++) {
-					VkDescriptorSetAllocateInfo allocInfo = {};
-					VkDescriptorSet descriptorSet;
-					
-					allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-					allocInfo.pNext = nullptr;
-					allocInfo.descriptorPool = descriptorPool;
-					allocInfo.descriptorSetCount = 1;
-					allocInfo.pSetLayouts = &setLayout.Layout;
-
-					if (vkAllocateDescriptorSets(logicalDevice, &allocInfo, &descriptorSet)) {
-						printf("Failed to allocate descriptor set\n");
+						if (reflBinding.binding == 0)
+						{
+							// Create my struct for a binding
+							DescriptorLayoutSpecs& binding = bindings[j];
+							binding.Binding = reflBinding.binding;
+							// location
+							binding.Location = DescriptorLocation::FRAGMENT;
+							// descriptor count
+							binding.DescriptorCount = 1;
+							// material
+							binding.Name = "Material";
+							// Uniform Buffer
+							binding.Type = DescriptorType::UNIFORM_BUFFER;
+						}
 					}
 
-					m_DescriptorSets.push_back(descriptorSet);
+					m_MaterialSet = DescriptorSet::Create(newSetSpecs, bindings);
 				}
 			}
 		}
