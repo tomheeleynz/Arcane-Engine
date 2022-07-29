@@ -132,6 +132,8 @@ namespace Arcane {
 				printf("Failed to load reflect descriptor sets\n");
 			}
 
+			uint32_t offset = 0;
+			uint32_t size = 0;
 			for (int i = 0; i < sets.size(); i++) {
 				SpvReflectDescriptorSet* reflectSet = sets[i];
 				// DescriptorSetLayoutData newData;
@@ -143,22 +145,49 @@ namespace Arcane {
 
 					std::vector<DescriptorLayoutSpecs> bindings;
 					bindings.resize(reflectSet->binding_count);
-
 					for (int j = 0; j < reflectSet->binding_count; j++) {
 						// Get the reflected binding
 						const SpvReflectDescriptorBinding& reflBinding = *(reflectSet->bindings[j]);
+						ShaderVariable newVariable;
+						
+						for (int k = 0; k < reflBinding.type_description->member_count; k++)
+						{
+							// This gets the member variable
+							SpvReflectTypeDescription& memberDesc = reflBinding.type_description->members[k];
 
+							if (memberDesc.traits.numeric.vector.component_count == 3)
+							{
+								// This is a vector 3
+								newVariable.Type = ShaderVariableType::Vec3;
+								newVariable.offset = offset;
+								newVariable.size = sizeof(float) * 3;
+								newVariable.Name = memberDesc.struct_member_name;
+								
+								m_MaterialVariables.push_back(newVariable);
+								
+								size += sizeof(float) * 3;
+								offset += 3;
+							}
+						}
+
+						// Get the actual material variables
 						if (reflBinding.binding == 0)
 						{
 							// Create my struct for a binding
 							DescriptorLayoutSpecs& binding = bindings[j];
+							
+							// Binding number
 							binding.Binding = reflBinding.binding;
+							
 							// location
 							binding.Location = DescriptorLocation::FRAGMENT;
+							
 							// descriptor count
 							binding.DescriptorCount = 1;
+							
 							// material
 							binding.Name = "Material";
+							
 							// Uniform Buffer
 							binding.Type = DescriptorType::UNIFORM_BUFFER;
 						}
@@ -167,6 +196,7 @@ namespace Arcane {
 					m_MaterialSet = DescriptorSet::Create(newSetSpecs, bindings);
 				}
 			}
+			m_MaterialSize = size;
 		}
 	}
 }

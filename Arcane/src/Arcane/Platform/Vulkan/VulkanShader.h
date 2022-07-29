@@ -9,12 +9,13 @@
 
 namespace Arcane 
 {
-
 	class VulkanShader : public Shader
 	{
 	public:
 		VulkanShader(std::string vertexShader, std::string fragmentShader);
-		virtual std::vector<ShaderVariable> GetShaderVariables() { return m_ShaderVariables; };
+
+		virtual std::vector<ShaderVariable> GetMaterialVariables() { return m_MaterialVariables; };
+		virtual uint32_t GetMaterialSize() { return m_MaterialSize; }
 
 		VkShaderModule GetVertexShaderModule() { return m_VertexShaderModule; }
 		VkShaderModule GetFragmentShaderModule() { return m_FragShaderModule; }
@@ -28,10 +29,11 @@ namespace Arcane
 		VkShaderModule m_FragShaderModule;
 
 		DescriptorSet* m_MaterialSet = nullptr;
+		uint32_t m_MaterialSize = 0;
 
 		std::vector<char> m_VertexByteCode;
 		std::vector<char> m_FragmentByteCode;
 
-		std::vector<ShaderVariable> m_ShaderVariables;
+		std::vector<ShaderVariable> m_MaterialVariables;
 	};
 }

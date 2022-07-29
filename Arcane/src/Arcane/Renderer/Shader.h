@@ -9,14 +9,18 @@ namespace Arcane
 {
 	enum class ShaderVariableType
 	{
-		Vector3,
-		Sampler
+		Float,
+		Vec3,
+		Vec2,
+		Int
 	};
 
 	struct ShaderVariable
 	{
 		std::string Name;
 		ShaderVariableType Type;
+		uint32_t size;
+		uint32_t offset;
 	};
 
 	/////////////////////////////////////////////////////////////
@@ -26,7 +30,8 @@ namespace Arcane
 	{
 	public:
 		virtual DescriptorSet* GetMaterialDescriptor() = 0;
-		virtual std::vector<ShaderVariable> GetShaderVariables() = 0;
+		virtual std::vector<ShaderVariable> GetMaterialVariables() = 0;
+		virtual uint32_t GetMaterialSize() = 0;
 		static Shader* Create(std::string vertexShader, std::string fragmentShader);
 	private:
 
