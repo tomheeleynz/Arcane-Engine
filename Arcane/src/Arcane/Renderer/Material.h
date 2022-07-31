@@ -19,6 +19,9 @@ namespace Arcane
 		// Write Material Variables to material buffer
 		virtual void WriteVec3(uint32_t offset, glm::vec3 value) = 0;
 
+		// Update Material data from internal structures
+		virtual void UpdateMaterialData() = 0;
+
 		static Material* Create(Shader* shader);
 	private:
 	};

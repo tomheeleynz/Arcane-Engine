@@ -68,4 +68,9 @@ namespace Arcane {
 	{
 		s_RendererAPI->RenderMesh(buffer, pipeline, descriptorSets);
 	}
+
+	void Renderer::RenderMeshWithMaterial(VertexBuffer* buffer, Pipeline* pipeline, Material* material)
+	{
+
+	}
 }

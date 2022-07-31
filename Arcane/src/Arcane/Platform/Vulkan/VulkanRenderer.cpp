@@ -272,6 +272,10 @@ namespace Arcane {
 		}
 	}
 
+	void VulkanRenderer::RenderMeshWithMaterial(VertexBuffer* buffer, Pipeline* pipeline, Material* material)
+	{
+	}
+
 	void VulkanRenderer::RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets)
 	{
 		Application& app = Application::Get();

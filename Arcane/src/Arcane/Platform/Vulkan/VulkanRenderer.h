@@ -26,6 +26,7 @@ namespace Arcane {
 		void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets);
 
 		void RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets) override;
+		void RenderMeshWithMaterial(VertexBuffer* buffer, Pipeline* pipeline, Material* material) override;
 	private:
 
 	};

@@ -74,6 +74,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 				if (variable.Type == Arcane::ShaderVariableType::Vec3)
 				{
 					glm::vec3 currentValue = material->GetVec3(variable.offset);
+
 					if (currentValue.x < 0)
 						currentValue = {0.0f, 0.0f, 0.0f};
 

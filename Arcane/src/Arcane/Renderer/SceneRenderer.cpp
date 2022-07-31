@@ -56,6 +56,9 @@ namespace Arcane
 		// Transform for meshes
 		std::vector<TransformComponent> MeshTransforms;
 
+		// Materials for meshses
+		std::vector<Material*> materials;
+
 		// Camera to render with
 		Camera* SceneCamera;
 	};
@@ -256,12 +259,15 @@ namespace Arcane
 
 	void SceneRenderer::GeometryPass()
 	{
+
 		// Update any per pass resources
 		Renderer::BeginRenderPass(s_Data.GeometryRenderPass);
 		{	
 			for (int i = 0; i < s_Data.Meshes.size(); i++)
 			{
 				Mesh* currentMesh = s_Data.Meshes[i];
+				Material* material = s_Data.materials[i];
+				material->UpdateMaterialData();
 
 				// Create Transform Component
 				TransformComponent& currentMeshComponent = s_Data.MeshTransforms[i];
@@ -277,7 +283,7 @@ namespace Arcane
 
 				for (int j = 0; j < currentMesh->GetSubMeshes().size(); j++) {
 					SubMesh* currentSubMesh = currentMesh->GetSubMeshes()[j];
-					Renderer::RenderMesh(currentSubMesh->GetVertexBuffer(), s_Data.GeometryPipeline, {s_Data.GlobalDescriptorSet, s_Data.ObjectDescriptorSet});
+					Renderer::RenderMesh(currentSubMesh->GetVertexBuffer(), s_Data.GeometryPipeline, {s_Data.GlobalDescriptorSet, s_Data.ObjectDescriptorSet, material->GetDescriptorSet()});
 				}
 
 			}
@@ -304,12 +310,14 @@ namespace Arcane
 
 		s_Data.Meshes.clear();
 		s_Data.MeshTransforms.clear();
+		s_Data.materials.clear();
 	}
 
-	void SceneRenderer::SubmitMesh(Mesh* mesh, TransformComponent& transform) 
+	void SceneRenderer::SubmitMesh(Mesh* mesh, TransformComponent& transform, Material* material) 
 	{
 		s_Data.Meshes.push_back(mesh);
 		s_Data.MeshTransforms.push_back(transform);
+		s_Data.materials.push_back(material);
 	}
 
 	void SceneRenderer::SetCamera(Camera* camera)

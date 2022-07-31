@@ -12,6 +12,7 @@
 #include "UniformBuffer.h"
 #include "Camera.h"
 #include "DescriptorSet.h"
+#include "Material.h"
 
 namespace Arcane
 {
@@ -25,7 +26,8 @@ namespace Arcane
 		void RenderScene();
 
 		void SetCamera(Camera* camera);
-		void SubmitMesh(Mesh* mesh, TransformComponent& component);
+		void SubmitMesh(Mesh* mesh, TransformComponent& component, Material* material);
+
 
 		void ResizeScene(uint32_t width, uint32_t height);
 	private:

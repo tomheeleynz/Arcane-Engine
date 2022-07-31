@@ -6,6 +6,7 @@
 #include "Pipeline.h"
 #include "RendererAPI.h"
 #include "RenderPass.h"
+#include "Material.h"
 
 namespace Arcane {
 
@@ -28,6 +29,7 @@ namespace Arcane {
 
 		// Render Mesh
 		static void RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets);
+		static void RenderMeshWithMaterial(VertexBuffer* buffer, Pipeline* pipeline, Material* material);
 	private:
 	};
 }

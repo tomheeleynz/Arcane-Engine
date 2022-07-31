@@ -34,7 +34,7 @@ void main() {
 	vec3 specular = specularStrength * spec * lightColor; 
 
 	// Calculate Result
-	vec3 result = (ambient + diffuse + specular) * vec3(1.0f, 0.0f, 0.0f);
+	vec3 result = (ambient + diffuse + specular) * material.color;
 	
 	// Final Color
 	Color = vec4(result, 1.0f);

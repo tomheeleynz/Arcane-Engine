@@ -21,12 +21,13 @@ namespace Arcane
 	{
 		// Render Mesh
 		{
-			auto view = m_Registry.view<MeshComponent, TransformComponent>();
+			auto view = m_Registry.view<MeshComponent, TransformComponent, MeshRendererComponent>();
 			for (auto& entity : view) 
 			{
 				auto& mesh = view.get<MeshComponent>(entity);
 				auto& transform = view.get<TransformComponent>(entity);
-				m_SceneRenderer->SubmitMesh(mesh.mesh, transform);
+				auto& meshRenderer = view.get<MeshRendererComponent>(entity);
+				m_SceneRenderer->SubmitMesh(mesh.mesh, transform, meshRenderer.material);
 			}
 		}
 		m_SceneRenderer->RenderScene();

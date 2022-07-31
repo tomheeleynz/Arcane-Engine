@@ -19,7 +19,11 @@ namespace Arcane
 		// Write Material Variables to material buffer
 		virtual void WriteVec3(uint32_t offset, glm::vec3 value) override;
 
+		void UpdateMaterialData() override;
+
 		std::vector<ShaderVariable> GetMaterialVariables();
+
+
 	private:
 		Shader* m_Shader;
 		DescriptorSet* m_DescriptorSet;
