@@ -6,6 +6,16 @@ layout(location = 2) in vec3 fragCameraPos;
 
 layout(location = 0) out vec4 Color;
 
+// Directional Light Struct
+struct DirectionalLight {
+	alignas(16) vec3 direction;
+	alignas(16) vec3 color;
+};
+
+layout(set = 1, binding = 0) uniform Lights {
+	DirectionalLight dirLight;
+} lights;
+
 // Material Structure
 layout (set = 2, binding = 0) uniform Material {
 	vec3 color;
@@ -13,7 +23,7 @@ layout (set = 2, binding = 0) uniform Material {
 
 void main() {
 	// Single Light Color
-	vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
+	vec3 lightColor = lights.dirLight.color;
 	
 	// Ambient Lighting
 	float ambientStength = 0.1f;
@@ -39,3 +49,4 @@ void main() {
 	// Final Color
 	Color = vec4(result, 1.0f);
 }
+

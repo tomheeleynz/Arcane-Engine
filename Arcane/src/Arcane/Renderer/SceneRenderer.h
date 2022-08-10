@@ -28,6 +28,8 @@ namespace Arcane
 		void SetCamera(Camera* camera);
 		void SubmitMesh(Mesh* mesh, TransformComponent& component, Material* material);
 
+		// Lighting code
+		void SetDirectionalLight(Light& light, TransformComponent& transform);
 
 		void ResizeScene(uint32_t width, uint32_t height);
 	private:

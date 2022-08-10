@@ -16,7 +16,7 @@ layout (set = 0, binding = 0) uniform Camera {
 } camera;
 
 // Per object data
-layout (set = 1, binding = 0) uniform Model {
+layout (set = 3, binding = 0) uniform Model {
 	mat4 transform;
 } model;
 

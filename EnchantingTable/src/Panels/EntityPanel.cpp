@@ -62,6 +62,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	if (entity.HasComponent<MeshComponent>()) 
 	{
 		DrawComponent<MeshComponent>("Mesh", entity, [](auto& component) {
+		
 		});
 	}
 
@@ -82,6 +83,19 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 					material->WriteVec3(variable.offset, currentValue);
 				}
 			}
+		});
+	}
+
+	if (entity.HasComponent<Light>())
+	{
+		DrawComponent<Light>("Light", entity, [](auto& component) {
+			if (component.Type == LightType::DIRECTIONAL) {
+				ImGui::Text("Directional");
+			}
+
+			glm::vec3 currentValue = component.color;
+			ImGui::ColorEdit3("Color", glm::value_ptr(currentValue));
+			component.color = currentValue;
 		});
 	}
 }

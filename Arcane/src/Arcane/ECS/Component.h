@@ -7,6 +7,12 @@
 
 namespace Arcane 
 {
+	enum class LightType
+	{
+		DIRECTIONAL,
+		POINT
+	};
+
 	struct TagComponent
 	{
 		std::string tag;
@@ -28,5 +34,11 @@ namespace Arcane
 	struct MeshRendererComponent
 	{
 		Material* material;
+	};
+
+	struct Light 
+	{
+		LightType Type;
+		glm::vec3 color;
 	};
 }

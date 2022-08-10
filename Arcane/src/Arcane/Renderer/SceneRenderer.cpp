@@ -18,6 +18,12 @@ namespace Arcane
 		glm::mat4 transform;
 	};
 
+	struct DirectionaLight
+	{
+		alignas(16) glm::vec3 direction;
+		alignas(16) glm::vec3 color;
+	};
+
 	struct SceneRendererData
 	{
 		// Global Render Data
@@ -39,7 +45,9 @@ namespace Arcane
 		RenderPass* GeometryRenderPass;
 		Pipeline* GeometryPipeline;
 		DescriptorSet* ObjectDescriptorSet;
+		DescriptorSet* GeometryPassDescriptorSet;
 		UniformBuffer* ObjectUniformBuffer;
+		UniformBuffer* GeometryPassUniformBuffer;
 		Shader* GeometryShader;
 		VertexDescriptor* GeometryVertexDescriptor;
 
@@ -61,6 +69,10 @@ namespace Arcane
 
 		// Camera to render with
 		Camera* SceneCamera;
+
+		// Scene Lighting Stuff
+		Light directionaLight;
+		TransformComponent directionalLightTransform;
 	};
 
 	static SceneRendererData s_Data;
@@ -113,11 +125,11 @@ namespace Arcane
 			VertexType::float3,
 			VertexType::float3,
 			VertexType::float2
-			});
+		});
 
 		// Create Object Descriptor Set
 		DescriptorSetSpecs objectDescriptorSetSpecs;
-		objectDescriptorSetSpecs.SetNumber = 1;
+		objectDescriptorSetSpecs.SetNumber = 3;
 		s_Data.ObjectDescriptorSet = DescriptorSet::Create(
 			objectDescriptorSetSpecs, {
 				{0, 1, DescriptorType::UNIFORM_BUFFER, "Model", DescriptorLocation::VERTEX}
@@ -127,6 +139,19 @@ namespace Arcane
 		s_Data.ObjectUniformBuffer = UniformBuffer::Create(sizeof(Model));
 		s_Data.ObjectDescriptorSet->AddUniformBuffer(s_Data.ObjectUniformBuffer, 1, 0);
 
+		// Create Geomertry pass descriptor
+		DescriptorSetSpecs geometryPassDescriptorSetSpecs;
+		geometryPassDescriptorSetSpecs.SetNumber = 1;
+		s_Data.GeometryPassDescriptorSet = DescriptorSet::Create(
+			geometryPassDescriptorSetSpecs, {
+				{0, 1, DescriptorType::UNIFORM_BUFFER, "Lights", DescriptorLocation::FRAGMENT}
+			}
+		);
+
+		s_Data.GeometryPassUniformBuffer = UniformBuffer::Create(sizeof(DirectionaLight));
+		s_Data.GeometryPassDescriptorSet->AddUniformBuffer(s_Data.GeometryPassUniformBuffer, 1, 0);
+
+
 		// Create Pipeline
 		PipelineSpecification geometrySpecs;
 		geometrySpecs.renderPass = s_Data.GeometryRenderPass;
@@ -134,7 +159,7 @@ namespace Arcane
 		geometrySpecs.descriptor = s_Data.GeometryVertexDescriptor;
 
 		if (s_Data.GeometryShader->GetMaterialDescriptor() != nullptr)
-			geometrySpecs.DescriptorSets = {s_Data.GlobalDescriptorSet, s_Data.ObjectDescriptorSet, s_Data.GeometryShader->GetMaterialDescriptor()};
+			geometrySpecs.DescriptorSets = {s_Data.GlobalDescriptorSet, s_Data.GeometryPassDescriptorSet, s_Data.GeometryShader->GetMaterialDescriptor(), s_Data.ObjectDescriptorSet};
 		else 
 			geometrySpecs.DescriptorSets = { s_Data.GlobalDescriptorSet, s_Data.ObjectDescriptorSet };
 		
@@ -167,12 +192,12 @@ namespace Arcane
 
 		// Create Descriptor Sets
 		DescriptorSetSpecs objectSetSpecs;
-		objectSetSpecs.SetNumber = 1;
+		objectSetSpecs.SetNumber = 3;
 		s_Data.ObjectDescriptorSet = DescriptorSet::Create(objectSetSpecs, {
 			{0, 1, DescriptorType::UNIFORM_BUFFER, "Transform Data", DescriptorLocation::VERTEX}
 		});
 		s_Data.ObjectUniformBuffer = UniformBuffer::Create(sizeof(Model));
-		s_Data.ObjectDescriptorSet->AddUniformBuffer(s_Data.ObjectUniformBuffer, 1, 0);
+		s_Data.ObjectDescriptorSet->AddUniformBuffer(s_Data.ObjectUniformBuffer, 3, 0);
 
 
 		PipelineSpecification gridSpecs;
@@ -259,6 +284,10 @@ namespace Arcane
 
 	void SceneRenderer::GeometryPass()
 	{
+		DirectionaLight currentDirLight;
+		currentDirLight.direction = s_Data.directionalLightTransform.pos;
+		currentDirLight.color = s_Data.directionaLight.color;
+		s_Data.GeometryPassUniformBuffer->WriteData((void*)&currentDirLight, sizeof(DirectionaLight));
 
 		// Update any per pass resources
 		Renderer::BeginRenderPass(s_Data.GeometryRenderPass);
@@ -283,7 +312,7 @@ namespace Arcane
 
 				for (int j = 0; j < currentMesh->GetSubMeshes().size(); j++) {
 					SubMesh* currentSubMesh = currentMesh->GetSubMeshes()[j];
-					Renderer::RenderMesh(currentSubMesh->GetVertexBuffer(), s_Data.GeometryPipeline, {s_Data.GlobalDescriptorSet, s_Data.ObjectDescriptorSet, material->GetDescriptorSet()});
+					Renderer::RenderMesh(currentSubMesh->GetVertexBuffer(), s_Data.GeometryPipeline, {s_Data.GlobalDescriptorSet, s_Data.GeometryPassDescriptorSet,  material->GetDescriptorSet(), s_Data.ObjectDescriptorSet});
 				}
 
 			}
@@ -328,5 +357,11 @@ namespace Arcane
 	void SceneRenderer::ResizeScene(uint32_t width, uint32_t height) {
 		// s_Data.GeometryFramebuffer->Resize(width, height);
 		s_Data.CompositeFramebuffer->Resize(width, height);
+	}
+
+	void SceneRenderer::SetDirectionalLight(Light& light, TransformComponent& transform)
+	{
+		s_Data.directionaLight = light;
+		s_Data.directionalLightTransform = transform;
 	}
 }

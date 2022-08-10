@@ -30,7 +30,6 @@ void ScenePanel::DrawNode(Arcane::Entity& entity)
 
 	if (ImGui::TreeNode(tag.c_str()))
 	{
-
 		m_SelectedEntity = entity;
 		ImGui::TreePop();
 	}

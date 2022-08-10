@@ -53,6 +53,17 @@ namespace Arcane
 					newRendererComponent.material = Material::Create(ShaderLibrary::GetShader("Mesh"));
 					newEntity->AddComponent<MeshRendererComponent>(newRendererComponent);
 				}
+				else if (name == "Light") {
+					Light light;
+
+					int lightType = element["type"];
+					if (lightType == 0) {
+						light.Type = LightType::DIRECTIONAL;
+					}
+
+					light.color = { element["color"][0], element["color"][1], element["color"][2]};
+					newEntity->AddComponent<Light>(light);
+				}
 			}
 		}
 	
