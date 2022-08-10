@@ -12,7 +12,8 @@ namespace Arcane
 		Float,
 		Vec3,
 		Vec2,
-		Int
+		Int,
+		Sampler
 	};
 
 	struct ShaderVariable
@@ -21,6 +22,7 @@ namespace Arcane
 		ShaderVariableType Type;
 		uint32_t size;
 		uint32_t offset;
+		uint32_t binding;
 	};
 
 	/////////////////////////////////////////////////////////////

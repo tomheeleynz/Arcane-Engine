@@ -22,6 +22,8 @@ layout (set = 2, binding = 0) uniform Material {
 	vec3 color;
 } material;
 
+layout (set = 2, binding = 1) uniform sampler2D albedo;
+
 void main() {
 	// Single Light Color
 	vec3 lightColor = lights.dirLight.color;
@@ -46,6 +48,9 @@ void main() {
 
 	// Calculate Result
 	vec3 result = (ambient + diffuse + specular) * material.color;
+
+	vec4 test = texture(albedo, fragTexCoord);
+	test = test;
 	
 	// Final Color
 	Color = vec4(result, 1.0f);

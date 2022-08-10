@@ -70,7 +70,6 @@ namespace Arcane
                 vec.x = mesh->mTextureCoords[0][i].x;
                 vec.y = mesh->mTextureCoords[0][i].y;
                 vertex.texture = vec;
-     
             }
             else
                 vertex.texture = glm::vec2(0.0f, 0.0f);

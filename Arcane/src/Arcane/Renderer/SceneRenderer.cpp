@@ -71,7 +71,7 @@ namespace Arcane
 		Camera* SceneCamera;
 
 		// Scene Lighting Stuff
-		Light directionaLight;
+		LightComponent directionaLight;
 		TransformComponent directionalLightTransform;
 	};
 
@@ -329,7 +329,6 @@ namespace Arcane
 		
 		// Need to to this for vulkan coord system
 		currentFrameCameraData.proj[1][1] *= -1;
-
 		currentFrameCameraData.view = s_Data.SceneCamera->GetView();
 		currentFrameCameraData.cameraPosition = s_Data.SceneCamera->GetPosition();
 		s_Data.GlobalUniformBuffer->WriteData((void*)&currentFrameCameraData, sizeof(CameraData));
@@ -355,11 +354,14 @@ namespace Arcane
 	}
 
 	void SceneRenderer::ResizeScene(uint32_t width, uint32_t height) {
-		// s_Data.GeometryFramebuffer->Resize(width, height);
+		// Update Geo Framebuffer
+		s_Data.GeometryFramebuffer->Resize(width, height);
+		s_Data.CompositeDescriptorSet->AddImageSampler(s_Data.GeometryFramebuffer, 1, 0);
+
 		s_Data.CompositeFramebuffer->Resize(width, height);
 	}
 
-	void SceneRenderer::SetDirectionalLight(Light& light, TransformComponent& transform)
+	void SceneRenderer::SetDirectionalLight(LightComponent& light, TransformComponent& transform)
 	{
 		s_Data.directionaLight = light;
 		s_Data.directionalLightTransform = transform;

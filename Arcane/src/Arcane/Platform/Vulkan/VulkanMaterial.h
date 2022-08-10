@@ -2,6 +2,7 @@
 
 #include "Arcane/Renderer/Material.h"
 #include "VulkanShader.h"
+#include "VulkanTexture.h"
 
 namespace Arcane
 {
@@ -22,12 +23,14 @@ namespace Arcane
 		void UpdateMaterialData() override;
 
 		std::vector<ShaderVariable> GetMaterialVariables();
-
-
 	private:
+		// Things to render material
 		Shader* m_Shader;
 		DescriptorSet* m_DescriptorSet;
 		UniformBuffer* m_UniformBuffer;
+
+		// Memory to hold material variables
 		float* m_UniformBufferMemory;
+		std::vector<VulkanTexture> m_MaterialTextures;
 	};
 }

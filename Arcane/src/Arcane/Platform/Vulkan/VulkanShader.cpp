@@ -149,7 +149,7 @@ namespace Arcane {
 						// Get the reflected binding
 						const SpvReflectDescriptorBinding& reflBinding = *(reflectSet->bindings[j]);
 						ShaderVariable newVariable;
-						
+
 						for (int k = 0; k < reflBinding.type_description->member_count; k++)
 						{
 							// This gets the member variable
@@ -162,33 +162,42 @@ namespace Arcane {
 								newVariable.offset = offset;
 								newVariable.size = sizeof(float) * 3;
 								newVariable.Name = memberDesc.struct_member_name;
-								
+								newVariable.binding = reflBinding.binding;
+
 								m_MaterialVariables.push_back(newVariable);
-								
+
 								size += sizeof(float) * 3;
 								offset += 3;
 							}
 						}
 
-						// Get the actual material variables
-						if (reflBinding.binding == 0)
-						{
-							// Create my struct for a binding
-							DescriptorLayoutSpecs& binding = bindings[j];
-							
-							// Binding number
-							binding.Binding = reflBinding.binding;
-							
-							// location
-							binding.Location = DescriptorLocation::FRAGMENT;
-							
-							// descriptor count
-							binding.DescriptorCount = 1;
-							
-							// material
-							binding.Name = "Material";
-							
-							// Uniform Buffer
+						if (reflBinding.descriptor_type == SpvReflectDescriptorType::SPV_REFLECT_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER) {
+							newVariable.Type = ShaderVariableType::Sampler;
+							newVariable.binding = reflBinding.binding;
+							m_MaterialVariables.push_back(newVariable);
+							// Process that material variable
+						}
+
+						// Create my struct for a binding
+						DescriptorLayoutSpecs& binding = bindings[j];
+
+						// Binding number
+						binding.Binding = reflBinding.binding;
+
+						// location
+						binding.Location = DescriptorLocation::FRAGMENT;
+
+						// descriptor count
+						binding.DescriptorCount = 1;
+
+						// material
+						binding.Name = "Material";
+
+						if (reflBinding.descriptor_type == SpvReflectDescriptorType::SPV_REFLECT_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER) {
+							binding.Type = DescriptorType::SAMPLER;
+						}
+
+						if (reflBinding.descriptor_type == SpvReflectDescriptorType::SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER) {
 							binding.Type = DescriptorType::UNIFORM_BUFFER;
 						}
 					}

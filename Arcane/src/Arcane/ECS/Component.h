@@ -36,9 +36,9 @@ namespace Arcane
 		Material* material;
 	};
 
-	struct Light 
+	struct LightComponent
 	{
-		LightType Type;
+		LightType type;
 		glm::vec3 color;
 	};
 }

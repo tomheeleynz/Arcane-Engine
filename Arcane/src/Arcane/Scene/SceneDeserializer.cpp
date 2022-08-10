@@ -54,15 +54,15 @@ namespace Arcane
 					newEntity->AddComponent<MeshRendererComponent>(newRendererComponent);
 				}
 				else if (name == "Light") {
-					Light light;
+					LightComponent light;
 
 					int lightType = element["type"];
 					if (lightType == 0) {
-						light.Type = LightType::DIRECTIONAL;
+						light.type = LightType::DIRECTIONAL;
 					}
 
 					light.color = { element["color"][0], element["color"][1], element["color"][2]};
-					newEntity->AddComponent<Light>(light);
+					newEntity->AddComponent<LightComponent>(light);
 				}
 			}
 		}

@@ -86,10 +86,10 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		});
 	}
 
-	if (entity.HasComponent<Light>())
+	if (entity.HasComponent<LightComponent>())
 	{
-		DrawComponent<Light>("Light", entity, [](auto& component) {
-			if (component.Type == LightType::DIRECTIONAL) {
+		DrawComponent<LightComponent>("Light", entity, [](auto& component) {
+			if (component.type == LightType::DIRECTIONAL) {
 				ImGui::Text("Directional");
 			}
 

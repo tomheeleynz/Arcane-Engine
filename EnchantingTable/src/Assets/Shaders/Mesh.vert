@@ -6,7 +6,8 @@ layout (location = 2) in vec2 aTexCoord;
 
 layout (location = 0) out vec3 fragNormal;
 layout (location = 1) out vec3 fragPos;
-layout (location = 2) out vec3 fragCameraPos;
+layout (location = 2) out vec2 fragTexCoord;
+layout (location = 3) out vec3 fragCameraPos;
  
 // Global Frame data
 layout (set = 0, binding = 0) uniform Camera {
@@ -24,5 +25,6 @@ void main() {
 	gl_Position = camera.proj * camera.view * model.transform * vec4(aPos, 1.0);
 	fragNormal = aNormal;
 	fragPos = vec3(model.transform * vec4(aPos, 1.0));
+	fragTexCoord = aTexCoord;
 }
 

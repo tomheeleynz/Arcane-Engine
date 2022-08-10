@@ -21,14 +21,14 @@ namespace Arcane
 	{
 		// Add Lights to scene
 		{
-			auto view = m_Registry.view<TransformComponent, Light>();
+			auto view = m_Registry.view<TransformComponent, LightComponent>();
 
 			for (auto& entity : view) 
 			{
-				auto& light = view.get<Light>(entity);
+				auto& light = view.get<LightComponent>(entity);
 				auto& transform = view.get<TransformComponent>(entity);
 				
-				if (light.Type == LightType::DIRECTIONAL) 
+				if (light.type == LightType::DIRECTIONAL) 
 				{
 					m_SceneRenderer->SetDirectionalLight(light, transform);
 				}
