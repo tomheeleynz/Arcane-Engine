@@ -8,9 +8,10 @@
 #include "Clock.h"
 #include "Window.h"
 #include "Arcane/ImGui/ImGuiLayer.h"
+#include "Arcane/Assets/AssetDatabase.h"
 
-namespace Arcane {
-
+namespace Arcane 
+{
 	struct ApplicationSpecifications
 	{
 		std::string Name;
@@ -42,9 +43,12 @@ namespace Arcane {
 		Window* m_Window;
 		static Application* s_Instance;
 		std::vector<Layer*> m_LayerStack;
+
 		bool m_bIsRunning = true;
 		ImGuiLayer* m_ImGuiLayer;
 		CClock* m_Clock;
 		bool m_ImguiEnabled = false;
+
+		AssetDatabase* m_AssetDatabase;
 	};
 }
