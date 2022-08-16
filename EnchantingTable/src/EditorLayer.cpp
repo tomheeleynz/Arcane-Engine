@@ -156,6 +156,17 @@ void EditorLayer::OnImGuiRender()
 		m_ViewportSize = { viewportSize.x, viewportSize.y };
 		
 		Arcane::UI::Image(m_Viewport, viewportSize);
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
+
+			if (payload != nullptr) {
+				int assetID = *static_cast<int*>(payload->Data);
+			}
+			ImGui::EndDragDropTarget();
+		}
+
 	}
 	ImGui::End();
 	

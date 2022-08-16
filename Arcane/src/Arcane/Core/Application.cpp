@@ -30,6 +30,14 @@ namespace Arcane {
 		}
 
 		m_Clock = new CClock();
+
+		// Generate Asset Database on application startup
+		m_AssetDatabase = new AssetDatabase("./src/Assets");
+		bool assetDatabaseGenerated = m_AssetDatabase->GenerateDatabase();
+
+		if (!assetDatabaseGenerated) {
+			std::cout << "Asset Database Not Created\n";
+		}
 	}
 
 	void Application::RenderImGui()
