@@ -12,6 +12,10 @@ public:
 
 	void Update();
 	void DrawComponents(Arcane::Entity& entity);
+
+private:
+	void AddMeshComponent(Arcane::Entity& entity);
+
 private:
 	Arcane::Entity m_Context;
 };

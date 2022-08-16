@@ -39,6 +39,8 @@ namespace Arcane
 
 		// ImGui
 		void RenderImGui();
+
+		AssetDatabase& GetAssetDatabase() { return *m_AssetDatabase; }
 	private:
 		Window* m_Window;
 		static Application* s_Instance;
