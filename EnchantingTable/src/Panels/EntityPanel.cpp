@@ -92,13 +92,13 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 				{
 					if (variable.Type == Arcane::ShaderVariableType::Vec3)
 					{
-						glm::vec3 currentValue = material->GetVec3(variable.offset);
+						glm::vec3 currentValue = material->GetVec3(variable.binding, variable.offset);
 
 						if (currentValue.x < 0)
 							currentValue = {0.0f, 0.0f, 0.0f};
 
 						ImGui::ColorEdit3(variable.Name.c_str(), glm::value_ptr(currentValue));
-						material->WriteVec3(variable.offset, currentValue);
+						material->WriteVec3(variable.binding, variable.offset, currentValue);
 					}
 				}
 			}

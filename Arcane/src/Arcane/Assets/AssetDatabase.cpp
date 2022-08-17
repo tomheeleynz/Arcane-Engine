@@ -58,7 +58,9 @@ namespace Arcane
 			m_Assets[assetID] = meshAsset;
 		}
 		else if (currentAssetPath.extension() == ".fbx") {
-			// Generate Mesh Asset
+			MeshAsset* meshAsset = new MeshAsset(currentAssetPath);
+			meshAsset->SetID(assetID);
+			m_Assets[assetID] = meshAsset;
 		}
 		return true;
 	}

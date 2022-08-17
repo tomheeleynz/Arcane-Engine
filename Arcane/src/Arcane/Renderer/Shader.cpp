@@ -26,7 +26,7 @@ namespace Arcane
 		// Load Shaders
 		m_Shaders["Mesh"] = Shader::Create(
 			".\\src\\Assets\\Shaders\\MeshVert.spv",
-			".\\src\\Assets\\Shaders\\MeshTextured.spv"
+			".\\src\\Assets\\Shaders\\MeshFrag.spv"
 		);
 		
 		m_Shaders["Grid"] = Shader::Create(

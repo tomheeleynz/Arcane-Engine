@@ -14,10 +14,10 @@ namespace Arcane
 		virtual UniformBuffer* GetUniformBuffer() = 0;
 
 		// Get Material Variables from material buffer
-		virtual glm::vec3 GetVec3(uint32_t offset) = 0;
+		virtual glm::vec3 GetVec3(int binding, uint32_t offset) = 0;
 		
 		// Write Material Variables to material buffer
-		virtual void WriteVec3(uint32_t offset, glm::vec3 value) = 0;
+		virtual void WriteVec3(int binding, uint32_t offset, glm::vec3 value) = 0;
 
 		// Update Material data from internal structures
 		virtual void UpdateMaterialData() = 0;

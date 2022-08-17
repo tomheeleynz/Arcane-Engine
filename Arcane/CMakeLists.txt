@@ -6,6 +6,7 @@ file(GLOB RENDERER_FILES "src/Arcane/Renderer/*.h" "src/Arcane/Renderer/*.cpp")
 file(GLOB ECS_FILES "src/Arcane/ECS/*.h" "src/Arcane/ECS/*.cpp")
 file(GLOB SCENE_FILES "src/Arcane/Scene/*.h" "src/Arcane/Scene/*.cpp")
 file(GLOB UTIL_FILES "src/Arcane/Utils/*.h" "src/Arcane/Utils/*.cpp")
+file(GLOB ASSET_MANAGER_FILES "src/Arcane/Assets/*.h" "src/Arcane/Assets/*.cpp")
 
 if (WIN32 OR (UNIX AND NOT APPLE))
 	# Find Vulkan
@@ -50,6 +51,7 @@ add_library(
 	${ECS_FILES}
 	${SCENE_FILES}
 	${UTIL_FILES}
+	${ASSET_MANAGER_FILES}
 )
 
 # Link Source Directories

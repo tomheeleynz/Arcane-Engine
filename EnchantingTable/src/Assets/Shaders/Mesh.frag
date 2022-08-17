@@ -24,7 +24,7 @@ layout (set = 2, binding = 0) uniform Material {
 
 void main() {
 	// Single Light Color
-	vec3 lightColor = lights.dirLight.color;
+	vec3 lightColor = vec3(1.0, 1.0, 1.0);
 	
 	// Ambient Lighting
 	float ambientStength = 0.1f;
