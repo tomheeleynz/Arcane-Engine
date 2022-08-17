@@ -15,13 +15,18 @@ void ScenePanel::Update()
 {
 	ImGui::Begin("Scene");
 	{
+		if (ImGui::Button("Add to scene"))
+			m_Context->CreateEntity("New Entity");
+
 		m_Context->m_Registry.each([this](auto entity) {
 			Arcane::Entity Entity(entity, this->m_Context);
 			DrawNode(Entity);
 		});
 	}
 	ImGui::End();
+
 }
+
 
 void ScenePanel::DrawNode(Arcane::Entity& entity) 
 {

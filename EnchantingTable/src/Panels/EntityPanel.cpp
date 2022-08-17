@@ -28,6 +28,10 @@ void EntityPanel::Update()
 {
 	ImGui::Begin("Entity");
 	{
+		if (ImGui::Button("Add Component")) {
+			AddMeshComponent(m_Context);
+		}
+
 		if (m_Context) 
 		{
 			DrawComponents(m_Context);
@@ -62,7 +66,19 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	if (entity.HasComponent<MeshComponent>()) 
 	{
 		DrawComponent<MeshComponent>("Mesh", entity, [](auto& component) {
-		
+			// Create something i can add to 
+			ImGui::Text("Mesh");
+			if (ImGui::BeginDragDropTarget())
+			{
+				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
+
+				if (payload != nullptr) {
+					int assetID = *static_cast<int*>(payload->Data);
+					MeshAsset* meshAsset = static_cast<MeshAsset*>(Arcane::Application::Get().GetAssetDatabase().GetAsset(assetID));
+					component.mesh = meshAsset->GetMesh();
+				}
+				ImGui::EndDragDropTarget();
+			}
 		});
 	}
 
@@ -70,17 +86,20 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	{
 		DrawComponent<MeshRendererComponent>("Mesh Renderer", entity, [](auto& component) {
 			Material* material = component.material;
-			for (Arcane::ShaderVariable variable : material->GetMaterialVariables())
-			{
-				if (variable.Type == Arcane::ShaderVariableType::Vec3)
+
+			if (material != nullptr) {
+				for (Arcane::ShaderVariable variable : material->GetMaterialVariables())
 				{
-					glm::vec3 currentValue = material->GetVec3(variable.offset);
+					if (variable.Type == Arcane::ShaderVariableType::Vec3)
+					{
+						glm::vec3 currentValue = material->GetVec3(variable.offset);
 
-					if (currentValue.x < 0)
-						currentValue = {0.0f, 0.0f, 0.0f};
+						if (currentValue.x < 0)
+							currentValue = {0.0f, 0.0f, 0.0f};
 
-					ImGui::ColorEdit3(variable.Name.c_str(), glm::value_ptr(currentValue));
-					material->WriteVec3(variable.offset, currentValue);
+						ImGui::ColorEdit3(variable.Name.c_str(), glm::value_ptr(currentValue));
+						material->WriteVec3(variable.offset, currentValue);
+					}
 				}
 			}
 		});
@@ -98,5 +117,15 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 			component.color = currentValue;
 		});
 	}
+}
+
+void EntityPanel::AddMeshComponent(Arcane::Entity& entity)
+{
+	Arcane::MeshComponent meshComponent;
+	Arcane::MeshRendererComponent meshRendererComponent;
+
+	meshRendererComponent.material = Arcane::Material::Create(Arcane::ShaderLibrary::GetShader("Mesh"));
+	entity.AddComponent<Arcane::MeshComponent>(meshComponent);
+	entity.AddComponent<Arcane::MeshRendererComponent>(meshRendererComponent);
 }
 

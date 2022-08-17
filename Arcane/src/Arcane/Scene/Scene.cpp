@@ -14,6 +14,7 @@ namespace Arcane
 		entt::entity newHandle = m_Registry.create();
 		Entity* newEntity = new Entity(newHandle, this);
 		newEntity->AddComponent<TagComponent>(name);
+		newEntity->AddComponent<TransformComponent>();
 		return newEntity;
 	}
 
@@ -43,7 +44,9 @@ namespace Arcane
 				auto& mesh = view.get<MeshComponent>(entity);
 				auto& transform = view.get<TransformComponent>(entity);
 				auto& meshRenderer = view.get<MeshRendererComponent>(entity);
-				m_SceneRenderer->SubmitMesh(mesh.mesh, transform, meshRenderer.material);
+
+				if (mesh.mesh != nullptr)
+					m_SceneRenderer->SubmitMesh(mesh.mesh, transform, meshRenderer.material);
 			}
 		}
 		m_SceneRenderer->RenderScene();

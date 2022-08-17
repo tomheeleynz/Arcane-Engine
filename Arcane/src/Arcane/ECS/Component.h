@@ -27,7 +27,7 @@ namespace Arcane
 
 	struct MeshComponent
 	{
-		Mesh* mesh;
+		Mesh* mesh = nullptr;
 		std::string filepath;
 	};
 

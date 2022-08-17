@@ -6,6 +6,7 @@
 #include <map>
 #include <unordered_map>
 #include <functional>
+#include <fstream>
 
 enum class FileStatus
 {
@@ -14,17 +15,28 @@ enum class FileStatus
 	Modified
 };
 
+struct FileInfo
+{
+	std::string name;
+	int assetID = -1;
+	bool isDirectory = false;
+};
+
 namespace Arcane
 {
 	class FileWatcher
 	{
 	public:
 		FileWatcher(std::string path_to_watch, std::chrono::duration<int, std::milli> delay);
-		void Start(const std::function<void(std::string, FileStatus)>& action);
+		void Update();
 
+
+		std::unordered_map<std::string, FileInfo> GetPaths() { return m_Paths; }
+	private:
+		int GetAssetID(std::filesystem::path metaPath);
 	private:
 		std::chrono::duration<int, std::milli> m_Delay;
-		std::unordered_map<std::string, std::filesystem::file_time_type> m_Paths;
+		std::unordered_map<std::string, FileInfo> m_Paths;
 		std::string m_Directory;
 
 		bool contains(const std::string & key) {
