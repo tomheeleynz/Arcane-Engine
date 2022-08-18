@@ -36,7 +36,7 @@ namespace Arcane
 	void VulkanMaterial::UpdateMaterialData()
 	{
 		for (auto& uniformBuffer : m_UniformBuffers) {
-			uniformBuffer.second->WriteData((void*)m_UniformBuffersData[uniformBuffer.first].second, m_UniformBuffersData[uniformBuffer.first].first);
+			uniformBuffer.second->WriteData((void*)m_UniformBuffersData[uniformBuffer.first].second, m_UniformBuffersData[uniformBuffer.first].first * sizeof(float));
 		}
 	}
 
