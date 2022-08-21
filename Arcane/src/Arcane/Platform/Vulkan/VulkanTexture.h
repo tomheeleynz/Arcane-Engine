@@ -11,6 +11,10 @@ namespace Arcane
 	public:
 		VulkanTexture(std::string fileName);
 
+		virtual void UpdateTexture(int data) override;
+		virtual void UpdateTexture(std::string filename) override;
+		virtual void UpdateTexture(Texture* texture) override;
+
 
 		VkDescriptorImageInfo GetImageDescriptorInfo() { return m_ImageInfo; }
 	private:

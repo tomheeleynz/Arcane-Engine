@@ -66,6 +66,12 @@ namespace Arcane
 		m_UniformBuffersData[binding].second[offset + 2] = value.z;
 	}
 
+	void VulkanMaterial::WriteTexture(int binding, Texture* texture)
+	{
+		m_MaterialTextures[binding] = texture;
+		m_DescriptorSet->AddImageSampler(m_MaterialTextures[binding], 2, binding);
+	}
+
 	glm::vec3 VulkanMaterial::GetVec3(int binding, uint32_t offset)
 	{
 		return glm::vec3(
@@ -73,6 +79,11 @@ namespace Arcane
 			m_UniformBuffersData[binding].second[offset + 1],
 			m_UniformBuffersData[binding].second[offset + 2]
 		);
+	}
+
+	Texture* VulkanMaterial::GetTexture(int binding)
+	{
+		return m_MaterialTextures[binding];
 	}
 
 }

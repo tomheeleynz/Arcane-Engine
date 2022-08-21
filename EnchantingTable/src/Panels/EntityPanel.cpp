@@ -100,6 +100,28 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 						ImGui::ColorEdit3(variable.Name.c_str(), glm::value_ptr(currentValue));
 						material->WriteVec3(variable.binding, variable.offset, currentValue);
 					}
+
+					if (variable.Type == Arcane::ShaderVariableType::Sampler)
+					{
+						ImGui::Text("Albedo Texture");
+
+						if (ImGui::BeginDragDropTarget())
+						{
+							const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
+
+							if (payload != nullptr) {
+								int assetID = *static_cast<int*>(payload->Data);
+								Asset* asset = Arcane::Application::Get().GetAssetDatabase().GetAsset(assetID);
+								
+								if (asset != nullptr && asset->GetAssetType() == AssetType::TEXTURE)
+								{
+									TextureAsset* textureAsset = static_cast<TextureAsset*>(asset);
+									material->WriteTexture(variable.binding, textureAsset->GetTexture());
+								}
+							}
+							ImGui::EndDragDropTarget();
+						}
+					}
 				}
 			}
 		});

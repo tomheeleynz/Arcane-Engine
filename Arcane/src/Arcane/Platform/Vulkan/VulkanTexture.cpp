@@ -129,6 +129,18 @@ namespace Arcane
 		}
 	}
 
+	void VulkanTexture::UpdateTexture(int data)
+	{
+	}
+
+	void VulkanTexture::UpdateTexture(std::string filename)
+	{
+	}
+
+	void VulkanTexture::UpdateTexture(Texture* texture)
+	{
+	}
+
 	VkCommandBuffer VulkanTexture::BeginSingleTimeCommands()
 	{
 		Application& app = Application::Get();

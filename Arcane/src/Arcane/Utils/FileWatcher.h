@@ -20,6 +20,7 @@ struct FileInfo
 	std::string name;
 	int assetID = -1;
 	bool isDirectory = false;
+	std::filesystem::path relativePath;
 };
 
 namespace Arcane
@@ -28,8 +29,10 @@ namespace Arcane
 	{
 	public:
 		FileWatcher(std::string path_to_watch, std::chrono::duration<int, std::milli> delay);
+		
+		void SetDirectory(std::filesystem::path newPath);
 		void Update();
-
+		void GoToParentDirectory();
 
 		std::unordered_map<std::string, FileInfo> GetPaths() { return m_Paths; }
 	private:

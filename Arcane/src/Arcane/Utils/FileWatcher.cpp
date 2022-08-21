@@ -5,10 +5,6 @@ namespace Arcane
 	FileWatcher::FileWatcher(std::string path_to_watch, std::chrono::duration<int, std::milli> delay)
 	{
 		m_Directory = path_to_watch;
-		//for (auto& file : std::filesystem::directory_iterator(path_to_watch)) {
-
-		//	m_Paths[file.path().string()] = std::filesystem::last_write_time(file);
-		//}
 	}
 
 	void FileWatcher::Update()
@@ -39,6 +35,7 @@ namespace Arcane
 					else
 						newFileInfo.isDirectory = true;
 
+					newFileInfo.relativePath = file.path();
 					m_Paths[file.path().string()] = newFileInfo;
 				}
 			}
@@ -56,5 +53,19 @@ namespace Arcane
 		i >> metaJson;
 
 		return metaJson["id"];
+	}
+
+	void FileWatcher::SetDirectory(std::filesystem::path newPath)
+	{
+		m_Directory = newPath.string();
+		m_Paths.clear();
+	}
+
+	void FileWatcher::GoToParentDirectory()
+	{
+		std::filesystem::path currentPath = std::filesystem::path(m_Directory);
+		std::filesystem::path parentPath = currentPath.parent_path();
+		m_Directory = parentPath.string();
+		m_Paths.clear();
 	}
 }
