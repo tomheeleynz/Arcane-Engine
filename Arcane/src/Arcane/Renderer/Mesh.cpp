@@ -3,7 +3,7 @@
 
 namespace Arcane
 {
-	static const uint32_t s_MeshImportFlags = aiProcess_Triangulate | aiProcess_FlipUVs;
+	static const uint32_t s_MeshImportFlags = aiProcess_Triangulate;
 
 	Mesh::Mesh(std::string filepath)
 	{

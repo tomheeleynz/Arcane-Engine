@@ -10,6 +10,7 @@ namespace Arcane {
 		virtual void UpdateTexture(int data) = 0;
 
 		static Texture* Create(std::string fileName);
+		static Texture* Create(float r, float g, float b, float a);
 	private:
 
 	};

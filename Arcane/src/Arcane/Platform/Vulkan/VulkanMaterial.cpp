@@ -20,8 +20,8 @@ namespace Arcane
 			}
 
 			if (variable.Type == ShaderVariableType::Sampler) {
-				m_MaterialTextures[variable.binding] = nullptr;
-				// m_DescriptorSet->AddImageSampler(m_MaterialTextures[variable.binding], 2, variable.binding);
+				m_MaterialTextures[variable.binding] = Texture::Create(255.0f, 0.0f, 0.0f, 255.0f);
+				m_DescriptorSet->AddImageSampler(m_MaterialTextures[variable.binding], 2, variable.binding);
 			}
 		}
 
