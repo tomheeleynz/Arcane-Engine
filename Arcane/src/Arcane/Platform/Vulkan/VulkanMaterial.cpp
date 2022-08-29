@@ -5,23 +5,39 @@ namespace Arcane
 	VulkanMaterial::VulkanMaterial(Shader* shader)
 	{
 		m_Shader = shader;
-		
+
 		// Reflect Shader to get descriptor info
 		VulkanShader* vulkanShader = static_cast<VulkanShader*>(shader);
-
-		// Get Material descriptor, then add uniform buffer to it
-		m_UniformBuffer = UniformBuffer::Create(vulkanShader->GetMaterialSize());
-
 		m_DescriptorSet = vulkanShader->GetMaterialDescriptor();
-		m_DescriptorSet->AddUniformBuffer(m_UniformBuffer, 2, 0);
 
-		// Create internal structure
-		m_UniformBufferMemory = new float[3];
+		std::map<int, int> m_UniformBufferSizeMap;
+
+		// Actually parse these variables
+		for (ShaderVariable variable : GetMaterialVariables())
+		{
+			if (variable.Type == ShaderVariableType::Vec3) {
+				m_UniformBuffersData[variable.binding].first += 3;
+			}
+
+			if (variable.Type == ShaderVariableType::Sampler) {
+				m_MaterialTextures[variable.binding] = Texture::Create(255.0f, 0.0f, 0.0f, 255.0f);
+				m_DescriptorSet->AddImageSampler(m_MaterialTextures[variable.binding], 2, variable.binding);
+			}
+		}
+
+		for (auto& uniformBufferData : m_UniformBuffersData) {
+			// Create the memory
+			uniformBufferData.second.second = new float[uniformBufferData.second.first];
+			m_UniformBuffers[uniformBufferData.first] = UniformBuffer::Create(sizeof(float) * uniformBufferData.second.first);
+			m_DescriptorSet->AddUniformBuffer(m_UniformBuffers[uniformBufferData.first], 2, uniformBufferData.first);
+		}
 	}
 
 	void VulkanMaterial::UpdateMaterialData()
 	{
-		m_UniformBuffer->WriteData((void*)m_UniformBufferMemory, m_Shader->GetMaterialSize());
+		for (auto& uniformBuffer : m_UniformBuffers) {
+			uniformBuffer.second->WriteData((void*)m_UniformBuffersData[uniformBuffer.first].second, m_UniformBuffersData[uniformBuffer.first].first * sizeof(float));
+		}
 	}
 
 	std::vector<ShaderVariable> VulkanMaterial::GetMaterialVariables()
@@ -43,20 +59,31 @@ namespace Arcane
 	//////////////////////////////////////////////////////////////////
 	////// Getters and Setters
 	//////////////////////////////////////////////////////////////////
-	void VulkanMaterial::WriteVec3(uint32_t offset, glm::vec3 value)
+	void VulkanMaterial::WriteVec3(int binding, uint32_t offset, glm::vec3 value)
 	{
-		m_UniformBufferMemory[offset] = value.x;
-		m_UniformBufferMemory[offset + 1] = value.y;
-		m_UniformBufferMemory[offset + 2] = value.z;
+		m_UniformBuffersData[binding].second[offset] = value.x;
+		m_UniformBuffersData[binding].second[offset + 1] = value.y;
+		m_UniformBuffersData[binding].second[offset + 2] = value.z;
 	}
 
-	glm::vec3 VulkanMaterial::GetVec3(uint32_t offset)
+	void VulkanMaterial::WriteTexture(int binding, Texture* texture)
+	{
+		m_MaterialTextures[binding] = texture;
+		m_DescriptorSet->AddImageSampler(m_MaterialTextures[binding], 2, binding);
+	}
+
+	glm::vec3 VulkanMaterial::GetVec3(int binding, uint32_t offset)
 	{
 		return glm::vec3(
-			m_UniformBufferMemory[offset],
-			m_UniformBufferMemory[offset + 1],
-			m_UniformBufferMemory[offset + 2]
+			m_UniformBuffersData[binding].second[offset],
+			m_UniformBuffersData[binding].second[offset + 1],
+			m_UniformBuffersData[binding].second[offset + 2]
 		);
+	}
+
+	Texture* VulkanMaterial::GetTexture(int binding)
+	{
+		return m_MaterialTextures[binding];
 	}
 
 }

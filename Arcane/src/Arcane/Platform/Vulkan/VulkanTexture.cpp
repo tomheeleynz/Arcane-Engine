@@ -129,6 +129,138 @@ namespace Arcane
 		}
 	}
 
+	VulkanTexture::VulkanTexture(float r, float g, float b, float a)
+	{
+		Application& app = Application::Get();
+		VkDevice logicalDevice = static_cast<VulkanContext*>(app.GetWindow().GetContext())->GetDevice().GetLogicalDevice();
+		
+		int width = 256;
+		int height = 256;
+
+		float* colors = new float[(width * height) * 4];
+		VkBuffer stagingBuffer;
+		VkDeviceMemory stagingBufferMemory;
+
+		int i = 0;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < height; x++) {
+
+				colors[i] = r;
+				colors[i + 1] = g;
+				colors[i + 2] = b;
+				colors[i + 3] = a;
+				i += 4;
+			}
+		}
+
+
+		VkDeviceSize imageSize = width * height * 4;
+		VkBufferCreateInfo bufferInfo{};
+		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		bufferInfo.size = imageSize;
+		bufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+		if (vkCreateBuffer(logicalDevice, &bufferInfo, nullptr, &stagingBuffer) != VK_SUCCESS) {
+			printf("Texture Staging Buffer Not Created\n");
+		}
+		else {
+			printf("Texture Buffer Created\n");
+		}
+
+		VkMemoryRequirements stagingMemRequirements;
+		vkGetBufferMemoryRequirements(logicalDevice, stagingBuffer, &stagingMemRequirements);
+
+		VkMemoryAllocateInfo stagingAllocInfo{};
+		stagingAllocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		stagingAllocInfo.allocationSize = stagingMemRequirements.size;
+		stagingAllocInfo.memoryTypeIndex = FindMemoryType(stagingMemRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+		if (vkAllocateMemory(logicalDevice, &stagingAllocInfo, nullptr, &stagingBufferMemory) != VK_SUCCESS) {
+			printf("Failed to allocated vertex buffer memory\n");
+		}
+		else {
+			printf("Allocated vertex buffer memory\n");
+		}
+
+		void* data;
+		vkMapMemory(logicalDevice, stagingBufferMemory, 0, imageSize, 0, &data);
+		memcpy(data, (void*)&colors[0], static_cast<size_t>(imageSize));
+		vkUnmapMemory(logicalDevice, stagingBufferMemory);
+
+		// Creating Image Info
+		VkImageCreateInfo imageInfo{};
+		imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+		imageInfo.imageType = VK_IMAGE_TYPE_2D;
+		imageInfo.extent.width = static_cast<uint32_t>(width);
+		imageInfo.extent.height = static_cast<uint32_t>(height);
+		imageInfo.extent.depth = 1;
+		imageInfo.mipLevels = 1;
+		imageInfo.arrayLayers = 1;
+		imageInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
+		imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+		imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+		imageInfo.flags = 0;
+
+		if (vkCreateImage(logicalDevice, &imageInfo, nullptr, &m_TextureImage) != VK_SUCCESS) {
+			printf("Texture Image Not Created\n");
+		}
+		else {
+			printf("Texture Image Created\n");
+		}
+
+		VkMemoryRequirements memRequirements;
+		vkGetImageMemoryRequirements(logicalDevice, m_TextureImage, &memRequirements);
+
+		VkMemoryAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		allocInfo.allocationSize = memRequirements.size;
+		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+		if (vkAllocateMemory(logicalDevice, &allocInfo, nullptr, &m_TextureImageMemory) != VK_SUCCESS) {
+			printf("Texture Image Memory Not Allocated");
+		}
+
+		vkBindImageMemory(logicalDevice, m_TextureImage, m_TextureImageMemory, 0);
+		vkBindBufferMemory(logicalDevice, stagingBuffer, stagingBufferMemory, 0);
+
+		TransitionImageLayout(m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+		CopyBufferToImage(stagingBuffer, m_TextureImage, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+
+		TransitionImageLayout(m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+		// Create Texture Image View
+		CreateTextureImageView();
+
+		// Create Texture Sampler
+		CreateTextureSampler();
+
+		// Set Up image Descriptor Info
+		m_ImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		m_ImageInfo.imageView = m_TextureImageView;
+		m_ImageInfo.sampler = m_TextureSampler;
+
+	}
+
+	void VulkanTexture::UpdateTexture(int data)
+	{
+
+	}
+
+	void VulkanTexture::UpdateTexture(std::string filename)
+	{
+
+	}
+
+	void VulkanTexture::UpdateTexture(Texture* texture)
+	{
+
+	}
+
 	VkCommandBuffer VulkanTexture::BeginSingleTimeCommands()
 	{
 		Application& app = Application::Get();

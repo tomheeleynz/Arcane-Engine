@@ -48,11 +48,8 @@ void main() {
 
 	// Calculate Result
 	vec3 result = (ambient + diffuse + specular) * material.color;
-
-	vec4 test = texture(albedo, fragTexCoord);
-	test = test;
 	
 	// Final Color
-	Color = vec4(result, 1.0f);
+	Color = texture(albedo, fragTexCoord);
 }
 

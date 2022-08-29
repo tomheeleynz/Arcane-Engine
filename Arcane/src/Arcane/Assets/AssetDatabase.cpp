@@ -5,6 +5,7 @@
 #include <cstdlib>
 
 #include "MeshAsset.h"
+#include "TextureAsset.h"
 #include "AssetDatabase.h"
 
 
@@ -58,7 +59,14 @@ namespace Arcane
 			m_Assets[assetID] = meshAsset;
 		}
 		else if (currentAssetPath.extension() == ".fbx") {
-			// Generate Mesh Asset
+			MeshAsset* meshAsset = new MeshAsset(currentAssetPath);
+			meshAsset->SetID(assetID);
+			m_Assets[assetID] = meshAsset;
+		}
+		else if (currentAssetPath.extension() == ".jpg") {
+			TextureAsset* textureAsset = new TextureAsset(currentAssetPath);
+			textureAsset->SetID(assetID);
+			m_Assets[assetID] = textureAsset;
 		}
 		return true;
 	}

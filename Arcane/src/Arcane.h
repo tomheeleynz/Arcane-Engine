@@ -48,3 +48,4 @@
 ////////// Assets
 /////////////////////////////////////////////////////
 #include "Arcane/Assets/MeshAsset.h"
+#include "Arcane/Assets/TextureAsset.h"

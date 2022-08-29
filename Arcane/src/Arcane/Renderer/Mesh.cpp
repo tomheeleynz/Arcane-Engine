@@ -3,13 +3,13 @@
 
 namespace Arcane
 {
-	static const uint32_t s_MeshImportFlags = aiProcess_Triangulate | aiProcess_FlipUVs;
+	static const uint32_t s_MeshImportFlags = aiProcess_Triangulate;
 
 	Mesh::Mesh(std::string filepath)
 	{
 		Assimp::Importer import;
 		const aiScene* scene = import.ReadFile(
-			"D:\\Engine-Development\\ArcaneEngine\\EnchantingTable\\src\\Assets\\Models\\MyModel.fbx", 
+			filepath, 
 			s_MeshImportFlags
 		);
 
