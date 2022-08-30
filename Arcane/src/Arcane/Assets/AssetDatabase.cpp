@@ -6,8 +6,9 @@
 
 #include "MeshAsset.h"
 #include "TextureAsset.h"
+#include "MaterialAsset.h"
 #include "AssetDatabase.h"
-
+#include "Arcane/Renderer/Shader.h"
 
 namespace Arcane
 {
@@ -15,11 +16,18 @@ namespace Arcane
 	{
 		m_AssetDirPath = assetDir;
 		srand(time(0));
+
+		m_DefaultAssets["MeshMaterial"] = new MaterialAsset(Material::Create(ShaderLibrary::GetShader("Mesh")));
 	}
 
 	Asset* AssetDatabase::GetAsset(int id)
 	{
 		return m_Assets[id];
+	}
+
+	Asset* AssetDatabase::GetDefaultAsset(std::string name)
+	{
+		return m_DefaultAssets[name];
 	}
 
 	bool AssetDatabase::GenerateDatabase()

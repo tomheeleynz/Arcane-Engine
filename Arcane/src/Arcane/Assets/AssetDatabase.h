@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <filesystem>
+#include <string>
 
 #include "Asset.h"
 
@@ -13,6 +14,7 @@ namespace Arcane
 		AssetDatabase(std::filesystem::path assetDir);
 		
 		Asset* GetAsset(int id);
+		Asset* GetDefaultAsset(std::string assetName);
 		
 		bool GenerateDatabase();
 		bool GenerateAsset(std::filesystem::path currentAssetPath);
@@ -22,6 +24,7 @@ namespace Arcane
 
 		int GetMetaID(std::filesystem::path metaPath);
 	private:
+		std::unordered_map<std::string, Asset*> m_DefaultAssets;
 		std::unordered_map<int, Asset*> m_Assets;
 		std::filesystem::path m_AssetDirPath;
 	};
