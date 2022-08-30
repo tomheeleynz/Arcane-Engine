@@ -5,7 +5,8 @@ namespace Arcane
 	enum class AssetType
 	{
 		MESH,
-		TEXTURE
+		TEXTURE,
+		MATERIAL
 	};
 
 	class Asset
