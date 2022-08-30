@@ -63,82 +63,80 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		ImGui::InputFloat3("Rotation", glm::value_ptr(component.rot));
 	});
 
-	if (entity.HasComponent<MeshComponent>()) 
-	{
-		DrawComponent<MeshComponent>("Mesh", entity, [](auto& component) {
-			// Create something i can add to 
-			ImGui::Text("Mesh");
-			if (ImGui::BeginDragDropTarget())
+
+	DrawComponent<MeshComponent>("Mesh", entity, [](auto& component) {
+		// Create something i can add to 
+		ImGui::Text("Mesh");
+		if (ImGui::BeginDragDropTarget())
+		{
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
+
+			if (payload != nullptr) {
+				int assetID = *static_cast<int*>(payload->Data);
+				MeshAsset* meshAsset = static_cast<MeshAsset*>(Arcane::Application::Get().GetAssetDatabase().GetAsset(assetID));
+				meshAsset->LoadAsset();
+				component.mesh = meshAsset->GetMesh();
+			}
+			ImGui::EndDragDropTarget();
+		}
+	});
+	
+
+
+	DrawComponent<MeshRendererComponent>("Mesh Renderer", entity, [](auto& component) {
+		Material* material = component.material;
+
+		if (material != nullptr) {
+			for (Arcane::ShaderVariable variable : material->GetMaterialVariables())
 			{
-				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
-
-				if (payload != nullptr) {
-					int assetID = *static_cast<int*>(payload->Data);
-					MeshAsset* meshAsset = static_cast<MeshAsset*>(Arcane::Application::Get().GetAssetDatabase().GetAsset(assetID));
-					component.mesh = meshAsset->GetMesh();
-				}
-				ImGui::EndDragDropTarget();
-			}
-		});
-	}
-
-	if (entity.HasComponent<MeshRendererComponent>())
-	{
-		DrawComponent<MeshRendererComponent>("Mesh Renderer", entity, [](auto& component) {
-			Material* material = component.material;
-
-			if (material != nullptr) {
-				for (Arcane::ShaderVariable variable : material->GetMaterialVariables())
+				if (variable.Type == Arcane::ShaderVariableType::Vec3)
 				{
-					if (variable.Type == Arcane::ShaderVariableType::Vec3)
+					glm::vec3 currentValue = material->GetVec3(variable.binding, variable.offset);
+
+					if (currentValue.x < 0)
+						currentValue = {0.0f, 0.0f, 0.0f};
+
+					ImGui::ColorEdit3(variable.Name.c_str(), glm::value_ptr(currentValue));
+					material->WriteVec3(variable.binding, variable.offset, currentValue);
+				}
+
+				if (variable.Type == Arcane::ShaderVariableType::Sampler)
+				{
+					ImGui::Text("Albedo Texture");
+
+					if (ImGui::BeginDragDropTarget())
 					{
-						glm::vec3 currentValue = material->GetVec3(variable.binding, variable.offset);
+						const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
 
-						if (currentValue.x < 0)
-							currentValue = {0.0f, 0.0f, 0.0f};
-
-						ImGui::ColorEdit3(variable.Name.c_str(), glm::value_ptr(currentValue));
-						material->WriteVec3(variable.binding, variable.offset, currentValue);
-					}
-
-					if (variable.Type == Arcane::ShaderVariableType::Sampler)
-					{
-						ImGui::Text("Albedo Texture");
-
-						if (ImGui::BeginDragDropTarget())
-						{
-							const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
-
-							if (payload != nullptr) {
-								int assetID = *static_cast<int*>(payload->Data);
-								Asset* asset = Arcane::Application::Get().GetAssetDatabase().GetAsset(assetID);
-								
-								if (asset != nullptr && asset->GetAssetType() == AssetType::TEXTURE)
-								{
-									TextureAsset* textureAsset = static_cast<TextureAsset*>(asset);
-									material->WriteTexture(variable.binding, textureAsset->GetTexture());
-								}
+						if (payload != nullptr) {
+							int assetID = *static_cast<int*>(payload->Data);
+							Asset* asset = Arcane::Application::Get().GetAssetDatabase().GetAsset(assetID);
+							
+							if (asset != nullptr && asset->GetAssetType() == AssetType::TEXTURE)
+							{
+								TextureAsset* textureAsset = static_cast<TextureAsset*>(asset);
+								textureAsset->LoadAsset();
+								material->WriteTexture(variable.binding, textureAsset->GetTexture());
 							}
-							ImGui::EndDragDropTarget();
 						}
+						ImGui::EndDragDropTarget();
 					}
 				}
 			}
-		});
-	}
+		}
+	});
+	
 
-	if (entity.HasComponent<LightComponent>())
-	{
-		DrawComponent<LightComponent>("Light", entity, [](auto& component) {
-			if (component.type == LightType::DIRECTIONAL) {
-				ImGui::Text("Directional");
-			}
+	DrawComponent<LightComponent>("Light", entity, [](auto& component) {
+		if (component.type == LightType::DIRECTIONAL) {
+			ImGui::Text("Directional");
+		}
 
-			glm::vec3 currentValue = component.color;
-			ImGui::ColorEdit3("Color", glm::value_ptr(currentValue));
-			component.color = currentValue;
-		});
-	}
+		glm::vec3 currentValue = component.color;
+		ImGui::ColorEdit3("Color", glm::value_ptr(currentValue));
+		component.color = currentValue;
+	});
+	
 }
 
 void EntityPanel::AddMeshComponent(Arcane::Entity& entity)
