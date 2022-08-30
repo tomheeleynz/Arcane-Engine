@@ -399,3 +399,6 @@ _deps
 
 *.arcmeta
 # End of https://www.toptal.com/developers/gitignore/api/cmake
+# End of https://www.toptal.com/developers/gitignore/api/cmake
+*.proj
+*.filters

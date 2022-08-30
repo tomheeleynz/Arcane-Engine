@@ -18,6 +18,8 @@ namespace Arcane
 
 		AssetType GetAssetType() { return m_Type; };
 		void SetAssetType(AssetType type) { m_Type = type; };
+
+		virtual void LoadAsset() {}
 	private:
 		int m_ID = -1;
 		AssetType m_Type;

@@ -9,10 +9,11 @@ namespace Arcane
 	{
 	public:
 		MeshAsset(std::filesystem::path meshPath);
-
-
 		Mesh* GetMesh() { return m_Mesh; }
+
+		virtual void LoadAsset() override;
 	private:
 		Mesh* m_Mesh;
+		std::filesystem::path m_MeshPath;
 	};
 }
