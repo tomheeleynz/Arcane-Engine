@@ -24,32 +24,27 @@ layout (set = 2, binding = 0) uniform Material {
 
 layout (set = 2, binding = 1) uniform sampler2D albedo;
 
+vec3 CalcDirLight(DirectionalLight light, vec3 normal, vec3 viewDir)
+{
+	// Get Light Direction
+	vec3 lightDir = normalize(-light.direction);
+
+	// Calculate diffuse light
+	float diff = max(dot(normal, lightDir), 0.0);
+
+	vec3 ambient = light.color * vec3(texture(albedo, fragTexCoord));
+	vec3 diffuse = light.color * diff *  vec3(texture(albedo, fragTexCoord));
+
+	return (ambient + diffuse);
+}
+
 void main() {
-	// Single Light Color
-	vec3 lightColor = lights.dirLight.color;
+	vec3 lightCalc = vec3(0.0);
 	
-	// Ambient Lighting
-	float ambientStength = 0.1f;
-	vec3 ambient = ambientStength * lightColor;
+	// Calculate Directional Light
+	lightCalc += CalcDirLight(lights.dirLight, fragNormal, fragCameraPos);
 
-	// Diffuse Lighting
-	vec3 lightPos = vec3(1.2f, 1.0f, 2.0f);
-	vec3 norm = normalize(fragNormal);
-	vec3 lightDir = normalize(lightPos - fragPos);
-	float diff = max(dot(norm, lightDir), 0.0);
-	vec3 diffuse = diff * lightColor;
-
-	// Specular Lighting
-	float specularStrength = 0.5f;
-	vec3 viewDir = normalize(fragCameraPos - fragPos);
-	vec3 reflectDir = reflect(-lightDir, norm);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-	vec3 specular = specularStrength * spec * lightColor; 
-
-	// Calculate Result
-	vec3 result = (ambient + diffuse + specular) * material.color;
-	
 	// Final Color
-	Color = texture(albedo, fragTexCoord);
+	Color = vec4(lightCalc, 1.0);
 }
 

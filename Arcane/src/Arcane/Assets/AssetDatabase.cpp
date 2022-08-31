@@ -17,7 +17,6 @@ namespace Arcane
 		m_AssetDirPath = assetDir;
 		srand(time(0));
 
-		m_DefaultAssets["MeshMaterial"] = new MaterialAsset(Material::Create(ShaderLibrary::GetShader("Mesh")));
 	}
 
 	Asset* AssetDatabase::GetAsset(int id)
@@ -32,6 +31,7 @@ namespace Arcane
 
 	bool AssetDatabase::GenerateDatabase()
 	{
+		GenerateDefaultAssets();
 		for (auto& dirEntry : std::filesystem::recursive_directory_iterator(m_AssetDirPath)) {
 			if (dirEntry.is_regular_file()) {
 				std::filesystem::path file = dirEntry.path();
@@ -104,5 +104,14 @@ namespace Arcane
 		i >> metaJson;
 
 		return metaJson["id"];
+	}
+	bool AssetDatabase::GenerateDefaultAssets()
+	{
+		TextureAsset* defaultTexture =  new TextureAsset("./src/Assets/Textures/default.png");
+		defaultTexture->LoadAsset();
+		m_DefaultAssets["DefaultTexture"] = defaultTexture;
+
+		m_DefaultAssets["MeshMaterial"] = new MaterialAsset(Material::Create(ShaderLibrary::GetShader("Mesh")));
+		return true;
 	}
 }

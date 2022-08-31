@@ -19,7 +19,10 @@ namespace Arcane
 
 		// Write Material Variables to material buffer
 		virtual void WriteVec3(int binding, uint32_t offset, glm::vec3 value) = 0;
+
+		// Write Texture (both image and color)
 		virtual void WriteTexture(int binding, Texture* texture) = 0;
+		virtual void WriteTexture(int binding, glm::vec4 color) = 0;
 
 		// Update Material data from internal structures
 		virtual void UpdateMaterialData() = 0;

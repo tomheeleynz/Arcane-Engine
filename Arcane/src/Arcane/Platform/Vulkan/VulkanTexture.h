@@ -12,7 +12,7 @@ namespace Arcane
 		VulkanTexture(std::string fileName);
 		VulkanTexture(float r, float g, float b, float a);
 
-		virtual void UpdateTexture(int data) override;
+		virtual void UpdateTexture(float r, float g, float b, float a) override;
 		virtual void UpdateTexture(std::string filename) override;
 		virtual void UpdateTexture(Texture* texture) override;
 

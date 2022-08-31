@@ -1,4 +1,6 @@
 #include "VulkanMaterial.h"
+#include "Arcane/Core/Application.h"
+#include "Arcane/Assets/TextureAsset.h"
 
 namespace Arcane
 {
@@ -12,6 +14,9 @@ namespace Arcane
 
 		std::map<int, int> m_UniformBufferSizeMap;
 
+		// Get Default Texture
+		Texture* defaultTexture = static_cast<TextureAsset*>(Application::Get().GetAssetDatabase().GetDefaultAsset("DefaultTexture"))->GetTexture();
+
 		// Actually parse these variables
 		for (ShaderVariable variable : GetMaterialVariables())
 		{
@@ -20,7 +25,7 @@ namespace Arcane
 			}
 
 			if (variable.Type == ShaderVariableType::Sampler) {
-				m_MaterialTextures[variable.binding] = Texture::Create(255.0f, 0.0f, 0.0f, 255.0f);
+				m_MaterialTextures[variable.binding] = defaultTexture;
 				m_DescriptorSet->AddImageSampler(m_MaterialTextures[variable.binding], 2, variable.binding);
 			}
 		}
@@ -70,6 +75,11 @@ namespace Arcane
 	{
 		m_MaterialTextures[binding] = texture;
 		m_DescriptorSet->AddImageSampler(m_MaterialTextures[binding], 2, binding);
+	}
+
+	void VulkanMaterial::WriteTexture(int binding, glm::vec4 color)
+	{
+		// m_MaterialTextures[binding]->UpdateTexture(color.x, color.y, color.z, color.w);
 	}
 
 	glm::vec3 VulkanMaterial::GetVec3(int binding, uint32_t offset)
