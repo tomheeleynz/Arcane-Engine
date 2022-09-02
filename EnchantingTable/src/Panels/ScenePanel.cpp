@@ -18,6 +18,13 @@ void ScenePanel::Update()
 		if (ImGui::Button("Add to scene"))
 			m_Context->CreateEntity("New Entity");
 
+		if (ImGui::IsWindowHovered())
+		{
+			if (Arcane::InputManager::GetMouseKeyReleased(1)) {
+				m_SelectedEntity = CreateMeshEntity(MeshEntityType::PLANE);
+			}
+		}
+
 		m_Context->m_Registry.each([this](auto entity) {
 			Arcane::Entity Entity(entity, this->m_Context);
 			DrawNode(Entity);
@@ -38,4 +45,45 @@ void ScenePanel::DrawNode(Arcane::Entity& entity)
 		m_SelectedEntity = entity;
 		ImGui::TreePop();
 	}
+}
+
+Arcane::Entity& ScenePanel::CreateMeshEntity(MeshEntityType type)
+{
+	// Get Default Material
+	Arcane::Asset* materialAsset = Arcane::Application::Get().GetAssetDatabase().GetDefaultAsset("MeshMaterial");
+	Arcane::Material* material = static_cast<Arcane::MaterialAsset*>(materialAsset)->GetMaterial();
+
+	// Create Entity
+	Arcane::Entity* entity = m_Context->CreateEntity("New Entity");
+	
+	// Create Mesh Component
+	Arcane::MeshComponent meshComponent;
+
+	// Create Mesh Renderer Component
+	Arcane::MeshRendererComponent meshRendererComponent;
+	meshRendererComponent.material = material;
+
+	// Select what type of mesh to give to
+	// Entity
+	switch (type)
+	{
+	case ScenePanel::MeshEntityType::PLANE:
+	{
+		meshComponent.mesh = Arcane::MeshFactory::CreatePlane();
+		break;
+	}
+	case ScenePanel::MeshEntityType::CUBE:
+	{
+
+		break;
+	}
+	default:
+		break;
+	}
+
+	// Add Components to entity
+	entity->AddComponent<Arcane::MeshComponent>(meshComponent);
+	entity->AddComponent<Arcane::MeshRendererComponent>(meshRendererComponent);
+
+	return *entity;
 }

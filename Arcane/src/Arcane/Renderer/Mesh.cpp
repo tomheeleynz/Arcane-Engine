@@ -22,6 +22,11 @@ namespace Arcane
 		ProcessNode(scene->mRootNode, scene);
 	}
 
+    Mesh::Mesh(std::vector<MeshVertex> vertices, std::vector<uint32_t> indices)
+    {
+        m_SubMeshes.push_back(new SubMesh(vertices, indices));
+    }
+
 	void Mesh::ProcessNode(aiNode* node, const aiScene* scene)
 	{
 		// process all the node's meshes (if any)

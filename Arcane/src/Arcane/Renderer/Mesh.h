@@ -15,6 +15,7 @@ namespace Arcane
 	{
 	public:
 		Mesh(std::string filepath);
+		Mesh(std::vector<MeshVertex> vertices, std::vector<uint32_t> indices);
 
 		std::vector<SubMesh*> GetSubMeshes() { return m_SubMeshes; }
 	private:

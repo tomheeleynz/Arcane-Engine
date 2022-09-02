@@ -22,6 +22,7 @@
 #include "Arcane/Renderer/SceneRenderer.h"
 #include "Arcane/Renderer/Camera.h"
 #include "Arcane/Renderer/DescriptorSet.h"
+#include "Arcane/Renderer/MeshFactory.h"
 
 /////////////////////////////////////////////////////
 ////////// ImGui
@@ -49,3 +50,4 @@
 /////////////////////////////////////////////////////
 #include "Arcane/Assets/MeshAsset.h"
 #include "Arcane/Assets/TextureAsset.h"
+#include "Arcane/Assets/MaterialAsset.h"
