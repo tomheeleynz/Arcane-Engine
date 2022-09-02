@@ -27,6 +27,11 @@ namespace Arcane
 		return newEntity;
 	}
 
+	void Scene::DeleteEntity(Entity& entity)
+	{
+		entity.DeleteEntity();
+	}
+
 	void Scene::OnUpdate()
 	{
 		// Add Lights to scene

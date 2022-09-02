@@ -15,6 +15,7 @@ namespace Arcane
 		Scene();
 
 		Entity* CreateEntity(std::string name);
+		void DeleteEntity(Entity& entity);
 
 		void OnUpdate();
 

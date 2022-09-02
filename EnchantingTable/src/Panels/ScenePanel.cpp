@@ -18,6 +18,16 @@ void ScenePanel::Update()
 		if (ImGui::Button("Add to scene"))
 			m_Context->CreateEntity("New Entity");
 
+		ImGui::SameLine();
+
+		if (ImGui::Button("Delete Entity")) {
+			if (m_SelectedEntity) {
+				m_Context->DeleteEntity(m_SelectedEntity);
+				m_SelectedEntity = {};
+			}
+		}
+
+
 		if (ImGui::IsWindowHovered())
 		{
 			if (Arcane::InputManager::GetMouseKeyReleased(1)) {
