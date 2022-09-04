@@ -49,7 +49,7 @@ namespace Arcane {
 		GLFWwindow* windowHandle = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
 		VulkanContext* vulkanContext = static_cast<VulkanContext*>(app.GetWindow().GetContext());
 
-		ImGui_ImplGlfw_InitForVulkan(windowHandle, false);
+		ImGui_ImplGlfw_InitForVulkan(windowHandle,true);
 
 		ImGui_ImplVulkan_InitInfo initInfo{};
 		initInfo.Instance = vulkanContext->GetInstance();
