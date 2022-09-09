@@ -83,35 +83,12 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	
 
 
-	DrawComponent<MeshRendererComponent>("Mesh Renderer", entity, [](auto& component) {
+	DrawComponent<MeshRendererComponent>("Mesh Renderer", entity, [this](auto& component) {
 		Material* material = component.material;
 
 		if (material != nullptr) {
-			for (Arcane::ShaderVariable variable : material->GetMaterialVariables())
-			{
-				if (variable.Type == Arcane::ShaderVariableType::Sampler)
-				{
-					ImGui::Text("Albedo");
-
-					if (ImGui::BeginDragDropTarget())
-					{
-						const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
-
-						if (payload != nullptr) {
-							int assetID = *static_cast<int*>(payload->Data);
-							Asset* asset = Arcane::Application::Get().GetAssetDatabase().GetAsset(assetID);
-							
-							if (asset != nullptr && asset->GetAssetType() == AssetType::TEXTURE)
-							{
-								TextureAsset* textureAsset = static_cast<TextureAsset*>(asset);
-								textureAsset->LoadAsset();
-								material->WriteTexture(variable.binding, textureAsset->GetTexture());
-							}
-						}
-						ImGui::EndDragDropTarget();
-					}
-				}
-			}
+			if (ImGui::Button("View Material"))
+				m_SelectedMaterial = material;
 		}
 	});
 	

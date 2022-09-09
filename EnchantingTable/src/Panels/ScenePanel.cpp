@@ -15,26 +15,9 @@ void ScenePanel::Update()
 {
 	ImGui::Begin("Scene");
 	{
-		if (ImGui::Button("Add to scene"))
-			m_Context->CreateEntity("New Entity");
-
-		ImGui::SameLine();
-
-		if (ImGui::Button("Delete Entity")) {
-			if (m_SelectedEntity) {
-				m_Context->DeleteEntity(m_SelectedEntity);
-				m_SelectedEntity = {};
-			}
-		}
-
-
-		if (ImGui::IsWindowHovered())
-		{
-			if (Arcane::InputManager::GetMouseKeyReleased(1)) {
-				m_SelectedEntity = CreateMeshEntity(MeshEntityType::PLANE);
-			}
-		}
-
+		if (ImGui::Button("Add Entity"))
+			CreateMeshEntity(MeshEntityType::PLANE);
+	
 		m_Context->m_Registry.each([this](auto entity) {
 			Arcane::Entity Entity(entity, this->m_Context);
 			DrawNode(Entity);
@@ -43,7 +26,6 @@ void ScenePanel::Update()
 	ImGui::End();
 
 }
-
 
 void ScenePanel::DrawNode(Arcane::Entity& entity) 
 {
@@ -84,9 +66,9 @@ Arcane::Entity& ScenePanel::CreateMeshEntity(MeshEntityType type)
 	}
 	case ScenePanel::MeshEntityType::CUBE:
 	{
-
+		// Create a cube at some point
 		break;
-	}
+	} 
 	default:
 		break;
 	}

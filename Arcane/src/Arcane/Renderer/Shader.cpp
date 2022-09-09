@@ -25,18 +25,18 @@ namespace Arcane
 	{
 		// Load Shaders
 		m_Shaders["Mesh"] = Shader::Create(
-			".\\src\\Assets\\Shaders\\MeshVert.spv",
-			".\\src\\Assets\\Shaders\\MeshTextured.spv"
+			".\\src\\EditorAssets\\Shaders\\MeshVert.spv",
+			".\\src\\EditorAssets\\Shaders\\MeshTextured.spv"
 		);
 		
 		m_Shaders["Grid"] = Shader::Create(
-			".\\src\\Assets\\Shaders\\GridVert.spv",
-			".\\src\\Assets\\Shaders\\GridFrag.spv"
+			".\\src\\EditorAssets\\Shaders\\GridVert.spv",
+			".\\src\\EditorAssets\\Shaders\\GridFrag.spv"
 		);
 		
 		m_Shaders["Screen"] = Shader::Create(
-			".\\src\\Assets\\Shaders\\ScreenVert.spv",
-			".\\src\\Assets\\Shaders\\ScreenFrag.spv"
+			".\\src\\EditorAssets\\Shaders\\ScreenVert.spv",
+			".\\src\\EditorAssets\\Shaders\\ScreenFrag.spv"
 		);
 	}
 

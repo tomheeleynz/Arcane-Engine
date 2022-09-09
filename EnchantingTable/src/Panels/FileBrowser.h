@@ -14,5 +14,5 @@ private:
 
 private:
 	Arcane::FileWatcher* m_Watcher;
-	std::map<std::string, Arcane::Texture*> m_Icons;
+	std::map<std::string, ImTextureID> m_Icons;
 };

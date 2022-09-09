@@ -41,6 +41,7 @@ void EditorLayer::OnAttach()
 
 	m_EntityPanel = new EntityPanel();
 	m_FileBrowserPanel = new FileBrowserPanel();
+	m_MaterialViewerPanel = new MaterialViewerPanel();
 
 	// Setup Camera
 	m_EditorCamera = new Arcane::PerspectiveCamera(512, 512, 45.0f);
@@ -121,8 +122,6 @@ void EditorLayer::OnImGuiRender()
 
 
 	// Resize Framebuffer if necessary
-
-
 	ImGui::BeginMenuBar();
 	{
 		if (ImGui::BeginMenu("File"))
@@ -140,8 +139,13 @@ void EditorLayer::OnImGuiRender()
 
 	m_EntityPanel->SetContext(m_ScenePanel->GetSelectedEntity());
 	m_EntityPanel->Update();
-	
+
 	m_FileBrowserPanel->OnUpdate();
+
+	if (m_EntityPanel->GetSelectedMaterial() != nullptr)
+		m_MaterialViewerPanel->SetMaterial(m_EntityPanel->GetSelectedMaterial());
+
+	m_MaterialViewerPanel->OnUpdate();
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	
