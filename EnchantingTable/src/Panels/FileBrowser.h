@@ -15,4 +15,6 @@ private:
 private:
 	Arcane::FileWatcher* m_Watcher;
 	std::map<std::string, ImTextureID> m_Icons;
+
+	std::filesystem::path m_AssetPath;
 };

@@ -2,7 +2,8 @@
 
 FileBrowserPanel::FileBrowserPanel()
 {
-	m_Watcher = new Arcane::FileWatcher("./src/Assets/Textures", std::chrono::milliseconds(5000));
+	m_Watcher = new Arcane::FileWatcher("./src/Assets/Models", std::chrono::milliseconds(5000));
+
 
 	///////////////////////////////////////////
 	//// Icons
@@ -14,8 +15,8 @@ FileBrowserPanel::FileBrowserPanel()
 	// -- Image Icon
 	m_Icons["Image"] = Arcane::UI::AddTexture(Arcane::Texture::Create("./src/EditorAssets/Icons/image_icon.png"));
 
-	// -- Mesh
-	m_Icons["Mesh"];
+	// -- Mesh Icon
+	m_Icons["Mesh"] = Arcane::UI::AddTexture(Arcane::Texture::Create("./src/EditorAssets/Icons/mesh_icon.png"));
 }
 
 void FileBrowserPanel::OnUpdate()
@@ -38,8 +39,6 @@ void FileBrowserPanel::OnUpdate()
 		if (columnCount < 1)
 			columnCount = 1;
 
-		ImGui::Columns(columnCount, 0, false);
-		
 		for (auto& path : m_Watcher->GetPaths())
 		{
 			if (!path.second.isDirectory) {
@@ -70,8 +69,6 @@ void FileBrowserPanel::OnUpdate()
 			}
 		}
 	}
-
-	ImGui::Columns(1);
 	ImGui::End();
 }
 
@@ -83,6 +80,10 @@ std::string FileBrowserPanel::GetIconType(std::string extension)
 
 	if (extension == ".arcmat") {
 		return "Material";
+	}
+
+	if (extension == ".obj" || extension == ".fbx") {
+		return "Mesh";
 	}
 
 	return std::string();
