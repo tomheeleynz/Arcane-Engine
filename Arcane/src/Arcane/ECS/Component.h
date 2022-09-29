@@ -2,6 +2,7 @@
 
 #include <string>
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 #include "Arcane/Renderer/Mesh.h"
 
@@ -21,7 +22,7 @@ namespace Arcane
 	struct TransformComponent
 	{
 		glm::vec3 pos = {0.0f, 0.0f, 0.0f};
-		glm::vec3 rot = {0.0f, 0.0f, 0.0f};
+		glm::quat rotation = {0.0, 0.0, 0.0, 1.0};
 		glm::vec3 scale = {1.0f, 1.0f, 1.0f };
 	};
 

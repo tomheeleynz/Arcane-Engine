@@ -303,8 +303,8 @@ namespace Arcane
 
 				// Create Model Matrix
 				Model currentTransform;
-				currentTransform.transform = glm::translate(glm::mat4(1), currentMeshComponent.pos) *
-					glm::rotate(glm::mat4(1), glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f)) * 
+				currentTransform.transform = glm::translate(glm::mat4(1), currentMeshComponent.pos) * 
+					glm::mat4_cast(currentMeshComponent.rotation) *
 					glm::scale(glm::mat4(1), currentMeshComponent.scale);
 
 				// Write to uniform buffer

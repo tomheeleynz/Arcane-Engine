@@ -59,8 +59,8 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 
 	DrawComponent<TransformComponent>("Transform", entity, [](auto& component) {
 		ImGui::InputFloat3("Position", glm::value_ptr(component.pos));
+		ImGui::InputFloat3("Rotation", glm::value_ptr(component.rotation));
 		ImGui::InputFloat3("Scale", glm::value_ptr(component.scale));
-		ImGui::InputFloat3("Rotation", glm::value_ptr(component.rot));
 	});
 
 

@@ -6,3 +6,5 @@ file(GLOB_RECURSE SRC_FILES "src/*.h" "src/*.cpp")
 add_executable(${PROJECT_NAME} ${SRC_FILES})
 
 target_link_libraries(${PROJECT_NAME} Arcane)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Tools")
