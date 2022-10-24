@@ -17,8 +17,3 @@ namespace Arcane
 	{
 	}
 }
-
-namespace std 
-{
-	
-}
