@@ -105,12 +105,12 @@ namespace Arcane
 
 		return metaJson["id"];
 	}
+
 	bool AssetDatabase::GenerateDefaultAssets()
 	{
 		TextureAsset* defaultTexture =  new TextureAsset("./src/Assets/Textures/default.png");
 		defaultTexture->LoadAsset();
 		m_DefaultAssets["DefaultTexture"] = defaultTexture;
-
 		m_DefaultAssets["MeshMaterial"] = new MaterialAsset(Material::Create(ShaderLibrary::GetShader("Mesh")));
 		return true;
 	}
