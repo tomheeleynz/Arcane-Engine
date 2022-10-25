@@ -4,14 +4,20 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
+#include "Arcane/Core/UUID.h"
 #include "Arcane/Renderer/Mesh.h"
 
-namespace Arcane 
+namespace Arcane
 {
 	enum class LightType
 	{
 		DIRECTIONAL,
 		POINT
+	};
+
+	struct IDComponent
+	{
+		UUID uuid;
 	};
 
 	struct TagComponent

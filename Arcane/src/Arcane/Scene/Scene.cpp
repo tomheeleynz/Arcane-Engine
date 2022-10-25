@@ -8,11 +8,11 @@ namespace Arcane
 	{
 		m_SceneRenderer = nullptr;
 
-		// Add defaults to scene
-
 		// -- Directional Light
 		entt::entity newHandle = m_Registry.create();
 		Entity* newEntity = new Entity(newHandle, this);
+
+		newEntity->AddComponent<IDComponent>();
 		newEntity->AddComponent<TagComponent>("Directional Light");
 		newEntity->AddComponent<TransformComponent>();
 		newEntity->AddComponent<LightComponent>(LightType::DIRECTIONAL, glm::vec3(1.0f, 1.0f, 1.0f));
@@ -22,8 +22,23 @@ namespace Arcane
 	{
 		entt::entity newHandle = m_Registry.create();
 		Entity* newEntity = new Entity(newHandle, this);
+
 		newEntity->AddComponent<TagComponent>(name);
+		newEntity->AddComponent<IDComponent>();
 		newEntity->AddComponent<TransformComponent>();
+
+		return newEntity;
+	}
+
+	Entity* Scene::CreateEntityWithUUID(std::string name, uint64_t uuid)
+	{
+		entt::entity newHandle = m_Registry.create();
+		Entity* newEntity = new Entity(newHandle, this);
+
+		newEntity->AddComponent<TagComponent>(name);
+		newEntity->AddComponent<IDComponent>(uuid);
+		newEntity->AddComponent<TransformComponent>();
+
 		return newEntity;
 	}
 
