@@ -4,19 +4,19 @@
 #include <time.h>
 #include <cstdlib>
 
+
 #include "MeshAsset.h"
 #include "TextureAsset.h"
 #include "MaterialAsset.h"
 #include "AssetDatabase.h"
 #include "Arcane/Renderer/Shader.h"
+#include "Arcane/Core/UUID.h"
 
 namespace Arcane
 {
 	AssetDatabase::AssetDatabase(std::filesystem::path assetDir)
 	{
 		m_AssetDirPath = assetDir;
-		srand(time(0));
-
 	}
 
 	Asset* AssetDatabase::GetAsset(int id)
@@ -53,7 +53,7 @@ namespace Arcane
 		// Either Create asset id or get from the meta file
 		int assetID = 0;
 		if (!CheckMetaInfo(metaPath)) {
-			assetID = rand();
+			assetID = (uint64_t)UUID();
 			GenerateMetaFile(metaPath, assetID);
 		}
 		else {
