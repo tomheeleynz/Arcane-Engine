@@ -18,7 +18,7 @@
 	url = https://github.com/nlohmann/json.git
 [submodule "Arcane/vendor/SPIRV-Reflect"]
 	path = Arcane/vendor/SPIRV-Reflect
-	url = https://github.com/KhronosGroup/SPIRV-Reflect.git
+	url = https://github.com/tomheeleynz/SPIRV-Reflect.git
 [submodule "Arcane/vendor/assimp"]
 	path = Arcane/vendor/assimp
 	url = https://github.com/tomheeleynz/assimp.git
