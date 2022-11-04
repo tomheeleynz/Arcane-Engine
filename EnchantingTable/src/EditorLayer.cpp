@@ -40,6 +40,8 @@ void EditorLayer::OnAttach()
 	m_ScenePanel->SetContext(m_ActiveScene);
 
 	m_EntityPanel = new EntityPanel();
+	m_FileBrowserPanel = new FileBrowserPanel();
+	m_MaterialViewerPanel = new MaterialViewerPanel();
 
 	// Setup Camera
 	m_EditorCamera = new Arcane::PerspectiveCamera(512, 512, 45.0f);
@@ -120,8 +122,6 @@ void EditorLayer::OnImGuiRender()
 
 
 	// Resize Framebuffer if necessary
-
-
 	ImGui::BeginMenuBar();
 	{
 		if (ImGui::BeginMenu("File"))
@@ -140,12 +140,13 @@ void EditorLayer::OnImGuiRender()
 	m_EntityPanel->SetContext(m_ScenePanel->GetSelectedEntity());
 	m_EntityPanel->Update();
 
-	ImGui::Begin("File Browser");
-	{
-		
-	}
-	ImGui::End();
-	
+	m_FileBrowserPanel->OnUpdate();
+
+	if (m_EntityPanel->GetSelectedMaterial() != nullptr)
+		m_MaterialViewerPanel->SetMaterial(m_EntityPanel->GetSelectedMaterial());
+
+	m_MaterialViewerPanel->OnUpdate();
+
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	
 	ImGui::Begin("Viewport");
@@ -159,6 +160,17 @@ void EditorLayer::OnImGuiRender()
 		m_ViewportSize = { viewportSize.x, viewportSize.y };
 		
 		Arcane::UI::Image(m_Viewport, viewportSize);
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
+
+			if (payload != nullptr) {
+				uint64_t assetID = *static_cast<uint64_t*>(payload->Data);
+			}
+			ImGui::EndDragDropTarget();
+		}
+
 	}
 	ImGui::End();
 	

@@ -3,23 +3,21 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 #include "Arcane/Renderer/UniformBuffer.h"
-#include "VulkanDescriptorSet.h"
 
 namespace Arcane
 {
 	class VulkanUniformBuffer : public UniformBuffer
 	{
 	public:
-		VulkanUniformBuffer(std::initializer_list<UniformDescriptor*> descriptors);
+		VulkanUniformBuffer(uint32_t size);
 
 		void WriteData(void* data, uint32_t size) override;
-		void WriteData(UniformObject* object) override;
+		std::vector<VkBuffer> GetUniformBuffers() { return m_UniformBuffers; }
 
-		VkDescriptorSetLayout GetLayout() { return m_DescriptorSet->GetLayout(); }
-		std::vector<VkDescriptorSet> GetDescriptorSets() { return m_DescriptorSet->GetDescriptorSets(); }
+		uint32_t GetSize() override;
 	private:
+		uint32_t m_Size = 0; 
 		std::vector<VkBuffer> m_UniformBuffers;
 		std::vector<VkDeviceMemory> m_UniformBuffersMemory;
-		VulkanDescriptorSet* m_DescriptorSet;
 	};
 }

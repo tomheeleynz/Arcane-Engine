@@ -25,6 +25,8 @@ namespace Arcane
 		glm::vec3 GetViewDir() { return -glm::transpose(m_View)[2]; }
 		glm::vec3 GetRightVector() { return glm::transpose(m_View)[0]; }
 
+		glm::vec3 GetPosition() { return m_ViewData.CameraPosition; }
+
 		glm::vec2 GetSize() { return m_Size; }
 		void SetSize(uint32_t width, uint32_t height) { m_Size = {width, height}; }
 

@@ -8,17 +8,30 @@ namespace Arcane
 		glm::vec2 texture;
 	};
 
-	struct MVP {
+	struct CameraData {
 		glm::mat4 proj;
 		glm::mat4 view;
-		glm::mat4 model;
+		glm::vec3 cameraPosition;
+	};
+
+	struct Model {
+		glm::mat4 transform;
+	};
+
+	struct DirectionaLight
+	{
+		alignas(16) glm::vec3 direction;
+		alignas(16) glm::vec3 color;
 	};
 
 	struct SceneRendererData
 	{
+		// Global Render Data
+		DescriptorSet* GlobalDescriptorSet;
+		UniformBuffer* GlobalUniformBuffer;
+
 		// Composite Render Pass
-		UniformBuffer* CompositeUniformBuffer;
-		TextureSampler* CompositeTextureSampler;
+		DescriptorSet* CompositeDescriptorSet;
 		Framebuffer* CompositeFramebuffer;
 		RenderPass* CompositeRenderPass;
 		Pipeline* CompositeRenderPipeline;
@@ -31,8 +44,10 @@ namespace Arcane
 		Framebuffer* GeometryFramebuffer;
 		RenderPass* GeometryRenderPass;
 		Pipeline* GeometryPipeline;
-		UniformBuffer* GeometryUniformBuffer;
-		UniformObject* MvpObject;
+		DescriptorSet* ObjectDescriptorSet;
+		DescriptorSet* GeometryPassDescriptorSet;
+		UniformBuffer* ObjectUniformBuffer;
+		UniformBuffer* GeometryPassUniformBuffer;
 		Shader* GeometryShader;
 		VertexDescriptor* GeometryVertexDescriptor;
 
@@ -49,8 +64,15 @@ namespace Arcane
 		// Transform for meshes
 		std::vector<TransformComponent> MeshTransforms;
 
+		// Materials for meshses
+		std::vector<Material*> materials;
+
 		// Camera to render with
 		Camera* SceneCamera;
+
+		// Scene Lighting Stuff
+		LightComponent directionaLight;
+		TransformComponent directionalLightTransform;
 	};
 
 	static SceneRendererData s_Data;
@@ -58,14 +80,35 @@ namespace Arcane
 	SceneRenderer::SceneRenderer()
 	{
 		///////////////////////////////////////////////////////////////
+		//// Global Render Data
+		///////////////////////////////////////////////////////////////
+		printf("----------- Creating Global Data\n");
+		// -- Create Descripor Set
+		DescriptorSetSpecs globalDescriptorSetSpecs;
+		globalDescriptorSetSpecs.SetNumber = 0;
+		s_Data.GlobalDescriptorSet = DescriptorSet::Create(
+			globalDescriptorSetSpecs, {
+				{0, 1, DescriptorType::UNIFORM_BUFFER, "Camera Data", DescriptorLocation::VERTEX}
+			}
+		);
+
+		// -- Create Uniform Buffer, then add to descriptor set
+		s_Data.GlobalUniformBuffer = UniformBuffer::Create(sizeof(CameraData));
+		s_Data.GlobalDescriptorSet->AddUniformBuffer(
+			s_Data.GlobalUniformBuffer, 0, 0
+		);
+
+
+		///////////////////////////////////////////////////////////////
 		//// Geometry Renderpass
 		///////////////////////////////////////////////////////////////
+		printf("----------- Creating Geo Renderpass\n");
 		FramebufferSpecifications geometryFramebufferSpecs;
 		geometryFramebufferSpecs.AttachmentSpecs = {
 			FramebufferAttachmentType::COLOR,
 			FramebufferAttachmentType::DEPTH
 		};
-		
+
 		geometryFramebufferSpecs.ClearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
 		geometryFramebufferSpecs.Width = 512;
 		geometryFramebufferSpecs.Height = 512;
@@ -76,10 +119,7 @@ namespace Arcane
 		geometryRenderpassSpecs.TargetFramebuffer = s_Data.GeometryFramebuffer;
 		s_Data.GeometryRenderPass = RenderPass::Create(geometryRenderpassSpecs);
 
-		s_Data.GeometryShader = Shader::Create(
-			".\\src\\Assets\\Shaders\\MeshVert.spv",
-			".\\src\\Assets\\Shaders\\MeshFrag.spv"
-		);
+		s_Data.GeometryShader = ShaderLibrary::GetShader("Mesh");
 
 		s_Data.GeometryVertexDescriptor = VertexDescriptor::Create({
 			VertexType::float3,
@@ -87,28 +127,48 @@ namespace Arcane
 			VertexType::float2
 		});
 
-		s_Data.MvpObject = new UniformObject(sizeof(MVP));
-		s_Data.MvpObject->SetBinding(0);
-		s_Data.MvpObject->SetLocation(UniformDescriptorLocation::VERTEX);
+		// Create Object Descriptor Set
+		DescriptorSetSpecs objectDescriptorSetSpecs;
+		objectDescriptorSetSpecs.SetNumber = 3;
+		s_Data.ObjectDescriptorSet = DescriptorSet::Create(
+			objectDescriptorSetSpecs, {
+				{0, 1, DescriptorType::UNIFORM_BUFFER, "Model", DescriptorLocation::VERTEX}
+			}
+		);
 
-		s_Data.GeometryUniformBuffer = UniformBuffer::Create({
-			s_Data.MvpObject
-		});
+		s_Data.ObjectUniformBuffer = UniformBuffer::Create(sizeof(Model));
+		s_Data.ObjectDescriptorSet->AddUniformBuffer(s_Data.ObjectUniformBuffer, 1, 0);
 
+		// Create Geomertry pass descriptor
+		DescriptorSetSpecs geometryPassDescriptorSetSpecs;
+		geometryPassDescriptorSetSpecs.SetNumber = 1;
+		s_Data.GeometryPassDescriptorSet = DescriptorSet::Create(
+			geometryPassDescriptorSetSpecs, {
+				{0, 1, DescriptorType::UNIFORM_BUFFER, "Lights", DescriptorLocation::FRAGMENT}
+			}
+		);
+
+		s_Data.GeometryPassUniformBuffer = UniformBuffer::Create(sizeof(DirectionaLight));
+		s_Data.GeometryPassDescriptorSet->AddUniformBuffer(s_Data.GeometryPassUniformBuffer, 1, 0);
+
+
+		// Create Pipeline
 		PipelineSpecification geometrySpecs;
 		geometrySpecs.renderPass = s_Data.GeometryRenderPass;
 		geometrySpecs.shader = s_Data.GeometryShader;
 		geometrySpecs.descriptor = s_Data.GeometryVertexDescriptor;
-		geometrySpecs.uniformBuffer = s_Data.GeometryUniformBuffer;
+
+		if (s_Data.GeometryShader->GetMaterialDescriptor() != nullptr)
+			geometrySpecs.DescriptorSets = {s_Data.GlobalDescriptorSet, s_Data.GeometryPassDescriptorSet, s_Data.GeometryShader->GetMaterialDescriptor(), s_Data.ObjectDescriptorSet};
+		else 
+			geometrySpecs.DescriptorSets = { s_Data.GlobalDescriptorSet, s_Data.ObjectDescriptorSet };
+		
 		s_Data.GeometryPipeline = Pipeline::Create(geometrySpecs);
 
 		///////////////////////////////////////////////////////////////
 		//// Grid (Part of Geo Pass)
 		///////////////////////////////////////////////////////////////
-		s_Data.GridShader = Shader::Create(
-			".\\src\\Assets\\Shaders\\GridVert.spv",
-			".\\src\\Assets\\Shaders\\GridFrag.spv"
-		);
+		s_Data.GridShader = ShaderLibrary::GetShader("Grid");
 
 		s_Data.GridVertexDescriptor = VertexDescriptor::Create({
 			VertexType::float3	
@@ -130,17 +190,28 @@ namespace Arcane
 		s_Data.GridIndexBuffer = IndexBuffer::Create(gridIndices.data(), gridIndices.size());
 		s_Data.GridVertexBuffer->AddIndexBuffer(s_Data.GridIndexBuffer);
 
+		// Create Descriptor Sets
+		DescriptorSetSpecs objectSetSpecs;
+		objectSetSpecs.SetNumber = 3;
+		s_Data.ObjectDescriptorSet = DescriptorSet::Create(objectSetSpecs, {
+			{0, 1, DescriptorType::UNIFORM_BUFFER, "Transform Data", DescriptorLocation::VERTEX}
+		});
+		s_Data.ObjectUniformBuffer = UniformBuffer::Create(sizeof(Model));
+		s_Data.ObjectDescriptorSet->AddUniformBuffer(s_Data.ObjectUniformBuffer, 3, 0);
+
+
 		PipelineSpecification gridSpecs;
 		gridSpecs.renderPass = s_Data.GeometryRenderPass;
 		gridSpecs.descriptor = s_Data.GridVertexDescriptor;
 		gridSpecs.shader = s_Data.GridShader;
-		gridSpecs.uniformBuffer = s_Data.GeometryUniformBuffer;
+		gridSpecs.DescriptorSets = {s_Data.GlobalDescriptorSet};
 		s_Data.GridPipleine = Pipeline::Create(gridSpecs);
 
 
 		///////////////////////////////////////////////////////////////
 		//// Composite Renderpass
 		///////////////////////////////////////////////////////////////
+		printf("----------- Creating Composite Renderpass\n");
 		FramebufferSpecifications compositeFramebufferSpecs;
 		compositeFramebufferSpecs.AttachmentSpecs = {
 			FramebufferAttachmentType::COLOR,
@@ -157,10 +228,7 @@ namespace Arcane
 		compositeSpecs.TargetFramebuffer = s_Data.CompositeFramebuffer;
 		s_Data.CompositeRenderPass = RenderPass::Create(compositeSpecs);
 
-		s_Data.CompositeShader = Shader::Create(
-			".\\src\\Assets\\Shaders\\ScreenVert.spv",
-			".\\src\\Assets\\Shaders\\ScreenFrag.spv"
-		);
+		s_Data.CompositeShader = ShaderLibrary::GetShader("Screen");
 
 		std::vector<ScreenVertex> screenVertices = {
 			{{-1.0f,-1.0f,0.0f}, {1.0f, 0.0f}}, // Top Left
@@ -182,20 +250,21 @@ namespace Arcane
 			VertexType::float3,
 			VertexType::float2
 		});
-		
-		TextureSampler* CompositeTextureSampler = new TextureSampler(s_Data.GeometryFramebuffer);
-		CompositeTextureSampler->SetBinding(0);
-		CompositeTextureSampler->SetLocation(UniformDescriptorLocation::FRAGMENT);
 
-		s_Data.CompositeUniformBuffer = UniformBuffer::Create({
-			CompositeTextureSampler
+		// Create per pass Descriptor
+		DescriptorSetSpecs compositeSetSpecs;
+		compositeSetSpecs.SetNumber = 1;
+		s_Data.CompositeDescriptorSet = DescriptorSet::Create(compositeSetSpecs, {
+			{0, 1, DescriptorType::SAMPLER, "Geo Framebuffer Texture", DescriptorLocation::FRAGMENT}
 		});
+
+		s_Data.CompositeDescriptorSet->AddImageSampler(s_Data.GeometryFramebuffer, 1, 0);
 
 		PipelineSpecification compositePipelineSpecs;
 		compositePipelineSpecs.shader = s_Data.CompositeShader;
 		compositePipelineSpecs.renderPass = s_Data.CompositeRenderPass;
 		compositePipelineSpecs.descriptor = s_Data.CompositeVertexDescriptor;
-		compositePipelineSpecs.uniformBuffer = s_Data.CompositeUniformBuffer;
+		compositePipelineSpecs.DescriptorSets = { s_Data.CompositeDescriptorSet };
 		s_Data.CompositeRenderPipeline = Pipeline::Create(compositePipelineSpecs);
 	}
 
@@ -208,53 +277,75 @@ namespace Arcane
 	{
 		Renderer::BeginRenderPass(s_Data.CompositeRenderPass);
 		{
-			Renderer::RenderQuad(s_Data.CompositeVertexBuffer, s_Data.CompositeRenderPipeline, s_Data.CompositeUniformBuffer);
+			Renderer::RenderQuad(s_Data.CompositeVertexBuffer, s_Data.CompositeRenderPipeline, {s_Data.CompositeDescriptorSet});
 		}
 		Renderer::EndRenderPass(s_Data.CompositeRenderPass);
 	}
 
 	void SceneRenderer::GeometryPass()
 	{
-		// Create Uniform Buffer Object
-		MVP CurrentMVP;
-		CurrentMVP.view = s_Data.SceneCamera->GetView();
-		CurrentMVP.proj = s_Data.SceneCamera->GetProject();
+		DirectionaLight currentDirLight;
+		currentDirLight.direction = s_Data.directionalLightTransform.pos;
+		currentDirLight.color = s_Data.directionaLight.color;
+		s_Data.GeometryPassUniformBuffer->WriteData((void*)&currentDirLight, sizeof(DirectionaLight));
 
+		// Update any per pass resources
 		Renderer::BeginRenderPass(s_Data.GeometryRenderPass);
 		{	
-			for (int i = 0; i < s_Data.Meshes.size(); i++) 
+			for (int i = 0; i < s_Data.Meshes.size(); i++)
 			{
+				Mesh* currentMesh = s_Data.Meshes[i];
+				Material* material = s_Data.materials[i];
+				material->UpdateMaterialData();
+
 				// Create Transform Component
 				TransformComponent& currentMeshComponent = s_Data.MeshTransforms[i];
-				glm::mat4 model = glm::translate(glm::mat4(1), currentMeshComponent.pos) * glm::scale(glm::mat4(1), currentMeshComponent.scale);
-				CurrentMVP.model = model;
-				s_Data.MvpObject->WriteData((void*)&CurrentMVP);
 
-				// Write to uniform object
-				s_Data.GeometryUniformBuffer->WriteData(s_Data.MvpObject);
+				// Create Model Matrix
+				Model currentTransform;
+				currentTransform.transform = glm::translate(glm::mat4(1), currentMeshComponent.pos) * 
+					glm::mat4_cast(currentMeshComponent.rotation) *
+					glm::scale(glm::mat4(1), currentMeshComponent.scale);
 
-				Renderer::RenderMesh(s_Data.Meshes[i]->GetVertexBuffer(), s_Data.GeometryPipeline, s_Data.GeometryUniformBuffer);
+				// Write to uniform buffer
+				s_Data.ObjectUniformBuffer->WriteData((void*)&currentTransform, sizeof(Model));
+
+				for (int j = 0; j < currentMesh->GetSubMeshes().size(); j++) {
+					SubMesh* currentSubMesh = currentMesh->GetSubMeshes()[j];
+					Renderer::RenderMesh(currentSubMesh->GetVertexBuffer(), s_Data.GeometryPipeline, {s_Data.GlobalDescriptorSet, s_Data.GeometryPassDescriptorSet,  material->GetDescriptorSet(), s_Data.ObjectDescriptorSet});
+				}
+
 			}
-			s_Data.MvpObject->WriteData((void*)&CurrentMVP);
-			s_Data.GeometryUniformBuffer->WriteData(s_Data.MvpObject);
-			Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, s_Data.GeometryUniformBuffer);
+			Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, {s_Data.GlobalDescriptorSet});
 		}
 		Renderer::EndRenderPass(s_Data.GeometryRenderPass);
 	}
 
 	void SceneRenderer::RenderScene()
 	{
+		// Write to uniform buffer
+		CameraData currentFrameCameraData;
+		currentFrameCameraData.proj = s_Data.SceneCamera->GetProject();
+		
+		// Need to to this for vulkan coord system
+		currentFrameCameraData.proj[1][1] *= -1;
+		currentFrameCameraData.view = s_Data.SceneCamera->GetView();
+		currentFrameCameraData.cameraPosition = s_Data.SceneCamera->GetPosition();
+		s_Data.GlobalUniformBuffer->WriteData((void*)&currentFrameCameraData, sizeof(CameraData));
+
 		GeometryPass();
 		CompositeRenderPass();
 
 		s_Data.Meshes.clear();
 		s_Data.MeshTransforms.clear();
+		s_Data.materials.clear();
 	}
 
-	void SceneRenderer::SubmitMesh(Mesh* mesh, TransformComponent& transform) 
+	void SceneRenderer::SubmitMesh(Mesh* mesh, TransformComponent& transform, Material* material) 
 	{
 		s_Data.Meshes.push_back(mesh);
 		s_Data.MeshTransforms.push_back(transform);
+		s_Data.materials.push_back(material);
 	}
 
 	void SceneRenderer::SetCamera(Camera* camera)
@@ -263,7 +354,16 @@ namespace Arcane
 	}
 
 	void SceneRenderer::ResizeScene(uint32_t width, uint32_t height) {
-		// s_Data.GeometryFramebuffer->Resize(width, height);
+		// Update Geo Framebuffer
+		s_Data.GeometryFramebuffer->Resize(width, height);
+		s_Data.CompositeDescriptorSet->AddImageSampler(s_Data.GeometryFramebuffer, 1, 0);
+
 		s_Data.CompositeFramebuffer->Resize(width, height);
+	}
+
+	void SceneRenderer::SetDirectionalLight(LightComponent& light, TransformComponent& transform)
+	{
+		s_Data.directionaLight = light;
+		s_Data.directionalLightTransform = transform;
 	}
 }

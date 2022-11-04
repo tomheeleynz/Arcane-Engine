@@ -99,6 +99,26 @@ namespace Arcane {
 		
 		// Setup Swapchain
 		m_SwapChain = new VulkanSwapChain(*m_Device, m_Surface);
+
+		// Create Descriptor pool (I think this should be a global option)
+		VkDescriptorPoolSize pool_sizes[] = {
+			{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 100 },
+			{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 100 },
+		};
+
+		VkDescriptorPoolCreateInfo pool_info = {};
+		pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+		pool_info.maxSets = 100;
+		pool_info.poolSizeCount = std::size(pool_sizes);
+		pool_info.pPoolSizes = pool_sizes;
+
+		if (vkCreateDescriptorPool(m_Device->GetLogicalDevice(), &pool_info, nullptr, &m_DescriptorPool) != VK_SUCCESS) {
+			printf("Context Descriptor Pool Not Created\n");
+		}
+		else {
+			printf("Context Descriptor Pool Created\n");
+		}
 	}
 
 	bool VulkanContext::CheckValidationLayerSupport()

@@ -1,9 +1,12 @@
 #pragma once
 
+#include <vector>
+
 #include "Buffer.h"
 #include "Pipeline.h"
 #include "RendererAPI.h"
 #include "RenderPass.h"
+#include "Material.h"
 
 namespace Arcane {
 
@@ -22,10 +25,11 @@ namespace Arcane {
 		// Render Functions
 		static void RenderTriangle(VertexBuffer* buffer, Pipeline* pipeline);
 		static void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline);
-		static void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, UniformBuffer* uniformBuffer);
+		static void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets);
 
 		// Render Mesh
-		static void RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, UniformBuffer* uniformBuffer);
+		static void RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets);
+		static void RenderMeshWithMaterial(VertexBuffer* buffer, Pipeline* pipeline, Material* material);
 	private:
 	};
 }

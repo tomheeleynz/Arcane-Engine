@@ -21,6 +21,7 @@ namespace Arcane {
 		VulkanPhysicalDevice& GetPhysicalDevice() { return *m_PhysicalDevice; }
 		VulkanSwapChain& GetSwapChain() { return *m_SwapChain; }
 		VkSurfaceKHR GetSurface() { return m_Surface; }
+		VkDescriptorPool GetPool() { return m_DescriptorPool; }
 	private:
 		bool CheckValidationLayerSupport();
 		std::vector<const char*> GetRequiredExtensions();
@@ -32,5 +33,6 @@ namespace Arcane {
 		VulkanDevice* m_Device;
 		VulkanSwapChain* m_SwapChain;
 		VkDebugUtilsMessengerEXT m_DebugMessenger;
+		VkDescriptorPool m_DescriptorPool;
 	};
 }

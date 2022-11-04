@@ -21,6 +21,8 @@
 #include "Arcane/Renderer/Framebuffer.h"
 #include "Arcane/Renderer/SceneRenderer.h"
 #include "Arcane/Renderer/Camera.h"
+#include "Arcane/Renderer/DescriptorSet.h"
+#include "Arcane/Renderer/MeshFactory.h"
 
 /////////////////////////////////////////////////////
 ////////// ImGui
@@ -40,3 +42,5 @@
 ////////// Utils
 /////////////////////////////////////////////////////
 #include "Arcane/Utils/Utils.h"
+#include "Arcane/Utils/FileWatcher.h"
+

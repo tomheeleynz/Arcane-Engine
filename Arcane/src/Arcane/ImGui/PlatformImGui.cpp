@@ -18,7 +18,18 @@ namespace Arcane::UI
 		VulkanTexture* vulkanTexture = static_cast<VulkanTexture*>(texture);
 		VkDescriptorImageInfo textureInfo = vulkanTexture->GetImageDescriptorInfo();
 
-		ImGui::Image((ImTextureID)ImGui_ImplVulkan_AddTexture(textureInfo.sampler, textureInfo.imageView, textureInfo.imageLayout), ImVec2{ 512, 512 });
+		ImGui::Image((ImTextureID)ImGui_ImplVulkan_AddTexture(textureInfo.sampler, textureInfo.imageView, textureInfo.imageLayout), ImVec2{ 128, 128 });
+	}
+
+	bool ImageButton(ImTextureID id, ImVec2 size)
+	{
+		return ImGui::ImageButton(id, size);
+	}
+
+	bool ImageButton(Texture* texture, ImVec2 size)
+	{
+		ImTextureID id = AddTexture(texture);
+		return ImGui::ImageButton(id, size);
 	}
 
 	ImTextureID AddTexture(Texture* texture)

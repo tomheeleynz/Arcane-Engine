@@ -7,11 +7,11 @@
 
 namespace Arcane
 {
-	UniformBuffer* UniformBuffer::Create(std::initializer_list<UniformDescriptor*> descriptors)
+	UniformBuffer* UniformBuffer::Create(uint32_t size)
 	{
 		switch (RendererAPI::Current())
 		{
-		case RendererAPIType::Vulkan: return new VulkanUniformBuffer(descriptors);
+		case RendererAPIType::Vulkan: return new VulkanUniformBuffer(size);
 		default:
 			break;
 		}

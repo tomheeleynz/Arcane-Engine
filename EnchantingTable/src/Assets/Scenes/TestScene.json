@@ -12,7 +12,23 @@
         },
         {
           "name": "Mesh",
-          "filepath": "\\D:\\Engine-Development\\ArcaneEngine\\EnchantingTable\\src\\Assets\\Models\\Mandalorian.fbx"
+          "filepath": "\\D:\\Engine-Development\\ArcaneEngine\\EnchantingTable\\src\\Assets\\Models\\Backpack.fbx"
+        }
+      ]
+    },
+    {
+      "name": "DirectionalLight",
+      "components": [
+        {
+          "name": "Transform",
+          "position": [ 1.0, 2.0, 3.0 ],
+          "rotation": [ 0.0, 0.0, 1.0 ],
+          "scale": [ 1.0, 1.0, 1.0 ]
+        },
+        {
+          "name": "Light",
+          "type": 0,
+          "color": [0.5, 1.0, 1.0]
         }
       ]
     }

@@ -8,36 +8,21 @@
 
 #include "Material.h"
 #include "SubMesh.h"
-#include "Buffer.h"
+#include "Arcane/Assets/Asset.h"
 
 namespace Arcane
 {
-	struct MeshVertex
-	{
-		glm::vec3 vertex;
-		glm::vec3 normal;
-		glm::vec2 texture;
-	};
-
-	class Mesh
+	class Mesh : public Asset
 	{
 	public:
 		Mesh(std::string filepath);
+		Mesh(std::vector<MeshVertex> vertices, std::vector<uint32_t> indices);
 
-		Material* GetMaterial();
-		void SetMaterial(Material* material);
-
-		VertexBuffer* GetVertexBuffer() { return m_VertexBuffer; }
+		std::vector<SubMesh*> GetSubMeshes() { return m_SubMeshes; }
 	private:
 		void ProcessNode(aiNode* node, const aiScene* scene);
-		void ProcessMesh(aiMesh* mesh, const aiScene* scene);
+		SubMesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
 	private:
-		std::vector<MeshVertex> m_Vertices;
-		std::vector<uint32_t> m_Indices;
-		
-		VertexBuffer* m_VertexBuffer;
-		IndexBuffer* m_IndexBuffer;
-		
-		Material* m_Material;
+		std::vector<SubMesh*> m_SubMeshes;
 	};
 }

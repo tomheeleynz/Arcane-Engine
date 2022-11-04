@@ -1,6 +1,5 @@
 #include "Material.h"
 #include "Renderer.h"
-
 #include "Arcane/Platform/Vulkan/VulkanMaterial.h"
 
 namespace Arcane

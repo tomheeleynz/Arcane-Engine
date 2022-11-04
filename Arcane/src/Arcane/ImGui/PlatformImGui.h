@@ -6,9 +6,20 @@
 
 namespace Arcane::UI
 {
+	//////////////////////////////////////////
+	/// Images
+	//////////////////////////////////////////
 	void Image(ImTextureID id, ImVec2 size);
 	void Image(Texture* texture);
-	
+
+	//////////////////////////////////////////
+	/// Image Buttons
+	//////////////////////////////////////////
+	bool ImageButton(ImTextureID id, ImVec2 size);
+	bool ImageButton(Texture* texture, ImVec2 size);
+
+
+
 	ImTextureID AddTexture(Texture* texture);
 	ImTextureID AddTexture(Framebuffer* frameBuffer);
 }

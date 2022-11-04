@@ -5,7 +5,9 @@ file(GLOB CORE_FILES "src/Arcane/Core/*.cpp"  "src/Arcane/Core/*.h")
 file(GLOB RENDERER_FILES "src/Arcane/Renderer/*.h" "src/Arcane/Renderer/*.cpp")
 file(GLOB ECS_FILES "src/Arcane/ECS/*.h" "src/Arcane/ECS/*.cpp")
 file(GLOB SCENE_FILES "src/Arcane/Scene/*.h" "src/Arcane/Scene/*.cpp")
-file(GLOB UTIL_FILES "src/Arcane/Utils/*.h")
+file(GLOB UTIL_FILES "src/Arcane/Utils/*.h" "src/Arcane/Utils/*.cpp")
+file(GLOB ASSET_MANAGER_FILES "src/Arcane/Assets/*.h" "src/Arcane/Assets/*.cpp")
+file(GLOB SCRIPTING_FILES "src/Arcane/Scripting/*.h" "src/Arcane/Scripting/*.cpp")
 
 if (WIN32 OR (UNIX AND NOT APPLE))
 	# Find Vulkan
@@ -50,10 +52,15 @@ add_library(
 	${ECS_FILES}
 	${SCENE_FILES}
 	${UTIL_FILES}
+	${ASSET_MANAGER_FILES}
+	${SCRIPTING_FILES}
 )
 
 # Link Source Directories
-target_include_directories(${PROJECT_NAME} PUBLIC "src" "vendor/glm" "vendor/stb" "vendor/entt/single_include" "vendor/json/single_include")
+target_include_directories(${PROJECT_NAME} PUBLIC "src" "vendor/glm" "vendor/stb" "vendor/entt/single_include" "vendor/json/single_include" "vendor/dotnet")
 
 # Link Libraries
 target_link_libraries(${PROJECT_NAME} ${LIBS})
+
+# Set Folder
+set_target_properties(Arcane PROPERTIES FOLDER "Core")

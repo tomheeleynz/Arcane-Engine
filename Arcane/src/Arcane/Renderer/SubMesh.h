@@ -1,14 +1,12 @@
 #pragma once
-
 #include <glm/glm.hpp>
-#include <assimp/Importer.hpp>      
-#include <assimp/scene.h>          
-#include <assimp/postprocess.h>
 #include <vector>
+
+#include "Buffer.h"
 
 namespace Arcane
 {
-	struct SubMeshVertex
+	struct MeshVertex
 	{
 		glm::vec3 position;
 		glm::vec3 normal;
@@ -18,10 +16,12 @@ namespace Arcane
 	class SubMesh
 	{
 	public:
-		SubMesh(aiMesh* submesh);
-	
+		SubMesh(std::vector<MeshVertex> vertices, std::vector<uint32_t> indices);
+
+		VertexBuffer* GetVertexBuffer() { return m_VertexBuffer; }
+		IndexBuffer* GetIndexBuffer() { return m_IndexBuffer; }
 	private:
-		std::vector<SubMeshVertex> m_Vertices;
-		std::vector<uint32_t> m_Indices;
+		VertexBuffer* m_VertexBuffer;
+		IndexBuffer* m_IndexBuffer;
 	};
 }

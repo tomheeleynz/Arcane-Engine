@@ -34,6 +34,11 @@ namespace Arcane
 			return m_Scene->m_Registry.get<T>(m_EntityHandle);
 		}
 
+		void DeleteEntity()
+		{
+			m_Scene->m_Registry.destroy(m_EntityHandle);
+		}
+
 		operator bool() const { return m_EntityHandle != entt::null; }
 	private:
 		entt::entity m_EntityHandle { entt::null };

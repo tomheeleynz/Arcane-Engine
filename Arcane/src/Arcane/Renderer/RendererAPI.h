@@ -1,9 +1,12 @@
 #pragma once
+#include <vector>
 
 #include "Buffer.h"
 #include "Pipeline.h"
 #include "RenderPass.h"
 #include "UniformBuffer.h"
+#include "DescriptorSet.h"
+#include "Material.h"
 
 namespace Arcane {
 
@@ -30,10 +33,11 @@ namespace Arcane {
 
 		// -- Without Uniform Buffer
 		virtual void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline) = 0;
-		virtual void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, UniformBuffer* uniformBuffer) = 0;
+		virtual void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets) = 0;
 
 		// Mesh
-		virtual void RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, UniformBuffer* uniformBuffer) = 0;
+		virtual void RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets) = 0;
+		virtual void RenderMeshWithMaterial(VertexBuffer* buffer, Pipeline* pipeline, Material* materal) = 0;
 
 		// Static Renderer Functions
 		static void SetAPI(RendererAPIType api);

@@ -39,13 +39,30 @@ namespace Arcane
 				}
 				else if (name == "Mesh") 
 				{
+					// Get Filepath of mesh
 					std::string filepath = element["filepath"];
 					
+					// Add a mesh component to hold the mesh
 					MeshComponent newComponent;
 					newComponent.filepath = filepath;
 					newComponent.mesh = new Mesh(filepath);
-
 					newEntity->AddComponent<MeshComponent>(newComponent);
+
+					// Add a mesh render component to hold the material
+					MeshRendererComponent newRendererComponent;
+					newRendererComponent.material = Material::Create(ShaderLibrary::GetShader("Mesh"));
+					newEntity->AddComponent<MeshRendererComponent>(newRendererComponent);
+				}
+				else if (name == "Light") {
+					LightComponent light;
+
+					int lightType = element["type"];
+					if (lightType == 0) {
+						light.type = LightType::DIRECTIONAL;
+					}
+
+					light.color = { element["color"][0], element["color"][1], element["color"][2]};
+					newEntity->AddComponent<LightComponent>(light);
 				}
 			}
 		}
