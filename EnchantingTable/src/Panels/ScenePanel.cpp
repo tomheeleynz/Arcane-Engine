@@ -43,7 +43,7 @@ Arcane::Entity& ScenePanel::CreateMeshEntity(MeshEntityType type)
 {
 	// Get Default Material
 	Arcane::Asset* materialAsset = Arcane::Application::Get().GetAssetDatabase().GetDefaultAsset("MeshMaterial");
-	Arcane::Material* material = static_cast<Arcane::MaterialAsset*>(materialAsset)->GetMaterial();
+	Arcane::Material* material = static_cast<Arcane::Material*>(materialAsset);
 
 	// Create Entity
 	Arcane::Entity* entity = m_Context->CreateEntity("New Entity");

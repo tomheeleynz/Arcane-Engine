@@ -166,7 +166,7 @@ void EditorLayer::OnImGuiRender()
 			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
 
 			if (payload != nullptr) {
-				int assetID = *static_cast<int*>(payload->Data);
+				uint64_t assetID = *static_cast<uint64_t*>(payload->Data);
 			}
 			ImGui::EndDragDropTarget();
 		}

@@ -44,10 +44,3 @@
 #include "Arcane/Utils/Utils.h"
 #include "Arcane/Utils/FileWatcher.h"
 
-
-/////////////////////////////////////////////////////
-////////// Assets
-/////////////////////////////////////////////////////
-#include "Arcane/Assets/MeshAsset.h"
-#include "Arcane/Assets/TextureAsset.h"
-#include "Arcane/Assets/MaterialAsset.h"

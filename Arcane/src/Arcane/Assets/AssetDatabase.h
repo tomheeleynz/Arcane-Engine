@@ -29,7 +29,7 @@ namespace Arcane
 	
 	private:
 		std::unordered_map<std::string, Asset*> m_DefaultAssets;
-		std::unordered_map<int, Asset*> m_Assets;
+		std::unordered_map<uint64_t, Asset*> m_Assets;
 		std::filesystem::path m_AssetDirPath;
 	};
 }

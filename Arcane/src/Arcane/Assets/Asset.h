@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Arcane/Core/UUID.h"
+
 namespace Arcane
 {
 	enum class AssetType
@@ -14,15 +16,13 @@ namespace Arcane
 	public:
 		Asset() {}
 
-		int GetID() { return m_ID; }
-		void SetID(int id) { m_ID = id; };
+		uint64_t GetID() { return (uint64_t)m_UUID; }
+		void SetID(Core::UUID id) { m_UUID = id; };
 
 		AssetType GetAssetType() { return m_Type; };
 		void SetAssetType(AssetType type) { m_Type = type; };
-
-		virtual void LoadAsset() {}
 	private:
-		int m_ID = -1;
+		Core::UUID m_UUID;
 		AssetType m_Type;
 	};
 }

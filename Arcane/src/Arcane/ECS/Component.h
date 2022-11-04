@@ -17,7 +17,7 @@ namespace Arcane
 
 	struct IDComponent
 	{
-		UUID uuid;
+		Core::UUID uuid;
 	};
 
 	struct TagComponent

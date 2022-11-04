@@ -5,25 +5,29 @@
 
 namespace Arcane
 {
-	class UUID
+	namespace Core
 	{
-	public:
-		UUID();
-		UUID(uint64_t uuid);
+		class UUID
+		{
+		public:
+			UUID();
+			UUID(uint64_t uuid);
 
-		operator uint64_t() const { return m_UUID; }
-	private:
-		uint64_t m_UUID;
-	};
+			operator uint64_t() const { return m_UUID; }
+		private:
+			uint64_t m_UUID;
+		
+		};
+	}
 }
 
 
 namespace std
 {
 	template<>
-	struct hash<Arcane::UUID>
+	struct hash<Arcane::Core::UUID>
 	{
-		std::size_t operator()(const Arcane::UUID& uuid) const
+		std::size_t operator()(const Arcane::Core::UUID& uuid) const
 		{
 			return hash<uint64_t>()((uint64_t)uuid);
 		}

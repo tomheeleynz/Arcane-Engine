@@ -1,6 +1,5 @@
 #include "VulkanMaterial.h"
 #include "Arcane/Core/Application.h"
-#include "Arcane/Assets/TextureAsset.h"
 
 namespace Arcane
 {
@@ -15,7 +14,7 @@ namespace Arcane
 		std::map<int, int> m_UniformBufferSizeMap;
 
 		// Get Default Texture
-		Texture* defaultTexture = static_cast<TextureAsset*>(Application::Get().GetAssetDatabase().GetDefaultAsset("DefaultTexture"))->GetTexture();
+		Texture* defaultTexture = static_cast<Texture*>(Application::Get().GetAssetDatabase().GetDefaultAsset("DefaultTexture"));
 
 		// Actually parse these variables
 		for (ShaderVariable variable : GetMaterialVariables())

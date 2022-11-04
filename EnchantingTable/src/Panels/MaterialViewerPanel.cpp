@@ -27,14 +27,13 @@ void MaterialViewerPanel::OnUpdate()
 				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
 
 				if (payload != nullptr) {
-					int assetID = *static_cast<int*>(payload->Data);
+					uint64_t assetID = *static_cast<int*>(payload->Data);
 					Asset* asset = Arcane::Application::Get().GetAssetDatabase().GetAsset(assetID);
 
 					if (asset != nullptr && asset->GetAssetType() == AssetType::TEXTURE)
 					{
-						TextureAsset* textureAsset = static_cast<TextureAsset*>(asset);
-						textureAsset->LoadAsset();
-						m_Material->WriteTexture(variable.binding, textureAsset->GetTexture());
+						Texture* texture = static_cast<Texture*>(asset);
+						m_Material->WriteTexture(variable.binding, texture);
 					}
 				}
 				ImGui::EndDragDropTarget();

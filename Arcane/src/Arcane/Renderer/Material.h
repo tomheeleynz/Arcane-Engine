@@ -1,12 +1,14 @@
 #pragma once
 #include <glm/glm.hpp>
+
+#include "Arcane/Assets/Asset.h"
 #include "Shader.h"
 #include "DescriptorSet.h"
 #include "UniformBuffer.h"
 
 namespace Arcane
 {
-	class Material
+	class Material : public Asset
 	{
 	public:
 		virtual std::vector<ShaderVariable> GetMaterialVariables() = 0;

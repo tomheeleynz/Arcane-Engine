@@ -8,10 +8,11 @@
 
 #include "Material.h"
 #include "SubMesh.h"
+#include "Arcane/Assets/Asset.h"
 
 namespace Arcane
 {
-	class Mesh
+	class Mesh : public Asset
 	{
 	public:
 		Mesh(std::string filepath);

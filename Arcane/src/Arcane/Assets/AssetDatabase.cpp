@@ -4,13 +4,11 @@
 #include <time.h>
 #include <cstdlib>
 
-
-#include "MeshAsset.h"
-#include "TextureAsset.h"
-#include "MaterialAsset.h"
 #include "AssetDatabase.h"
 #include "Arcane/Renderer/Shader.h"
 #include "Arcane/Core/UUID.h"
+#include "Arcane/Renderer/Mesh.h"
+#include "Arcane/Renderer/Texture.h"
 
 namespace Arcane
 {
@@ -51,9 +49,9 @@ namespace Arcane
 		std::filesystem::path metaPath = currentAssetPath.parent_path() / metaFileName;
 
 		// Either Create asset id or get from the meta file
-		int assetID = 0;
+		uint64_t assetID = 0;
 		if (!CheckMetaInfo(metaPath)) {
-			assetID = (uint64_t)UUID();
+			assetID = (uint64_t)Arcane::Core::UUID();
 			GenerateMetaFile(metaPath, assetID);
 		}
 		else {
@@ -62,19 +60,23 @@ namespace Arcane
 
 		// Get File extension
 		if (currentAssetPath.extension() == ".obj") {
-			MeshAsset* meshAsset = new MeshAsset(currentAssetPath);
-			meshAsset->SetID(assetID);
-			m_Assets[assetID] = meshAsset;
+			Mesh* newMeshAsset = new Mesh(currentAssetPath.string());
+			newMeshAsset->SetID(Arcane::Core::UUID(assetID));
+			newMeshAsset->SetAssetType(AssetType::MESH);
+			m_Assets[assetID] = newMeshAsset;
+
 		}
 		else if (currentAssetPath.extension() == ".fbx") {
-			MeshAsset* meshAsset = new MeshAsset(currentAssetPath);
-			meshAsset->SetID(assetID);
-			m_Assets[assetID] = meshAsset;
+			Mesh* newMeshAsset = new Mesh(currentAssetPath.string());
+			newMeshAsset->SetAssetType(AssetType::MESH);
+			newMeshAsset->SetID(Arcane::Core::UUID(assetID));
+			m_Assets[assetID] = newMeshAsset;
 		}
 		else if (currentAssetPath.extension() == ".jpg") {
-			TextureAsset* textureAsset = new TextureAsset(currentAssetPath);
-			textureAsset->SetID(assetID);
-			m_Assets[assetID] = textureAsset;
+			Texture* newTextureAsset = Texture::Create(currentAssetPath.string());
+			newTextureAsset->SetAssetType(AssetType::TEXTURE);
+			newTextureAsset->SetID(Arcane::Core::UUID(assetID));
+			m_Assets[assetID] = newTextureAsset;
 		}
 		return true;
 	}
@@ -108,10 +110,9 @@ namespace Arcane
 
 	bool AssetDatabase::GenerateDefaultAssets()
 	{
-		TextureAsset* defaultTexture =  new TextureAsset("./src/Assets/Textures/default.png");
-		defaultTexture->LoadAsset();
+		Texture* defaultTexture =  Texture::Create("./src/Assets/Textures/default.png");
 		m_DefaultAssets["DefaultTexture"] = defaultTexture;
-		m_DefaultAssets["MeshMaterial"] = new MaterialAsset(Material::Create(ShaderLibrary::GetShader("Mesh")));
+		m_DefaultAssets["MeshMaterial"] = Material::Create(ShaderLibrary::GetShader("Mesh"));
 		return true;
 	}
 }

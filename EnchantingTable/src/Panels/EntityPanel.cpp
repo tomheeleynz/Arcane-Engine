@@ -72,10 +72,14 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
 
 			if (payload != nullptr) {
-				int assetID = *static_cast<int*>(payload->Data);
-				MeshAsset* meshAsset = static_cast<MeshAsset*>(Arcane::Application::Get().GetAssetDatabase().GetAsset(assetID));
-				meshAsset->LoadAsset();
-				component.mesh = meshAsset->GetMesh();
+				// Get Asset Id
+				uint64_t assetID = *static_cast<int*>(payload->Data);
+				Asset* meshAsset = Application::Get().GetAssetDatabase().GetAsset(assetID);
+
+				if (meshAsset != nullptr && meshAsset->GetAssetType() == AssetType::MESH) {
+					Mesh* mesh = static_cast<Mesh*>(meshAsset);
+					component.mesh = mesh;
+				}
 			}
 			ImGui::EndDragDropTarget();
 		}

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Arcane/Assets/Asset.h"
+
 #include <string>
 namespace Arcane {
 	enum class TextureImageDataType
@@ -8,7 +10,7 @@ namespace Arcane {
 		SAMPLER
 	};
 
-	class Texture
+	class Texture : public Asset
 	{
 	public:
 		virtual void UpdateTexture(std::string filename) = 0;
