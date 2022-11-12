@@ -10,8 +10,6 @@ public:
 	{
 		PushLayer(new EditorLayer());
 	}
-
-
 private:
 
 };

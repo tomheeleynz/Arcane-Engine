@@ -1,6 +1,7 @@
 #include "Window.h"
 #include "Arcane/Renderer/GraphicsContext.h"
 #include "InputManager.h"
+#include "Arcane/Renderer/RendererAPI.h"
 
 namespace Arcane {
 	Window::Window(WindowSpecifications& specifications)
@@ -15,7 +16,8 @@ namespace Arcane {
 	{
 		glfwInit();
 
-		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		if (RendererAPI::Current() == RendererAPIType::Vulkan)
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
 		m_Window = glfwCreateWindow(m_Data.Width, m_Data.Height, m_Data.Title.c_str(), nullptr, nullptr);
 
