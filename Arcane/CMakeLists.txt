@@ -13,14 +13,18 @@ if (WIN32 OR (UNIX AND NOT APPLE))
 	# Find Vulkan
 	find_package(Vulkan REQUIRED)
 
+	# Find OpenGL
+	find_package(OpenGL REQUIRED)
+
 	# Only add spirv-reflect on windows and linux
 	add_subdirectory("vendor/SPIRV-Reflect")
 
 	# Set Libraries
-	set(LIBS glfw imgui ${Vulkan_LIBRARIES} assimp SPIRV-REFLECT glad)
+	set(LIBS glfw imgui ${Vulkan_LIBRARIES} assimp SPIRV-REFLECT glad ${OPENGL_LIBRARIES})
 
 	# Set Vulkan engine files
 	file(GLOB VULKAN_FILES "src/Arcane/Platform/Vulkan/*.h" "src/Arcane/Platform/Vulkan/*.cpp")
+	file(GLOB OPENGL_FILES "src/Arcane/Platform/OpenGL/*.h" "src/Arcane/Platform/OpenGL/*.cpp" )
 	file(GLOB IMGUI_FILES "src/Arcane/ImGui/ImGuiLayer.h" "src/Arcane/ImGui/ImGuiLayer.cpp" "src/Arcane/ImGui/PlatformImGui.h"  "src/Arcane/ImGui/PlatformImGui.cpp")
 
 	if (WIN32)
@@ -29,7 +33,7 @@ if (WIN32 OR (UNIX AND NOT APPLE))
 		
 		file(GLOB WINDOWS_UTILS "src/Arcane/Platform/Windows/*.h"  "src/Arcane/Platform/Windows/*.cpp" )
 
-		set(PLATFORM_FILES ${VULKAN_FILES} ${WINDOWS_UTILS})
+		set(PLATFORM_FILES ${VULKAN_FILES} ${WINDOWS_UTILS} ${OPENGL_FILES})
 	else()
 		add_definitions(-DARCANE_LINUX)
 		message(STATUS "Compiling for linux")
@@ -57,7 +61,7 @@ add_library(
 )
 
 # Link Source Directories
-target_include_directories(${PROJECT_NAME} PUBLIC "src" "vendor/glm" "vendor/stb" "vendor/entt/single_include" "vendor/json/single_include" "vendor/dotnet")
+target_include_directories(${PROJECT_NAME} PUBLIC "src" "vendor/glm" "vendor/stb" "vendor/entt/single_include" "vendor/json/single_include" "vendor/dotnet" ${OPENGL_INCLUDE_DIRS})
 
 # Link Libraries
 target_link_libraries(${PROJECT_NAME} ${LIBS})

@@ -3,6 +3,9 @@
 // -- Vulkan Renderer
 #include "Arcane/Platform/Vulkan/VulkanRenderer.h"
 
+// -- OpenGL Renderer
+#include "Arcane/Platform/OpenGL/OpenGLRenderer.h"
+
 namespace Arcane {
 	static RendererAPI* s_RendererAPI = nullptr;
 
@@ -16,6 +19,7 @@ namespace Arcane {
 		switch (RendererAPI::Current())
 		{
 		case RendererAPIType::Vulkan: return new VulkanRenderer();
+		case RendererAPIType::OpenGL: return new OpenGLRenderer();
 		}
 	}
 
