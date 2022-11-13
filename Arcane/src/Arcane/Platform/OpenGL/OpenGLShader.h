@@ -3,6 +3,7 @@
 
 #include <string>
 #include <fstream>
+#include <spirv_glsl.hpp>
 
 namespace Arcane 
 {

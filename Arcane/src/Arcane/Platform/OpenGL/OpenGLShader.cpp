@@ -1,10 +1,11 @@
 #include "OpenGLShader.h"
 
 #include <glad/glad.h>
+#include <iostream>
 
 namespace Arcane
 {
-	static std::vector<char> readFile(const std::string& filename)
+	static std::vector<uint32_t> readFile(const std::string& filename)
 	{
 		std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
@@ -18,19 +19,33 @@ namespace Arcane
 		file.read(buffer.data(), fileSize);
 		file.close();
 
-		return buffer;
+		std::vector<uint32_t> test;
+		for (int i = 0; i < buffer.size() - 3; i += 4) {
+			uint32_t num = (uint32_t)buffer[i] << 24 | 
+					(uint32_t)buffer[i + 1] << 16 |	
+					(uint32_t)buffer[i + 2] << 8 | 
+					(uint32_t)buffer[i + 3];
+
+			test.push_back(num);
+		}
+
+		return test;
 	}
 
 	OpenGLShader::OpenGLShader(std::string vertexShader, std::string fragmentShader)
 	{
-		// Vertex Shader
+		GLuint vertexProgram = 0;
+		// Setup Vertex Source
 		{
 			auto vertexSpirv = readFile(vertexShader);
-			uint32_t vertexShaderProgram = glCreateShader(GL_VERTEX_SHADER);
-			glShaderBinary(1, &vertexShaderProgram, GL_SHADER_BINARY_FORMAT_SPIR_V, vertexSpirv.data(), vertexSpirv.size());
-			std::string vsEntryPoint = "main";
+			spirv_cross::CompilerGLSL glsl(std::move(vertexSpirv));
+			std::string source = glsl.compile();
 
-			glSpecializeShader(vertexShaderProgram, (const GLchar*)vsEntryPoint.c_str(), 0, nullptr, nullptr);
+			GLuint vertexShaderProgram = glCreateShader(GL_VERTEX_SHADER);
+			const GLchar* shaderSource = (const GLchar*)source.c_str();
+			
+			glShaderSource(vertexShaderProgram, 1, &shaderSource, 0);
+			glCompileShader(vertexShaderProgram);
 
 			GLint isCompiled = 0;
 			glGetShaderiv(vertexShaderProgram, GL_COMPILE_STATUS, &isCompiled);
@@ -46,16 +61,23 @@ namespace Arcane
 				// We don't need the shader anymore.
 				glDeleteShader(vertexShaderProgram);
 			}
+			else {
+				vertexProgram = vertexShaderProgram;
+			}
 		}
 
-		// Fragment Shader
+		GLuint fragmentProgram = 0;
+		// Setup Fragment Source 
 		{
-			auto fragmentSpirv = readFile(vertexShader);
-			uint32_t fragmentShaderProgram = glCreateShader(GL_VERTEX_SHADER);
-			glShaderBinary(1, &fragmentShaderProgram, GL_SHADER_BINARY_FORMAT_SPIR_V, fragmentSpirv.data(), fragmentSpirv.size());
-			std::string fsEntryPoint = "main";
+			auto fragmentSpirv = readFile(fragmentShader);
+			spirv_cross::CompilerGLSL glsl(std::move(fragmentSpirv));
+			std::string source = glsl.compile();
 
-			glSpecializeShader(fragmentShaderProgram, (const GLchar*)fsEntryPoint.c_str(), 0, nullptr, nullptr);
+			GLuint fragmentShaderProgram = glCreateShader(GL_FRAGMENT_SHADER);
+			const GLchar* shaderSource = (const GLchar*)source.c_str();
+
+			glShaderSource(fragmentShaderProgram, 1, &shaderSource, 0);
+			glCompileShader(fragmentShaderProgram);
 
 			GLint isCompiled = 0;
 			glGetShaderiv(fragmentShaderProgram, GL_COMPILE_STATUS, &isCompiled);
@@ -71,7 +93,42 @@ namespace Arcane
 				// We don't need the shader anymore.
 				glDeleteShader(fragmentShaderProgram);
 			}
+			else {
+				fragmentProgram = fragmentShaderProgram;
+			}
 		}
+
+		// Link Program
+		m_ShaderProgram = glCreateProgram();
+
+		// Attach our shaders to our program
+		glAttachShader(m_ShaderProgram, vertexProgram);
+		glAttachShader(m_ShaderProgram, fragmentProgram);
+
+		// Link our program
+		glLinkProgram(m_ShaderProgram);
+
+		// Note the different functions here: glGetProgram* instead of glGetShader*.
+		GLint isLinked = 0;
+		glGetProgramiv(m_ShaderProgram, GL_LINK_STATUS, (int*)&isLinked);
+		if (isLinked == GL_FALSE)
+		{
+			GLint maxLength = 0;
+			glGetProgramiv(m_ShaderProgram, GL_INFO_LOG_LENGTH, &maxLength);
+
+			std::vector<GLchar> infoLog(maxLength);
+			glGetProgramInfoLog(m_ShaderProgram, maxLength, &maxLength, &infoLog[0]);
+
+			glDeleteProgram(m_ShaderProgram);
+
+			glDeleteShader(vertexProgram);
+			glDeleteShader(fragmentProgram);
+		}
+
+		// Always detach shaders after a successful link.
+		glDetachShader(m_ShaderProgram, vertexProgram);
+		glDetachShader(m_ShaderProgram, fragmentProgram);
+
 	}
 
 	DescriptorSet* OpenGLShader::GetMaterialDescriptor()

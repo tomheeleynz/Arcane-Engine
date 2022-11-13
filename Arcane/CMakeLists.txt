@@ -20,7 +20,7 @@ if (WIN32 OR (UNIX AND NOT APPLE))
 	add_subdirectory("vendor/SPIRV-Reflect")
 
 	# Set Libraries
-	set(LIBS glfw imgui ${Vulkan_LIBRARIES} assimp SPIRV-REFLECT glad ${OPENGL_LIBRARIES})
+	set(LIBS glfw imgui ${Vulkan_LIBRARIES} assimp SPIRV-REFLECT glad ${OPENGL_LIBRARIES} spirv-cross-glsl)
 
 	# Set Vulkan engine files
 	file(GLOB VULKAN_FILES "src/Arcane/Platform/Vulkan/*.h" "src/Arcane/Platform/Vulkan/*.cpp")
@@ -61,7 +61,7 @@ add_library(
 )
 
 # Link Source Directories
-target_include_directories(${PROJECT_NAME} PUBLIC "src" "vendor/glm" "vendor/stb" "vendor/entt/single_include" "vendor/json/single_include" "vendor/dotnet" ${OPENGL_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PUBLIC "src" "vendor/glm" "vendor/stb" "vendor/entt/single_include" "vendor/json/single_include" "vendor/dotnet" ${OPENGL_INCLUDE_DIRS} "vendor/SPIRV-Cross")
 
 # Link Libraries
 target_link_libraries(${PROJECT_NAME} ${LIBS})

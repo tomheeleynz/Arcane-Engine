@@ -22,3 +22,6 @@
 [submodule "Arcane/vendor/assimp"]
 	path = Arcane/vendor/assimp
 	url = https://github.com/tomheeleynz/assimp.git
+[submodule "Arcane/vendor/SPIRV-Cross"]
+	path = Arcane/vendor/SPIRV-Cross
+	url = https://github.com/KhronosGroup/SPIRV-Cross.git

@@ -7,10 +7,6 @@ OpenGLTestLayer::OpenGLTestLayer()
 
 void OpenGLTestLayer::OnAttach()
 {
-	Arcane::Shader* testShader = Arcane::Shader::Create(
-		".\\src\\EditorAssets\\Shaders\\MeshVert.spv",
-		".\\src\\EditorAssets\\Shaders\\MeshTextured.spv"
-	);
 }
 
 void OpenGLTestLayer::OnDetach()
