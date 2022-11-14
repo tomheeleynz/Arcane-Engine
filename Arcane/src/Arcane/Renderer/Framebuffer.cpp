@@ -5,6 +5,9 @@
 // -- Vulkan
 #include "Arcane/Platform/Vulkan/VulkanFramebuffer.h"
 
+// -- OpenGL
+#include "Arcane/Platform/OpenGL/OpenGLFramebuffer.h"
+
 namespace Arcane {
 
 	Framebuffer* Framebuffer::Create(FramebufferSpecifications& specs)
@@ -13,6 +16,7 @@ namespace Arcane {
 		{
 		case RendererAPIType::None: return nullptr;
 		case RendererAPIType::Vulkan: return new VulkanFramebuffer(specs);
+		case RendererAPIType::OpenGL: return new OpenGLFramebuffer(specs);
 		default: return nullptr;
 		}
 	}

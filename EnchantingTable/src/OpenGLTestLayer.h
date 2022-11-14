@@ -12,5 +12,7 @@ public:
 	void OnUpdate(float deltaTime) override;
 	void OnImGuiRender() override;
 private:
+	Arcane::Framebuffer* m_Framebuffer;
+	Arcane::RenderPass* m_RenderPass;
 
 };

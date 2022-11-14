@@ -7,6 +7,22 @@ OpenGLTestLayer::OpenGLTestLayer()
 
 void OpenGLTestLayer::OnAttach()
 {
+	// Shader Setup
+	Arcane::Shader* shader;
+
+	// Framebuffer Setup
+	Arcane::FramebufferSpecifications specs;
+	specs.Width = 800;
+	specs.Height = 600;
+	m_Framebuffer = Arcane::Framebuffer::Create(specs);
+
+	// Renderpass Setup
+	Arcane::RenderPassSpecs renderPassSpecs;
+	renderPassSpecs.TargetFramebuffer = m_Framebuffer;
+	m_RenderPass = Arcane::RenderPass::Create(renderPassSpecs);
+
+	// Pipeline Setup
+
 }
 
 void OpenGLTestLayer::OnDetach()
@@ -15,8 +31,15 @@ void OpenGLTestLayer::OnDetach()
 
 void OpenGLTestLayer::OnUpdate(float deltaTime)
 {
-	glClear(GL_COLOR_BUFFER_BIT);
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	Arcane::Renderer::BeginFrame();
+	{
+		Arcane::Renderer::BeginRenderPass(m_RenderPass);
+		{
+			
+		}
+		Arcane::Renderer::EndRenderPass(m_RenderPass);
+	}
+	Arcane::Renderer::EndFrame();
 }
 
 void OpenGLTestLayer::OnImGuiRender()
