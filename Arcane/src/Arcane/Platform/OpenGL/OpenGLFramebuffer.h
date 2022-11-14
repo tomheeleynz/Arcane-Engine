@@ -17,5 +17,6 @@ namespace Arcane
 	private:
 		uint32_t m_FBO;
 		uint32_t m_FramebufferTexture;
+		FramebufferSpecifications m_Specs;
 	};
 }

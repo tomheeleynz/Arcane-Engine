@@ -6,6 +6,8 @@ namespace Arcane
 {
 	OpenGLFramebuffer::OpenGLFramebuffer(FramebufferSpecifications& specs)
 	{
+		m_Specs = specs;
+
 		// Generate Framebuffer
 		glGenFramebuffers(1, &m_FBO);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
@@ -30,7 +32,7 @@ namespace Arcane
 
 	FramebufferSpecifications OpenGLFramebuffer::GetSpecs()
 	{
-		return FramebufferSpecifications();
+		return m_Specs;
 	}
 
 	void OpenGLFramebuffer::Resize(uint32_t width, uint32_t height)

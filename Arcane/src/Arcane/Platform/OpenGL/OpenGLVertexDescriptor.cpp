@@ -1,4 +1,5 @@
 #include "OpenGLVertexDescriptor.h"
+#include "OpenGLBuffer.h"
 
 namespace Arcane
 {
@@ -48,25 +49,28 @@ namespace Arcane
 			{
 			case VertexType::float1:
 			{
-				stride += sizeof(float);
 				break;
 			}
 			case VertexType::float2:
 			{
-				stride += sizeof(float) * 2;
 				break;
 			}
 			case VertexType::float3:
 			{
-				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)offset);
-				glEnableVertexAttribArray(count);
-				offset += 3 * sizeof(float);
+				VertexAttribSpec newSpec;
+				newSpec.offset = offset;
+				newSpec.stride = stride;
+				newSpec.type = VertexType::float3;
+				newSpec.size = 3;
+				newSpec.count = count;
+				m_AttribSpecs.push_back(newSpec);
+
+				offset += sizeof(float) * 3;
 				count += 1;
 				break;
 			}
 			case VertexType::float4:
 			{
-				stride += sizeof(float) * 4;
 				break;
 			}
 			default:
@@ -85,5 +89,28 @@ namespace Arcane
 	void OpenGLVertexDescriptor::UnBind()
 	{
 		glBindVertexArray(0);
+	}
+
+	void OpenGLVertexDescriptor::Generate(VertexBuffer* buffer)
+	{
+		// Bind Vertex Array
+		glBindVertexArray(m_VAO);
+		
+		// Bind Vertex Buffer
+		OpenGLVertexBuffer* openglBuffer = static_cast<OpenGLVertexBuffer*>(buffer);
+		openglBuffer->Bind();
+
+		// Set Attrib Array
+		for (int i = 0; i < m_AttribSpecs.size(); i++) {
+			VertexAttribSpec spec = m_AttribSpecs[i];
+			glVertexAttribPointer(0, spec.size, GL_FLOAT, GL_FALSE, spec.stride, (void*)0);
+			glEnableVertexAttribArray(spec.count);
+		}
+
+		// Cleanup
+		openglBuffer->UnBind();
+		glBindVertexArray(0);
+
+		m_IsGenerated = true;
 	}
 }

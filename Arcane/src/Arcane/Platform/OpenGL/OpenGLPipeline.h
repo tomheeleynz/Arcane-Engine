@@ -13,6 +13,8 @@ namespace Arcane
 
 		void UnbindShader();
 		void UnbindVertexDescriptor();
+
+		PipelineSpecification GetSpec();
 	private:
 		PipelineSpecification m_Spec;
 	};

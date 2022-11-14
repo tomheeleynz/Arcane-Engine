@@ -33,4 +33,9 @@ namespace Arcane
 		OpenGLVertexDescriptor* vertexDescriptor = static_cast<OpenGLVertexDescriptor*>(m_Spec.descriptor);
 		vertexDescriptor->UnBind();
 	}
+
+	PipelineSpecification OpenGLPipeline::GetSpec()
+	{
+		return m_Spec;
+	}
 }

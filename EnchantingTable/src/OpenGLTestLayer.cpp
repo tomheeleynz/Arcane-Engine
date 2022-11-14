@@ -55,7 +55,7 @@ void OpenGLTestLayer::OnUpdate(float deltaTime)
 {
 	Arcane::Renderer::BeginRenderPass(m_RenderPass);
 	{
-		
+		Arcane::Renderer::RenderTriangle(m_VertexBuffer, m_Pipeline);
 	}
 	Arcane::Renderer::EndRenderPass(m_RenderPass);
 }
