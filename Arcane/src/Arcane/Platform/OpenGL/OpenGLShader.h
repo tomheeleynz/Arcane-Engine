@@ -15,6 +15,9 @@ namespace Arcane
 		DescriptorSet* GetMaterialDescriptor() override;
 		std::vector<ShaderVariable> GetMaterialVariables() override;
 		uint32_t GetMaterialSize() override;
+
+		void Bind();
+		void UnBind();
 	private:
 		uint32_t m_ShaderProgram;
 	};

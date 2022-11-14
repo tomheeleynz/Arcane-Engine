@@ -7,7 +7,13 @@ namespace Arcane
 	{
 	public:
 		OpenGLPipeline(PipelineSpecification& spec);
+
+		void BindShader();
+		void BindVertexDescriptor();
+
+		void UnbindShader();
+		void UnbindVertexDescriptor();
 	private:
-	
+		PipelineSpecification m_Spec;
 	};
 }

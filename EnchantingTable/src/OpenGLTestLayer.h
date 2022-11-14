@@ -14,5 +14,8 @@ public:
 private:
 	Arcane::Framebuffer* m_Framebuffer;
 	Arcane::RenderPass* m_RenderPass;
-
+	Arcane::VertexBuffer* m_VertexBuffer;
+	Arcane::Shader* m_Shader;
+	Arcane::VertexDescriptor* m_VertexDescriptor;
+	Arcane::Pipeline* m_Pipeline;
 };

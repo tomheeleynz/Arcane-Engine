@@ -25,6 +25,16 @@ namespace Arcane
 		return m_IndexBuffer;
 	}
 
+	void OpenGLVertexBuffer::Bind()
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	}
+
+	void OpenGLVertexBuffer::UnBind()
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
 	////////////////////////////////////////////////////////
 	//// Index Buffer
 	////////////////////////////////////////////////////////
@@ -41,5 +51,15 @@ namespace Arcane
 	uint32_t OpenGLIndexBuffer::GetCount()
 	{
 		return m_Count;
+	}
+
+	void OpenGLIndexBuffer::Bind()
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+	}
+
+	void OpenGLIndexBuffer::UnBind()
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 }

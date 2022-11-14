@@ -40,6 +40,7 @@ namespace Arcane
 			auto vertexSpirv = readFile(vertexShader);
 			spirv_cross::CompilerGLSL glsl(std::move(vertexSpirv));
 			std::string source = glsl.compile();
+			std::cout << source << std::endl;
 
 			GLuint vertexShaderProgram = glCreateShader(GL_VERTEX_SHADER);
 			const GLchar* shaderSource = (const GLchar*)source.c_str();
@@ -66,12 +67,15 @@ namespace Arcane
 			}
 		}
 
+		std::cout << std::endl;
+
 		GLuint fragmentProgram = 0;
 		// Setup Fragment Source 
 		{
 			auto fragmentSpirv = readFile(fragmentShader);
 			spirv_cross::CompilerGLSL glsl(std::move(fragmentSpirv));
 			std::string source = glsl.compile();
+			std::cout << source << std::endl;
 
 			GLuint fragmentShaderProgram = glCreateShader(GL_FRAGMENT_SHADER);
 			const GLchar* shaderSource = (const GLchar*)source.c_str();
@@ -144,6 +148,16 @@ namespace Arcane
 	uint32_t OpenGLShader::GetMaterialSize()
 	{
 		return uint32_t();
+	}
+	
+	void OpenGLShader::Bind()
+	{
+		glUseProgram(m_ShaderProgram);
+	}
+
+	void OpenGLShader::UnBind()
+	{
+		glUseProgram(0);
 	}
 
 }

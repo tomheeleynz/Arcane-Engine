@@ -5,6 +5,9 @@
 // -- Vulkan
 #include "Arcane/Platform/Vulkan/VulkanBuffer.h"
 
+// -- OpenGL
+#include "Arcane/Platform/OpenGL/OpenGLBuffer.h"
+
 namespace Arcane {
 
 	////////////////////////////////////////////////////////
@@ -15,6 +18,7 @@ namespace Arcane {
 		switch (RendererAPI::Current())
 		{
 		case RendererAPIType::Vulkan: return new VulkanVertexBuffer(data, size);
+		case RendererAPIType::OpenGL: return new OpenGLVertexBuffer(data, size);
 		default: return nullptr;
 		}
 	}
@@ -27,6 +31,7 @@ namespace Arcane {
 		switch (RendererAPI::Current())
 		{
 		case RendererAPIType::Vulkan: return new VulkanIndexBuffer(data, count);
+		case RendererAPIType::OpenGL: return new OpenGLIndexBuffer(data, count);
 		default: return nullptr;
 		}
 	}
