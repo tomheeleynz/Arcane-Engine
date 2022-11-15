@@ -28,9 +28,9 @@ void OpenGLTestLayer::OnAttach()
 
 	// Vertex buffer
 	float vertices[] = {
-		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		 0.0f,  0.5f, 0.0f
+		 0.5f, 0.5f, 0.0f,
+		-0.5f, 0.5f, 0.0f,
+		 0.0f, -0.5f, 0.0f
 	};
 
 	m_VertexBuffer = Arcane::VertexBuffer::Create(vertices, sizeof(float) * 9);
@@ -44,6 +44,7 @@ void OpenGLTestLayer::OnAttach()
 	Arcane::PipelineSpecification pipelineSpecs;
 	pipelineSpecs.descriptor = m_VertexDescriptor;
 	pipelineSpecs.shader = m_Shader;
+	pipelineSpecs.renderPass = m_RenderPass;
 	m_Pipeline = Arcane::Pipeline::Create(pipelineSpecs);
 }
 
