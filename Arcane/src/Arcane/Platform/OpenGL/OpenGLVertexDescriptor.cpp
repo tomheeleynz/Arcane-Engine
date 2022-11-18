@@ -98,7 +98,10 @@ namespace Arcane
 		
 		// Bind Vertex Buffer
 		OpenGLVertexBuffer* openglBuffer = static_cast<OpenGLVertexBuffer*>(buffer);
+		OpenGLIndexBuffer* indexBuffer = static_cast<OpenGLIndexBuffer*>(buffer->GetIndexBuffer());
+		
 		openglBuffer->Bind();
+		indexBuffer->Bind();
 
 		// Set Attrib Array
 		for (int i = 0; i < m_AttribSpecs.size(); i++) {
@@ -109,8 +112,8 @@ namespace Arcane
 
 		// Cleanup
 		openglBuffer->UnBind();
+		indexBuffer->UnBind();
 		glBindVertexArray(0);
-
 		m_IsGenerated = true;
 	}
 }

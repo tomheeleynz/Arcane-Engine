@@ -90,6 +90,30 @@ namespace Arcane
 
 	void OpenGLRenderer::RenderQuad(VertexBuffer* buffer, Pipeline* pipeline)
 	{
+		OpenGLVertexBuffer* vertexBuffer = static_cast<OpenGLVertexBuffer*>(buffer);
+		OpenGLPipeline* openglPipeline = static_cast<OpenGLPipeline*>(pipeline);
+		OpenGLVertexDescriptor* vertexDescriptor = static_cast<OpenGLVertexDescriptor*>(openglPipeline->GetSpec().descriptor);
+		OpenGLIndexBuffer* indexBuffer = static_cast<OpenGLIndexBuffer*>(vertexBuffer->GetIndexBuffer());
+
+		// Bind Shader
+		openglPipeline->BindShader();
+
+		// Bind VAO
+		if (!vertexDescriptor->GetIsGenerated()) {
+			vertexDescriptor->Generate(buffer);
+		}
+
+		openglPipeline->BindVertexDescriptor();
+		indexBuffer->Bind();
+
+		// Draw
+		glDrawElements(GL_TRIANGLES, indexBuffer->GetCount(), GL_UNSIGNED_INT, 0);
+
+		// Unbind Everyting
+		openglPipeline->UnbindVertexDescriptor();
+		openglPipeline->UnbindShader();
+		vertexBuffer->UnBind();
+		indexBuffer->UnBind();
 	}
 
 	void OpenGLRenderer::RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets)

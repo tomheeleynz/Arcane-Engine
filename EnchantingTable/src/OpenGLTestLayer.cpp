@@ -28,12 +28,20 @@ void OpenGLTestLayer::OnAttach()
 
 	// Vertex buffer
 	float vertices[] = {
-		 0.5f, 0.5f, 0.0f,
-		-0.5f, 0.5f, 0.0f,
-		 0.0f, -0.5f, 0.0f
+		 0.5f,  0.5f, 0.0f,  // top right
+		 0.5f, -0.5f, 0.0f,  // bottom right
+		-0.5f, -0.5f, 0.0f,  // bottom left
+		-0.5f,  0.5f, 0.0f   // top left 
 	};
 
-	m_VertexBuffer = Arcane::VertexBuffer::Create(vertices, sizeof(float) * 9);
+	uint32_t indices[] = {  // note that we start from 0!
+		0, 1, 3,  // first Triangle
+		1, 2, 3   // second Triangle
+	};
+
+	m_VertexBuffer = Arcane::VertexBuffer::Create(vertices, sizeof(float) * 12);
+	m_IndexBuffer = Arcane::IndexBuffer::Create(indices, 6);
+	m_VertexBuffer->AddIndexBuffer(m_IndexBuffer);
 
 	// Vertex Descriptor
 	m_VertexDescriptor = Arcane::VertexDescriptor::Create({
@@ -56,7 +64,7 @@ void OpenGLTestLayer::OnUpdate(float deltaTime)
 {
 	Arcane::Renderer::BeginRenderPass(m_RenderPass);
 	{
-		Arcane::Renderer::RenderTriangle(m_VertexBuffer, m_Pipeline);
+		Arcane::Renderer::RenderQuad(m_VertexBuffer, m_Pipeline);
 	}
 	Arcane::Renderer::EndRenderPass(m_RenderPass);
 }

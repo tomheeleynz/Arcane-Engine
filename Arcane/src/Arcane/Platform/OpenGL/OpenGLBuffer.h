@@ -1,6 +1,8 @@
 #pragma once
 #include "Arcane/Renderer/Buffer.h"
 
+#include <vector>
+
 namespace Arcane
 {
 	////////////////////////////////////////////////////////
@@ -28,7 +30,6 @@ namespace Arcane
 	{
 	public:
 		OpenGLIndexBuffer(void* data, uint32_t count);
-
 		uint32_t GetCount();
 
 		void Bind();

@@ -1,5 +1,6 @@
 #include "OpenGLBuffer.h"
 
+#include <iostream>
 #include <glad/glad.h>
 
 namespace Arcane
@@ -41,11 +42,10 @@ namespace Arcane
 	OpenGLIndexBuffer::OpenGLIndexBuffer(void* data, uint32_t count)
 	{
 		m_Count = count;
-
 		glGenBuffers(1, &m_EBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * count, data, GL_STATIC_DRAW);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, m_EBO);
+		glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint32_t), data, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
 	uint32_t OpenGLIndexBuffer::GetCount()
