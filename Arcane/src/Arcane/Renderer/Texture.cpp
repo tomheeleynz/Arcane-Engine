@@ -2,6 +2,7 @@
 #include "Texture.h"
 
 #include "Arcane/Platform/Vulkan/VulkanTexture.h"
+#include "Arcane/Platform/OpenGL/OpenGLTexture.h"
 
 
 namespace Arcane {
@@ -9,6 +10,7 @@ namespace Arcane {
 		switch (RendererAPI::Current()) 
 		{
 		case RendererAPIType::Vulkan: return new VulkanTexture(fileName);
+		case RendererAPIType::OpenGL: return new OpenGLTexture(fileName);
 		default:
 			return nullptr;
 		}

@@ -53,6 +53,16 @@ namespace Arcane
 			}
 			case VertexType::float2:
 			{
+				VertexAttribSpec newSpec;
+				newSpec.offset = offset;
+				newSpec.stride = stride;
+				newSpec.type = VertexType::float2;
+				newSpec.size = 2;
+				newSpec.count = count;
+				m_AttribSpecs.push_back(newSpec);
+
+				offset += sizeof(float) * 2;
+				count += 1;
 				break;
 			}
 			case VertexType::float3:
@@ -106,7 +116,7 @@ namespace Arcane
 		// Set Attrib Array
 		for (int i = 0; i < m_AttribSpecs.size(); i++) {
 			VertexAttribSpec spec = m_AttribSpecs[i];
-			glVertexAttribPointer(0, spec.size, GL_FLOAT, GL_FALSE, spec.stride, (void*)0);
+			glVertexAttribPointer(spec.count, spec.size, GL_FLOAT, GL_FALSE, spec.stride, (const void*)spec.offset);
 			glEnableVertexAttribArray(spec.count);
 		}
 

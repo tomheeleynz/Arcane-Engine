@@ -12,6 +12,6 @@ namespace Arcane
 		void UpdateTexture(Texture* texture) override;
 		void UpdateTexture(float r, float g, float b, float a) override;
 	private:
-	
+		uint32_t m_TextureID;
 	};
 }

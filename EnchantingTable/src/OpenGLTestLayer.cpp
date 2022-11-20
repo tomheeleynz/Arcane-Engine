@@ -7,6 +7,9 @@ OpenGLTestLayer::OpenGLTestLayer()
 
 void OpenGLTestLayer::OnAttach()
 {
+	// Generate Texture
+	m_Texture = Arcane::Texture::Create(".\\src\\Assets\\Textures\\shield.png");
+
 	// Shader
 	m_Shader = Arcane::Shader::Create(
 		".\\src\\EditorAssets\\Shaders\\TriangleVert.spv",
@@ -28,10 +31,10 @@ void OpenGLTestLayer::OnAttach()
 
 	// Vertex buffer
 	float vertices[] = {
-		 0.5f,  0.5f, 0.0f,  // top right
-		 0.5f, -0.5f, 0.0f,  // bottom right
-		-0.5f, -0.5f, 0.0f,  // bottom left
-		-0.5f,  0.5f, 0.0f   // top left 
+		 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,  // top right
+		 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  // bottom right
+		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,  // bottom left
+		-0.5f,  0.5f, 0.0f, 0.0f, 1.0f   // top left 
 	};
 
 	uint32_t indices[] = {  // note that we start from 0!
@@ -39,21 +42,36 @@ void OpenGLTestLayer::OnAttach()
 		1, 2, 3   // second Triangle
 	};
 
-	m_VertexBuffer = Arcane::VertexBuffer::Create(vertices, sizeof(float) * 12);
+	m_VertexBuffer = Arcane::VertexBuffer::Create(vertices, sizeof(float) * 20);
 	m_IndexBuffer = Arcane::IndexBuffer::Create(indices, 6);
 	m_VertexBuffer->AddIndexBuffer(m_IndexBuffer);
 
 	// Vertex Descriptor
 	m_VertexDescriptor = Arcane::VertexDescriptor::Create({
-		Arcane::VertexType::float3
+		Arcane::VertexType::float3,
+		Arcane::VertexType::float2
 	});
+
+	// Setting up descriptor set 
+	Arcane::DescriptorSetSpecs descriptorSetSpecs;
+	descriptorSetSpecs.SetNumber = 0;
+	m_DescriptorSet = Arcane::DescriptorSet::Create(
+		descriptorSetSpecs, {
+			{0, 1, Arcane::DescriptorType::SAMPLER, "Texture", Arcane::DescriptorLocation::VERTEX}
+		}
+	);
+
+	m_DescriptorSet->AddImageSampler(m_Texture, 0, 0);
 
 	// Pipeline
 	Arcane::PipelineSpecification pipelineSpecs;
 	pipelineSpecs.descriptor = m_VertexDescriptor;
 	pipelineSpecs.shader = m_Shader;
 	pipelineSpecs.renderPass = m_RenderPass;
+	pipelineSpecs.DescriptorSets = { m_DescriptorSet };
 	m_Pipeline = Arcane::Pipeline::Create(pipelineSpecs);
+
+
 }
 
 void OpenGLTestLayer::OnDetach()

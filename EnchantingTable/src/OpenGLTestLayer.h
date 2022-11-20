@@ -19,4 +19,6 @@ private:
 	Arcane::Shader* m_Shader;
 	Arcane::VertexDescriptor* m_VertexDescriptor;
 	Arcane::Pipeline* m_Pipeline;
+	Arcane::Texture* m_Texture;
+	Arcane::DescriptorSet* m_DescriptorSet;
 };

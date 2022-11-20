@@ -27,7 +27,7 @@ namespace Arcane
 
 		struct VertexAttribSpec
 		{
-			float offset;
+			uint32_t offset;
 			float stride;
 			VertexType type;
 			float size;
