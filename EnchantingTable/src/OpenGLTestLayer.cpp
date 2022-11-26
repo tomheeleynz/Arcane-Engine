@@ -80,7 +80,7 @@ void OpenGLTestLayer::OnUpdate(float deltaTime)
 {
 	Arcane::Renderer::BeginRenderPass(m_RenderPass);
 	{
-		Arcane::Renderer::RenderQuad(m_VertexBuffer, m_Pipeline);
+		Arcane::Renderer::RenderQuad(m_VertexBuffer, m_Pipeline, { m_DescriptorSet });
 	}
 	Arcane::Renderer::EndRenderPass(m_RenderPass);
 }

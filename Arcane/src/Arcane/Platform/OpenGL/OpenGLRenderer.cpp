@@ -12,7 +12,8 @@ namespace Arcane
 {
 	OpenGLRenderer::OpenGLRenderer()
 	{
-
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	void OpenGLRenderer::Shutdown()
@@ -125,6 +126,37 @@ namespace Arcane
 
 	void OpenGLRenderer::RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets)
 	{
+		OpenGLVertexBuffer* vertexBuffer = static_cast<OpenGLVertexBuffer*>(buffer);
+		OpenGLPipeline* openglPipeline = static_cast<OpenGLPipeline*>(pipeline);
+		OpenGLVertexDescriptor* vertexDescriptor = static_cast<OpenGLVertexDescriptor*>(openglPipeline->GetSpec().descriptor);
+		OpenGLIndexBuffer* indexBuffer = static_cast<OpenGLIndexBuffer*>(vertexBuffer->GetIndexBuffer());
+		OpenGLShader* shader = static_cast<OpenGLShader*>(openglPipeline->GetSpec().shader);
+
+		// Bind Shader
+		openglPipeline->BindShader();
+
+		// Bind VAO
+		if (!vertexDescriptor->GetIsGenerated()) {
+			vertexDescriptor->Generate(buffer);
+		}
+
+		openglPipeline->BindVertexDescriptor();
+		indexBuffer->Bind();
+
+		// Bind Descriptor Sets
+		for (int i = 0; i < descriptorSets.size(); i++) {
+			OpenGLDescriptorSet* descriptorSet = static_cast<OpenGLDescriptorSet*>(descriptorSets[i]);
+			descriptorSet->BindTextures(shader->GetShaderID());
+		}
+
+		// Draw
+		glDrawElements(GL_TRIANGLES, indexBuffer->GetCount(), GL_UNSIGNED_INT, 0);
+
+		// Unbind Everyting
+		openglPipeline->UnbindVertexDescriptor();
+		openglPipeline->UnbindShader();
+		vertexBuffer->UnBind();
+		indexBuffer->UnBind();
 	}
 
 	void OpenGLRenderer::RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets)
