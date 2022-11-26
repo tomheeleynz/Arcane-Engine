@@ -18,6 +18,8 @@ namespace Arcane
 
 		void Bind();
 		void UnBind();
+
+		uint32_t GetShaderID() { return m_ShaderProgram; }
 	private:
 		uint32_t m_ShaderProgram;
 	};

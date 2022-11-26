@@ -3,6 +3,8 @@
 #include "OpenGLPipeline.h"
 #include "OpenGLBuffer.h"
 #include "OpenGLVertexDescriptor.h"
+#include "OpenGLDescriptorSet.h"
+#include "OpenGLShader.h"
 
 #include <glad/glad.h>
 
@@ -94,6 +96,8 @@ namespace Arcane
 		OpenGLPipeline* openglPipeline = static_cast<OpenGLPipeline*>(pipeline);
 		OpenGLVertexDescriptor* vertexDescriptor = static_cast<OpenGLVertexDescriptor*>(openglPipeline->GetSpec().descriptor);
 		OpenGLIndexBuffer* indexBuffer = static_cast<OpenGLIndexBuffer*>(vertexBuffer->GetIndexBuffer());
+		OpenGLDescriptorSet* descriptorSet = static_cast<OpenGLDescriptorSet*>(openglPipeline->GetSpec().DescriptorSets[0]);
+		OpenGLShader* shader = static_cast<OpenGLShader*>(openglPipeline->GetSpec().shader);
 
 		// Bind Shader
 		openglPipeline->BindShader();
@@ -105,6 +109,9 @@ namespace Arcane
 
 		openglPipeline->BindVertexDescriptor();
 		indexBuffer->Bind();
+
+		// Bind Descriptor Sets
+		descriptorSet->BindTextures(shader->GetShaderID());
 
 		// Draw
 		glDrawElements(GL_TRIANGLES, indexBuffer->GetCount(), GL_UNSIGNED_INT, 0);

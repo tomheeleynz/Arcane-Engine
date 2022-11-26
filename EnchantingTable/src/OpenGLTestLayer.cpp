@@ -12,8 +12,8 @@ void OpenGLTestLayer::OnAttach()
 
 	// Shader
 	m_Shader = Arcane::Shader::Create(
-		".\\src\\EditorAssets\\Shaders\\TriangleVert.spv",
-		".\\src\\EditorAssets\\Shaders\\TriangleFrag.spv"
+		".\\src\\EditorAssets\\Shaders\\ScreenVert.spv",
+		".\\src\\EditorAssets\\Shaders\\ScreenFrag.spv"
 	);
 
 	// Framebuffer Setup
@@ -57,7 +57,7 @@ void OpenGLTestLayer::OnAttach()
 	descriptorSetSpecs.SetNumber = 0;
 	m_DescriptorSet = Arcane::DescriptorSet::Create(
 		descriptorSetSpecs, {
-			{0, 1, Arcane::DescriptorType::SAMPLER, "Texture", Arcane::DescriptorLocation::VERTEX}
+			{0, 1, Arcane::DescriptorType::SAMPLER, "texSampler", Arcane::DescriptorLocation::FRAGMENT}
 		}
 	);
 
@@ -70,8 +70,6 @@ void OpenGLTestLayer::OnAttach()
 	pipelineSpecs.renderPass = m_RenderPass;
 	pipelineSpecs.DescriptorSets = { m_DescriptorSet };
 	m_Pipeline = Arcane::Pipeline::Create(pipelineSpecs);
-
-
 }
 
 void OpenGLTestLayer::OnDetach()

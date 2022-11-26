@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include "Arcane/Renderer/DescriptorSet.h"
 
 namespace Arcane
@@ -14,7 +15,10 @@ namespace Arcane
 		void AddImageSampler(Texture* texture, uint32_t setNum, uint32_t bindingNum) override;
 		void AddImageSampler(Framebuffer* framebuffer, uint32_t setNum, uint32_t bindingNum) override;
 		void AddUniformBuffer(UniformBuffer* buffer, uint32_t setNum, uint32_t bindingNum) override;
+
+		// OpenGL Specific Functions
+		void BindTextures(uint32_t shaderID);
 	private:
-	
+		std::map<std::pair<int, std::string>, Texture*> m_Textures;
 	};
 }
