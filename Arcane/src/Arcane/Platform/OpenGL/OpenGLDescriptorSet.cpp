@@ -1,5 +1,6 @@
 #include "OpenGLDescriptorSet.h"
 #include "OpenGLTexture.h"
+#include "OpenGLFramebuffer.h"
 
 #include<glad/glad.h>
 
@@ -8,7 +9,12 @@ namespace Arcane
 	OpenGLDescriptorSet::OpenGLDescriptorSet(DescriptorSetSpecs& setSpecs, std::initializer_list<DescriptorLayoutSpecs> layoutSpecs)
 	{
 		for (DescriptorLayoutSpecs spec : layoutSpecs) {
-			m_Textures[{spec.Binding, spec.Name}] = nullptr;
+			DescriptorInfo newInfo;
+			newInfo.binding = spec.Binding;
+			newInfo.set = setSpecs.SetNumber;
+			newInfo.name = spec.Name;
+
+			m_TextureInfo.push_back(newInfo);
 		}
 	}
 
@@ -18,40 +24,52 @@ namespace Arcane
 
 	void OpenGLDescriptorSet::AddImageSampler(Texture* texture, uint32_t setNum, uint32_t bindingNum)
 	{
-		std::map<std::pair<int, std::string>, Texture*>::iterator it;
-		for (it = m_Textures.begin(); it != m_Textures.end(); it++) {
-			if (it->first.first == bindingNum) {
-				it->second = texture;
-			}
+		for (int i = 0; i < m_TextureInfo.size(); i++) {
+			DescriptorInfo& currentInfo = m_TextureInfo[i];
+			currentInfo.type = TextureSourceType::TEXTURE;
+			currentInfo.texture = texture;
 		}
 	}
 
 	void OpenGLDescriptorSet::AddImageSampler(Framebuffer* framebuffer, uint32_t setNum, uint32_t bindingNum)
 	{
+		for (int i = 0; i < m_TextureInfo.size(); i++) {
+			DescriptorInfo& currentInfo = m_TextureInfo[i];
+			currentInfo.type = TextureSourceType::FRAMEBUFFER;
+			currentInfo.framebuffer = framebuffer;
+		}
 	}
 
 	void OpenGLDescriptorSet::AddUniformBuffer(UniformBuffer* buffer, uint32_t setNum, uint32_t bindingNum)
 	{
+
 	}
 
 	void OpenGLDescriptorSet::BindTextures(uint32_t shaderID)
 	{
 		int textureCount = 0;
 
-		std::map<std::pair<int, std::string>, Texture*>::iterator it;
-		for (it = m_Textures.begin(); it != m_Textures.end(); it++) {
-			// Cast Texture to opengl texture
-			OpenGLTexture* openglTexture = static_cast<OpenGLTexture*>(it->second);
+		for (int i = 0; i < m_TextureInfo.size(); i++) {
+			DescriptorInfo currentInfo = m_TextureInfo[i];
 
 			// Get Texture Uniform Name
-			std::string uniformName = it->first.second;
+			std::string uniformName = currentInfo.name;
 
 			// Set Uniform Value
 			glUniform1i(glGetUniformLocation(shaderID, uniformName.c_str()), textureCount);
-			
-			// Set Active Texture
+
+			uint32_t textureID = -1;
+
+			if (currentInfo.type == TextureSourceType::TEXTURE) {
+				textureID = static_cast<OpenGLTexture*>(currentInfo.texture)->GetTextureID();
+			}
+			else {
+				textureID = static_cast<OpenGLFramebuffer*>(currentInfo.framebuffer)->GetFramebufferID();
+			}
+
 			glActiveTexture(GL_TEXTURE + textureCount);
-			glBindTexture(GL_TEXTURE_2D, openglTexture->GetTextureID());
+			glBindTexture(GL_TEXTURE_2D, textureID);
+			textureCount++;
 		}
 	}
 }

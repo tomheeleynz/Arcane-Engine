@@ -45,8 +45,6 @@ namespace Arcane
 		}
 		else {
 			OpenGLFramebuffer* framebuffer = static_cast<OpenGLFramebuffer*>(renderPass->GetRenderPassSpecs().TargetFramebuffer);
-			framebuffer->Bind();
-
 			glClear(GL_COLOR_BUFFER_BIT);
 			glClearColor(
 				framebuffer->GetSpecs().ClearColor.x,
@@ -54,6 +52,7 @@ namespace Arcane
 				framebuffer->GetSpecs().ClearColor.z,
 				framebuffer->GetSpecs().ClearColor.w
 			);
+			framebuffer->Bind();
 		}
 	}
 
