@@ -45,6 +45,12 @@ if (APPLE)
 	message(STATUS "Compiling for apple")
 endif()
 
+# Find Python for scripting
+find_package (Python COMPONENTS Interpreter Development)
+message(STATUS ${Python_INCLUDE_DIRS})
+message(STATUS ${Python_LIBRARIES})
+message(STATUS ${Python_LIBRARY_DIRS})
+
 # Create Library
 add_library(
 	${PROJECT_NAME}
@@ -61,10 +67,10 @@ add_library(
 )
 
 # Link Source Directories
-target_include_directories(${PROJECT_NAME} PUBLIC "src" "vendor/glm" "vendor/stb" "vendor/entt/single_include" "vendor/json/single_include" "vendor/dotnet" ${OPENGL_INCLUDE_DIRS} "vendor/SPIRV-Cross")
+target_include_directories(${PROJECT_NAME} PUBLIC "src" "vendor/glm" "vendor/stb" "vendor/entt/single_include" "vendor/json/single_include" "vendor/dotnet" ${OPENGL_INCLUDE_DIRS} "vendor/SPIRV-Cross"  ${Python_INCLUDE_DIRS})
 
 # Link Libraries
-target_link_libraries(${PROJECT_NAME} ${LIBS})
+target_link_libraries(${PROJECT_NAME} ${LIBS} ${Python_LIBRARIES})
 
 # Set Folder
 set_target_properties(Arcane PROPERTIES FOLDER "Core")

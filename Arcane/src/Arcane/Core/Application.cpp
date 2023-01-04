@@ -4,6 +4,7 @@
 #include "Arcane/Renderer/Shader.h"
 #include "Arcane/Renderer/Pipeline.h"
 #include "Arcane/Renderer/RenderPass.h"
+#include "Arcane/Scripting/ScriptingEngine.h"
 
 namespace Arcane {
 	Application* Application::s_Instance = nullptr;
@@ -38,6 +39,9 @@ namespace Arcane {
 		if (!assetDatabaseGenerated) {
 			std::cout << "Asset Database Not Created\n";
 		}
+
+		// Init Scripting Engine
+		ScriptingEngine::Init();
 	}
 
 	void Application::RenderImGui()
