@@ -23,9 +23,14 @@ void OpenGLTestLayer::OnAttach()
 
 	// Framebuffer Setup
 	Arcane::FramebufferSpecifications specs;
+	
+	specs.AttachmentSpecs = {
+		Arcane::FramebufferAttachmentType::COLOR
+	};
+	
 	specs.Width = 800;
 	specs.Height = 600;
-	specs.ClearColor = {0.2f, 0.3f, 0.3f, 1.0f};
+	specs.ClearColor = {0.5f, 0.3f, 0.3f, 1.0f};
 	m_Framebuffer = Arcane::Framebuffer::Create(specs);
 
 	// Renderpass Setup
@@ -79,10 +84,15 @@ void OpenGLTestLayer::OnAttach()
 	////////////////////////////////////////////////////////////
 	//// Composite Pass
 	////////////////////////////////////////////////////////////
+	m_CompShader = Arcane::Shader::Create(
+		".\\src\\EditorAssets\\Shaders\\ScreenVert.spv",
+		".\\src\\EditorAssets\\Shaders\\ScreenFrag.spv"
+	);
+
 	Arcane::FramebufferSpecifications compSpecs;
-	specs.Width = 800;
-	specs.Height = 600;
-	specs.ClearColor = { 1.0f, 0.0f, 0.0f, 1.0f };
+	compSpecs.Width = 800;
+	compSpecs.Height = 600;
+	compSpecs.ClearColor = { 0.2f, 0.3f, 0.3f, 1.0f };
 	m_CompFramebuffer = Arcane::Framebuffer::Create(compSpecs);
 
 	Arcane::RenderPassSpecs compRenderPassSpecs;
@@ -98,15 +108,15 @@ void OpenGLTestLayer::OnAttach()
 	compDescriptorSetSpecs.SetNumber = 0;
 	m_CompDescriptorSet = Arcane::DescriptorSet::Create(
 		compDescriptorSetSpecs, {
-			{0, 1, Arcane::DescriptorType::SAMPLER, "texSampler", Arcane::DescriptorLocation::FRAGMENT}
+			{ 0, 1, Arcane::DescriptorType::SAMPLER, "texSampler", Arcane::DescriptorLocation::FRAGMENT }
 		}
 	);
 
-	m_CompDescriptorSet->AddImageSampler(m_CompFramebuffer, 0, 0);
+	m_CompDescriptorSet->AddImageSampler(m_Framebuffer, 0, 0);
 
 	Arcane::PipelineSpecification compPipelineSpecs;
 	compPipelineSpecs.descriptor = m_VertexDescriptor;
-	compPipelineSpecs.shader = m_Shader;
+	compPipelineSpecs.shader = m_CompShader;
 	compPipelineSpecs.renderPass = m_CompRenderPass;
 	compPipelineSpecs.DescriptorSets = { m_CompDescriptorSet };
 	m_CompPipeline = Arcane::Pipeline::Create(compPipelineSpecs);

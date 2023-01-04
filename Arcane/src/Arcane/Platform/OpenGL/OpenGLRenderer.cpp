@@ -35,24 +35,29 @@ namespace Arcane
 	{
 		if (renderPass->GetRenderPassSpecs().SwapchainFramebuffer) {
 			OpenGLFramebuffer* framebuffer = static_cast<OpenGLFramebuffer*>(renderPass->GetRenderPassSpecs().TargetFramebuffer);
-			glClear(GL_COLOR_BUFFER_BIT);
+
 			glClearColor(
 				framebuffer->GetSpecs().ClearColor.x,
 				framebuffer->GetSpecs().ClearColor.y,
 				framebuffer->GetSpecs().ClearColor.z,
 				framebuffer->GetSpecs().ClearColor.w
 			);
+
+			glClear(GL_COLOR_BUFFER_BIT);
+			glViewport(0, 0, 1600, 1200);
 		}
 		else {
 			OpenGLFramebuffer* framebuffer = static_cast<OpenGLFramebuffer*>(renderPass->GetRenderPassSpecs().TargetFramebuffer);
-			glClear(GL_COLOR_BUFFER_BIT);
+			framebuffer->Bind();
 			glClearColor(
 				framebuffer->GetSpecs().ClearColor.x,
 				framebuffer->GetSpecs().ClearColor.y,
 				framebuffer->GetSpecs().ClearColor.z,
 				framebuffer->GetSpecs().ClearColor.w
 			);
-			framebuffer->Bind();
+
+			glClear(GL_COLOR_BUFFER_BIT);
+			glViewport(0, 0, framebuffer->GetSpecs().Width, framebuffer->GetSpecs().Height);
 		}
 	}
 
