@@ -2,16 +2,16 @@
 #include <Arcane.h>
 
 #include "EditorLayer.h"
+#include "OpenGLTestLayer.h"
 
 class EnchantingTableApplication : public Arcane::Application
 {
 public:
 	EnchantingTableApplication(Arcane::ApplicationSpecifications& specifications) : Arcane::Application(specifications)
 	{
+		//PushLayer(new OpenGLTestLayer());
 		PushLayer(new EditorLayer());
 	}
-
-
 private:
 
 };

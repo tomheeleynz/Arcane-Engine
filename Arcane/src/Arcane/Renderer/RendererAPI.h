@@ -13,7 +13,8 @@ namespace Arcane {
 	enum class RendererAPIType
 	{
 		None = 0,
-		Vulkan
+		Vulkan,
+		OpenGL
 	};
 
 	class RendererAPI

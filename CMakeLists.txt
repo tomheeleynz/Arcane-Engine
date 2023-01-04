@@ -7,7 +7,7 @@ add_subdirectory(Arcane)
 # EnchantingTable Editor
 add_subdirectory(EnchantingTable)
 
-# Script COre
+# Script Core
 add_subdirectory(Arcane-ScriptCore)
 
 # Vendor Libraries
@@ -22,6 +22,12 @@ add_subdirectory("Arcane/vendor/imgui")
 
 # -- Assimp
 add_subdirectory("Arcane/vendor/assimp")
+
+# -- Glad
+add_subdirectory("Arcane/vendor/glad")
+
+# -- SPIRV-Cross
+add_subdirectory("Arcane/vendor/SPIRV-Cross")
 
 # -- Set Global Properties
 set_property(TARGET Arcane PROPERTY CXX_STANDARD 17)
