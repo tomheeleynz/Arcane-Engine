@@ -21,7 +21,6 @@ FileBrowserPanel::FileBrowserPanel()
 
 void FileBrowserPanel::OnUpdate()
 {
-
 	m_Watcher->Update();
 	
 	ImGui::Begin("File Browser");
@@ -39,6 +38,7 @@ void FileBrowserPanel::OnUpdate()
 		if (columnCount < 1)
 			columnCount = 1;
 
+		int id = 0;
 		for (auto& path : m_Watcher->GetPaths())
 		{
 			if (!path.second.isDirectory) {
@@ -57,13 +57,14 @@ void FileBrowserPanel::OnUpdate()
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 1.0f, 1.0f, 0.3f));
 
-				ImGui::PushID(path.second.relativePath.c_str());
+				ImGui::PushID(id);
 				
 				if (Arcane::UI::ImageButton(m_Icons["Folder"], {thumbnailSize, thumbnailSize})) {
 					m_Watcher->SetDirectory(path.second.relativePath);
 				}
 
 				ImGui::PopID();
+				id++;
 				ImGui::PopStyleColor(2);
 				ImGui::Text(path.second.relativePath.stem().string().c_str());
 			}
