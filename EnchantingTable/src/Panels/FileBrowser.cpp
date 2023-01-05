@@ -1,9 +1,9 @@
 #include "FileBrowser.h"
+#include "Arcane.h"
 
 FileBrowserPanel::FileBrowserPanel()
 {
-	m_Watcher = new Arcane::FileWatcher("./src/Assets/Models", std::chrono::milliseconds(5000));
-
+	m_Watcher = new Arcane::FileWatcher(Arcane::Application::Get().GetProject()->GetWorkingPath().string(), std::chrono::milliseconds(5000));
 
 	///////////////////////////////////////////
 	//// Icons
@@ -82,7 +82,7 @@ std::string FileBrowserPanel::GetIconType(std::string extension)
 		return "Material";
 	}
 
-	if (extension == ".obj" || extension == ".fbx") {
+	if (extension == ".obj" || extension == ".fbx" || extension == ".arcaneproj") {
 		return "Mesh";
 	}
 

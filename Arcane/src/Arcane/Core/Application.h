@@ -9,6 +9,7 @@
 #include "Window.h"
 #include "Arcane/ImGui/ImGuiLayer.h"
 #include "Arcane/Assets/AssetDatabase.h"
+#include "Arcane/Project/ProjectDeserializer.h"
 
 namespace Arcane 
 {
@@ -18,6 +19,7 @@ namespace Arcane
 		uint32_t WindowWidth;
 		uint32_t WindowHeight;
 		bool PushImguiLayer = false;
+		const char* ProjectFilePath;
 	};
 
 	class Application
@@ -41,6 +43,8 @@ namespace Arcane
 		void RenderImGui();
 
 		AssetDatabase& GetAssetDatabase() { return *m_AssetDatabase; }
+
+		Project* GetProject() { return m_Project; }
 	private:
 		Window* m_Window;
 		static Application* s_Instance;
@@ -52,5 +56,6 @@ namespace Arcane
 		bool m_ImguiEnabled = false;
 
 		AssetDatabase* m_AssetDatabase;
+		Project* m_Project;
 	};
 }
