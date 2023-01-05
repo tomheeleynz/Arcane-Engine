@@ -1,6 +1,11 @@
 #include "Shader.h"
 #include "Arcane/Renderer/Renderer.h"
+
+// -- Vulkan Shader
 #include "Arcane/Platform/Vulkan/VulkanShader.h"
+
+// -- OpenGL Shader
+#include "Arcane/Platform/OpenGL/OpenGLShader.h"
 
 namespace Arcane 
 {
@@ -12,6 +17,7 @@ namespace Arcane
 		switch (RendererAPI::Current())
 		{
 		case RendererAPIType::Vulkan: return new VulkanShader(vertexShader, fragmentShader);
+		case RendererAPIType::OpenGL: return new OpenGLShader(vertexShader, fragmentShader);
 		default: return nullptr;
 		}
 	}
