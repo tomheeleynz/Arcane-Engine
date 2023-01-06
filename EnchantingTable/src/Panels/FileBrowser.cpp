@@ -1,5 +1,7 @@
 #include "FileBrowser.h"
 #include "Arcane.h"
+#include "PanelStructs.h"
+
 
 FileBrowserPanel::FileBrowserPanel()
 {
@@ -38,6 +40,8 @@ void FileBrowserPanel::OnUpdate()
 		if (columnCount < 1)
 			columnCount = 1;
 
+		ImGui::Columns(columnCount, 0, false);
+
 		int id = 0;
 		for (auto& path : m_Watcher->GetPaths())
 		{
@@ -47,7 +51,12 @@ void FileBrowserPanel::OnUpdate()
 				Arcane::UI::Image(m_Icons[iconType], {thumbnailSize, thumbnailSize});
 				
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-					ImGui::SetDragDropPayload("CURRENT_SELECTED_ASSET", &path.second.assetID, sizeof(uint64_t));
+					// Create Asset Info
+					AssetInfo newInfo;
+					newInfo.id = path.second.assetID;
+					newInfo.name = path.second.name;
+
+					ImGui::SetDragDropPayload("CURRENT_SELECTED_ASSET", &newInfo, sizeof(AssetInfo));
 					ImGui::EndDragDropSource();
 				}
 
@@ -68,8 +77,10 @@ void FileBrowserPanel::OnUpdate()
 				ImGui::PopStyleColor(2);
 				ImGui::Text(path.second.relativePath.stem().string().c_str());
 			}
+			ImGui::NextColumn();
 		}
 	}
+	ImGui::Columns(1);
 	ImGui::End();
 }
 
