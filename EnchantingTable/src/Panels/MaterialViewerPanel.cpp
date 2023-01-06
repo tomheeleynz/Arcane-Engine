@@ -1,4 +1,5 @@
 #include "MaterialViewerPanel.h"
+#include "PanelStructs.h"
 
 MaterialViewerPanel::MaterialViewerPanel()
 {
@@ -27,8 +28,8 @@ void MaterialViewerPanel::OnUpdate()
 				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
 
 				if (payload != nullptr) {
-					uint64_t assetID = *static_cast<int*>(payload->Data);
-					Asset* asset = Arcane::Application::Get().GetAssetDatabase().GetAsset(assetID);
+					AssetInfo assetInfo = *static_cast<AssetInfo*>(payload->Data);
+					Asset* asset = Arcane::Application::Get().GetAssetDatabase().GetAsset(assetInfo.id);
 
 					if (asset != nullptr && asset->GetAssetType() == AssetType::TEXTURE)
 					{
