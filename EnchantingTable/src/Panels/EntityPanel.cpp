@@ -73,7 +73,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 
 			if (payload != nullptr) {
 				// Get Asset Id
-				uint64_t assetID = *static_cast<int*>(payload->Data);
+				uint64_t assetID = *static_cast<uint64_t*>(payload->Data);
 				Asset* meshAsset = Application::Get().GetAssetDatabase().GetAsset(assetID);
 
 				if (meshAsset != nullptr && meshAsset->GetAssetType() == AssetType::MESH) {

@@ -47,7 +47,7 @@ void FileBrowserPanel::OnUpdate()
 				Arcane::UI::Image(m_Icons[iconType], {thumbnailSize, thumbnailSize});
 				
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-					ImGui::SetDragDropPayload("CURRENT_SELECTED_ASSET", &path.second.assetID, sizeof(int));
+					ImGui::SetDragDropPayload("CURRENT_SELECTED_ASSET", &path.second.assetID, sizeof(uint64_t));
 					ImGui::EndDragDropSource();
 				}
 

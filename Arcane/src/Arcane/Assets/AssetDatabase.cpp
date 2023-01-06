@@ -17,7 +17,7 @@ namespace Arcane
 		m_AssetDirPath = assetDir;
 	}
 
-	Asset* AssetDatabase::GetAsset(int id)
+	Asset* AssetDatabase::GetAsset(uint64_t id)
 	{
 		return m_Assets[id];
 	}
@@ -86,7 +86,7 @@ namespace Arcane
 		return std::filesystem::exists(currentMetaPath);
 	}
 
-	void AssetDatabase::GenerateMetaFile(std::filesystem::path metaPath, int newID)
+	void AssetDatabase::GenerateMetaFile(std::filesystem::path metaPath, uint64_t newID)
 	{
 		// Generate ID 
 		std::ofstream o(metaPath.string().c_str());
@@ -99,7 +99,7 @@ namespace Arcane
 		o << meta_file << std::endl;
 	}
 
-	int AssetDatabase::GetMetaID(std::filesystem::path currentMetaPath)
+	uint64_t AssetDatabase::GetMetaID(std::filesystem::path currentMetaPath)
 	{
 		nlohmann::json metaJson;
 		std::ifstream i(currentMetaPath.string().c_str());
