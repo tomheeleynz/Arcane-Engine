@@ -18,7 +18,7 @@ enum class FileStatus
 struct FileInfo
 {
 	std::string name;
-	int assetID = -1;
+	uint64_t assetID = 0;
 	bool isDirectory = false;
 	std::filesystem::path relativePath;
 };
@@ -36,7 +36,7 @@ namespace Arcane
 
 		std::unordered_map<std::string, FileInfo> GetPaths() { return m_Paths; }
 	private:
-		int GetAssetID(std::filesystem::path metaPath);
+		uint64_t GetAssetID(std::filesystem::path metaPath);
 	private:
 		std::chrono::duration<int, std::milli> m_Delay;
 		std::unordered_map<std::string, FileInfo> m_Paths;

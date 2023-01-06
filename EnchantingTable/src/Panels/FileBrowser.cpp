@@ -1,9 +1,11 @@
 #include "FileBrowser.h"
+#include "Arcane.h"
+#include "PanelStructs.h"
+
 
 FileBrowserPanel::FileBrowserPanel()
 {
-	m_Watcher = new Arcane::FileWatcher("./src/Assets/Models", std::chrono::milliseconds(5000));
-
+	m_Watcher = new Arcane::FileWatcher(Arcane::Application::Get().GetProject()->GetWorkingPath().string(), std::chrono::milliseconds(5000));
 
 	///////////////////////////////////////////
 	//// Icons
@@ -21,7 +23,6 @@ FileBrowserPanel::FileBrowserPanel()
 
 void FileBrowserPanel::OnUpdate()
 {
-
 	m_Watcher->Update();
 	
 	ImGui::Begin("File Browser");
@@ -39,6 +40,9 @@ void FileBrowserPanel::OnUpdate()
 		if (columnCount < 1)
 			columnCount = 1;
 
+		ImGui::Columns(columnCount, 0, false);
+
+		int id = 0;
 		for (auto& path : m_Watcher->GetPaths())
 		{
 			if (!path.second.isDirectory) {
@@ -47,7 +51,12 @@ void FileBrowserPanel::OnUpdate()
 				Arcane::UI::Image(m_Icons[iconType], {thumbnailSize, thumbnailSize});
 				
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-					ImGui::SetDragDropPayload("CURRENT_SELECTED_ASSET", &path.second.assetID, sizeof(int));
+					// Create Asset Info
+					AssetInfo newInfo;
+					newInfo.id = path.second.assetID;
+					newInfo.name = path.second.name;
+
+					ImGui::SetDragDropPayload("CURRENT_SELECTED_ASSET", &newInfo, sizeof(AssetInfo));
 					ImGui::EndDragDropSource();
 				}
 
@@ -57,18 +66,21 @@ void FileBrowserPanel::OnUpdate()
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 1.0f, 1.0f, 0.3f));
 
-				ImGui::PushID(path.second.relativePath.c_str());
+				ImGui::PushID(id);
 				
 				if (Arcane::UI::ImageButton(m_Icons["Folder"], {thumbnailSize, thumbnailSize})) {
 					m_Watcher->SetDirectory(path.second.relativePath);
 				}
 
 				ImGui::PopID();
+				id++;
 				ImGui::PopStyleColor(2);
 				ImGui::Text(path.second.relativePath.stem().string().c_str());
 			}
+			ImGui::NextColumn();
 		}
 	}
+	ImGui::Columns(1);
 	ImGui::End();
 }
 
@@ -82,7 +94,7 @@ std::string FileBrowserPanel::GetIconType(std::string extension)
 		return "Material";
 	}
 
-	if (extension == ".obj" || extension == ".fbx") {
+	if (extension == ".obj" || extension == ".fbx" || extension == ".arcaneproj") {
 		return "Mesh";
 	}
 

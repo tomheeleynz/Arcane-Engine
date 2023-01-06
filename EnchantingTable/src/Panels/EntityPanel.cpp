@@ -1,4 +1,5 @@
 #include "EntityPanel.h"
+#include "PanelStructs.h"
 
 
 template <typename T, typename UIFunction>
@@ -10,6 +11,7 @@ static void DrawComponent(std::string name, Arcane::Entity entity, UIFunction ui
 		ImGui::Text(name.c_str());
 		auto& component = entity.GetComponent<T>();
 		uiFunction(component);
+		ImGui::Separator();
 	}
 }
 
@@ -44,9 +46,8 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 {
 	using namespace Arcane;
 
-	if (entity.HasComponent<TagComponent>())
-	{
-		auto& tag = entity.GetComponent<TagComponent>().tag;
+	DrawComponent<TagComponent>("Tag", entity, [](auto& component) {
+		auto& tag = component.tag;
 
 		char buffer[256];
 		memset(buffer, 0, sizeof(buffer));
@@ -55,7 +56,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		{
 			tag = std::string(buffer);
 		}
-	}
+	});
 
 	DrawComponent<TransformComponent>("Transform", entity, [](auto& component) {
 		ImGui::InputFloat3("Position", glm::value_ptr(component.pos));
@@ -73,8 +74,8 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 
 			if (payload != nullptr) {
 				// Get Asset Id
-				uint64_t assetID = *static_cast<int*>(payload->Data);
-				Asset* meshAsset = Application::Get().GetAssetDatabase().GetAsset(assetID);
+				AssetInfo assetInfo = *static_cast<AssetInfo*>(payload->Data);
+				Asset* meshAsset = Application::Get().GetAssetDatabase().GetAsset(assetInfo.id);
 
 				if (meshAsset != nullptr && meshAsset->GetAssetType() == AssetType::MESH) {
 					Mesh* mesh = static_cast<Mesh*>(meshAsset);

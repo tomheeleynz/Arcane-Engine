@@ -16,8 +16,12 @@ private:
 
 };
 
-int main()
+int main(int argc, char* argv[])
 {
+	// Parse Project Directory
+	const char* projectFilePath = argv[1];
+	std::cout << projectFilePath << std::endl;
+
 	// -- Set API to Vulkan
 	Arcane::RendererAPI::SetAPI(Arcane::RendererAPIType::Vulkan);
 
@@ -27,6 +31,7 @@ int main()
 	specs.WindowWidth = 1600;
 	specs.WindowHeight = 1200;
 	specs.PushImguiLayer = true;
+	specs.ProjectFilePath = projectFilePath;
 
 	// Create Vulkan Application
 	EnchantingTableApplication* app = new EnchantingTableApplication(specs);

@@ -42,7 +42,7 @@ namespace Arcane
 		}
 	}
 
-	int FileWatcher::GetAssetID(std::filesystem::path metaPath)
+	uint64_t FileWatcher::GetAssetID(std::filesystem::path metaPath)
 	{
 		std::string metaFileName = metaPath.stem().string() + ".arcmeta";
 		std::filesystem::path metaFile = metaPath.parent_path() / metaFileName;

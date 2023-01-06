@@ -12,7 +12,6 @@ namespace Arcane
 
 		UUID::UUID() : m_UUID(m_UniformDistribution(s_Engine))
 		{
-
 		}
 
 		UUID::UUID(uint64_t uuid) : m_UUID(uuid)

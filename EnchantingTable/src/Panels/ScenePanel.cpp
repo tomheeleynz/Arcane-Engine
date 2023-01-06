@@ -22,6 +22,18 @@ void ScenePanel::Update()
 			Arcane::Entity Entity(entity, this->m_Context);
 			DrawNode(Entity);
 		});
+
+		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
+			m_SelectedEntity = {};
+
+		if (ImGui::BeginPopupContextWindow(0, 1, false))
+		{
+			if (ImGui::MenuItem("Create Empty Entity"))
+				m_Context->CreateEntity("Empty Entity");
+
+			ImGui::EndPopup();
+		}
+
 	}
 	ImGui::End();
 
@@ -31,12 +43,26 @@ void ScenePanel::DrawNode(Arcane::Entity& entity)
 {
 	// Get Tag Component of Entity
 	std::string tag = entity.GetComponent<Arcane::TagComponent>().tag;
-
-	if (ImGui::TreeNode(tag.c_str()))
+	
+	ImGuiTreeNodeFlags flags = ((m_SelectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+	flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
+	
+	bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());
+	if (ImGui::IsItemClicked())
 	{
 		m_SelectedEntity = entity;
+	}
+
+	if (opened)
+	{
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+		bool opened = ImGui::TreeNodeEx((void*)9817239, flags, tag.c_str());
+		if (opened)
+			ImGui::TreePop();
 		ImGui::TreePop();
 	}
+
+
 }
 
 Arcane::Entity& ScenePanel::CreateMeshEntity(MeshEntityType type)

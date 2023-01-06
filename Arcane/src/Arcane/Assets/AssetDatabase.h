@@ -13,7 +13,7 @@ namespace Arcane
 	public:
 		AssetDatabase(std::filesystem::path assetDir);
 		
-		Asset* GetAsset(int id);
+		Asset* GetAsset(uint64_t id);
 		Asset* GetDefaultAsset(std::string assetName);
 		
 		bool GenerateDatabase();
@@ -21,9 +21,9 @@ namespace Arcane
 		bool GenerateAsset(std::filesystem::path currentAssetPath);
 		
 		bool CheckMetaInfo(std::filesystem::path currentMetaPath);
-		void GenerateMetaFile(std::filesystem::path metaPath, int newID);
+		void GenerateMetaFile(std::filesystem::path metaPath, uint64_t newID);
 
-		int GetMetaID(std::filesystem::path metaPath);
+		uint64_t GetMetaID(std::filesystem::path metaPath);
 	private:
 		bool GenerateDefaultAssets();
 	

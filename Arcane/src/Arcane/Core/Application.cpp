@@ -6,6 +6,7 @@
 #include "Arcane/Renderer/RenderPass.h"
 #include "Arcane/Scripting/ScriptingEngine.h"
 
+
 namespace Arcane {
 	Application* Application::s_Instance = nullptr;
 
@@ -32,8 +33,12 @@ namespace Arcane {
 
 		m_Clock = new CClock();
 
+		// Init Project
+		ProjectDeserializer deserializer(std::filesystem::path(specifications.ProjectFilePath));
+		m_Project = deserializer.Deserialize();
+
 		// Generate Asset Database on application startup
-		m_AssetDatabase = new AssetDatabase("./src/Assets");
+		m_AssetDatabase = new AssetDatabase(m_Project->GetWorkingPath().string());
 		bool assetDatabaseGenerated = m_AssetDatabase->GenerateDatabase();
 
 		if (!assetDatabaseGenerated) {
