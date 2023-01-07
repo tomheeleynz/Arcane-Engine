@@ -1,7 +1,7 @@
 #pragma once
 
 #include <nlohmann/json.hpp>
-
+#include <fstream>
 #include "Scene.h"
 
 namespace Arcane

@@ -37,5 +37,32 @@ namespace Arcane
 
 			return std::string();
 		}
+
+		std::string SaveFile()
+		{
+			Application& app = Application::Get();
+			GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
+			HWND handle = glfwGetWin32Window(window);
+
+			OPENFILENAME ofn = { 0 };
+			TCHAR szFile[260] = { 0 };
+			ofn.lStructSize = sizeof(ofn);
+			ofn.hwndOwner = handle;
+			ofn.lpstrFile = szFile;
+			ofn.nMaxFile = sizeof(szFile);
+			ofn.lpstrFilter = "All Files\0*.*\0\0";
+			ofn.nFilterIndex = 1;
+			ofn.lpstrFileTitle = NULL;
+			ofn.nMaxFileTitle = 0;
+			ofn.lpstrInitialDir = NULL;
+			ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+			if (GetSaveFileName(&ofn) == TRUE)
+			{
+				return ofn.lpstrFile;
+			}
+
+			return std::string();
+		}
 	}
 }

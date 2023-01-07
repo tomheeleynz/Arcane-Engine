@@ -129,6 +129,9 @@ void EditorLayer::OnImGuiRender()
 			if (ImGui::MenuItem("Open"))
 				OpenScene();
 
+			if (ImGui::MenuItem("Save"))
+				SaveScene();
+
 			ImGui::EndMenu();
 		}
 
@@ -195,5 +198,10 @@ void EditorLayer::OpenScene()
 
 void EditorLayer::SaveScene()
 {
-
+	std::string filename = Arcane::FileDialog::SaveFile();
+	
+	if (!filename.empty()) {
+		Arcane::SceneSerializer serializer(m_ActiveScene);
+		serializer.Serialize(filename);
+	}
 }
