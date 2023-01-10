@@ -6,6 +6,7 @@
 
 #include "Arcane/Core/UUID.h"
 #include "Arcane/Renderer/Mesh.h"
+#include "Arcane/Scripting/Script.h"
 
 namespace Arcane
 {
@@ -47,5 +48,10 @@ namespace Arcane
 	{
 		LightType type;
 		glm::vec3 color;
+	};
+
+	struct ScriptComponent
+	{
+		Script* script;
 	};
 }

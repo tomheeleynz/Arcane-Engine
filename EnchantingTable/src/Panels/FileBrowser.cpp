@@ -19,6 +19,9 @@ FileBrowserPanel::FileBrowserPanel()
 
 	// -- Mesh Icon
 	m_Icons["Mesh"] = Arcane::UI::AddTexture(Arcane::Texture::Create("./src/EditorAssets/Icons/mesh_icon.png"));
+
+	// -- Script Icon
+	m_Icons["Script"] = Arcane::UI::AddTexture(Arcane::Texture::Create("./src/EditorAssets/Icons/script_icon.png"));
 }
 
 void FileBrowserPanel::OnUpdate()
@@ -96,6 +99,10 @@ std::string FileBrowserPanel::GetIconType(std::string extension)
 
 	if (extension == ".obj" || extension == ".fbx" || extension == ".arcaneproj") {
 		return "Mesh";
+	}
+
+	if (extension == ".py") {
+		return "Script";
 	}
 
 	return std::string();

@@ -2,6 +2,7 @@
 
 #include <string>
 #include <entt/entt.hpp>
+
 #include "Arcane/ECS/Component.h"
 #include "Arcane/Renderer/SceneRenderer.h"
 

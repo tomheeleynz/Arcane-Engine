@@ -24,7 +24,7 @@ namespace Arcane
 
 	Asset* AssetDatabase::GetDefaultAsset(std::string name)
 	{
-		return m_DefaultAssets[name];
+		return GetAsset(m_DefaultAssets[name]);
 	}
 
 	bool AssetDatabase::GenerateDatabase()
@@ -110,9 +110,22 @@ namespace Arcane
 
 	bool AssetDatabase::GenerateDefaultAssets()
 	{
+		// Create default texture
+		Arcane::Core::UUID defaultTextureId = Arcane::Core::UUID();
 		Texture* defaultTexture =  Texture::Create("./src/Assets/Textures/default.png");
-		m_DefaultAssets["DefaultTexture"] = defaultTexture;
-		m_DefaultAssets["MeshMaterial"] = Material::Create(ShaderLibrary::GetShader("Mesh"));
+		defaultTexture->SetAssetType(AssetType::TEXTURE);
+		defaultTexture->SetID(defaultTextureId);
+		m_Assets[defaultTextureId] = defaultTexture;
+		m_DefaultAssets["DefaultTexture"] = (uint64_t)defaultTextureId;
+
+		// Create default material
+		uint64_t defaultMaterialId = Arcane::Core::UUID();
+		Material* defaultMaterial = Material::Create(ShaderLibrary::GetShader("Mesh"));
+		defaultTexture->SetAssetType(AssetType::MATERIAL);
+		defaultTexture->SetID(defaultMaterialId);
+		m_Assets[defaultMaterialId] = defaultMaterial;
+		m_DefaultAssets["MeshMaterial"] = (uint64_t)defaultMaterialId;
+		
 		return true;
 	}
 }

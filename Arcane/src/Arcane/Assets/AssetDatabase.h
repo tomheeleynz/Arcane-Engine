@@ -28,8 +28,9 @@ namespace Arcane
 		bool GenerateDefaultAssets();
 	
 	private:
-		std::unordered_map<std::string, Asset*> m_DefaultAssets;
+		std::unordered_map<std::string, uint64_t> m_DefaultAssets;
 		std::unordered_map<uint64_t, Asset*> m_Assets;
+		
 		std::filesystem::path m_AssetDirPath;
 	};
 }

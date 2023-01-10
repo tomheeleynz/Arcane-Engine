@@ -4,7 +4,6 @@
 #include <Arcane.h>
 #include <glm/glm.hpp>
 
-
 // Panels
 #include "Panels/ScenePanel.h"
 #include "Panels/EntityPanel.h"

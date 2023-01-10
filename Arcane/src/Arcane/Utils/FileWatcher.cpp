@@ -23,10 +23,9 @@ namespace Arcane
 		for (auto& file : std::filesystem::directory_iterator(m_Directory)) {
 			auto current_file_last_write_time = std::filesystem::last_write_time(file);
 
-			if (file.path().extension() != ".arcmeta") {
+			if (file.path().extension() != ".arcmeta" && file.path().stem() != "venv" && file.path().extension() != ".arcaneproj") {
 				if (!contains(file.path().string())) 
 				{
-			
 					FileInfo newFileInfo;
 					newFileInfo.name = file.path().stem().string();
 				

@@ -65,8 +65,10 @@ namespace Arcane
 			{
 				MeshRendererComponent component = sceneEntity.GetComponent<MeshRendererComponent>();
 				nlohmann::json meshRendererObject = nlohmann::json::object();
+
 				meshRendererObject["name"] = "MeshRenderer";
 				meshRendererObject["AssetID"] = component.material->GetID();
+				
 				componentArray.push_back(meshRendererObject);
 			}
 
