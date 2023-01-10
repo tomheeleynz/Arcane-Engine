@@ -9,6 +9,7 @@
 #include "Arcane/Core/UUID.h"
 #include "Arcane/Renderer/Mesh.h"
 #include "Arcane/Renderer/Texture.h"
+#include "Arcane/Scripting/Script.h"
 
 namespace Arcane
 {
@@ -64,7 +65,6 @@ namespace Arcane
 			newMeshAsset->SetID(Arcane::Core::UUID(assetID));
 			newMeshAsset->SetAssetType(AssetType::MESH);
 			m_Assets[assetID] = newMeshAsset;
-
 		}
 		else if (currentAssetPath.extension() == ".fbx") {
 			Mesh* newMeshAsset = new Mesh(currentAssetPath.string());
@@ -77,6 +77,12 @@ namespace Arcane
 			newTextureAsset->SetAssetType(AssetType::TEXTURE);
 			newTextureAsset->SetID(Arcane::Core::UUID(assetID));
 			m_Assets[assetID] = newTextureAsset;
+		}
+		else if (currentAssetPath.extension() == ".py") {
+			Script* newScriptAsset = new Script(currentAssetPath.string());
+			newScriptAsset->SetAssetType(AssetType::SCRIPT);
+			newScriptAsset->SetID(Arcane::Core::UUID(assetID));
+			m_Assets[assetID] = newScriptAsset;
 		}
 		return true;
 	}

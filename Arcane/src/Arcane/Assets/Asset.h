@@ -8,7 +8,8 @@ namespace Arcane
 	{
 		MESH,
 		TEXTURE,
-		MATERIAL
+		MATERIAL,
+		SCRIPT
 	};
 
 	class Asset

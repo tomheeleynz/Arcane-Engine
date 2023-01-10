@@ -43,7 +43,7 @@ namespace Arcane
 
 				nlohmann::json position = { component.pos.x, component.pos.y, component.pos.z };
 				nlohmann::json rotation = { component.rotation.x, component.rotation.y, component.rotation.z };
-				nlohmann::json scale = {component.scale.x, component.scale.y, component.scale.z};
+				nlohmann::json scale = { component.scale.x, component.scale.y, component.scale.z };
 				
 				transformObject["position"] = position;
 				transformObject["rotation"] = rotation;
@@ -56,8 +56,10 @@ namespace Arcane
 			{
 				MeshComponent component = sceneEntity.GetComponent<MeshComponent>();
 				nlohmann::json meshObject = nlohmann::json::object();
+				
 				meshObject["name"] = "Mesh";
 				meshObject["AssetID"] = component.mesh->GetID();
+				
 				componentArray.push_back(meshObject);
 			}
 
@@ -68,7 +70,7 @@ namespace Arcane
 
 				meshRendererObject["name"] = "MeshRenderer";
 				meshRendererObject["AssetID"] = component.material->GetID();
-				
+
 				componentArray.push_back(meshRendererObject);
 			}
 

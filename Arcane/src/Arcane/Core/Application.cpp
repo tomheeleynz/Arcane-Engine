@@ -37,6 +37,9 @@ namespace Arcane {
 		ProjectDeserializer deserializer(std::filesystem::path(specifications.ProjectFilePath));
 		m_Project = deserializer.Deserialize();
 
+		// Init Scripting Engine
+		ScriptingEngine::Init();
+
 		// Generate Asset Database on application startup
 		m_AssetDatabase = new AssetDatabase(m_Project->GetWorkingPath().string());
 		bool assetDatabaseGenerated = m_AssetDatabase->GenerateDatabase();
@@ -44,9 +47,6 @@ namespace Arcane {
 		if (!assetDatabaseGenerated) {
 			std::cout << "Asset Database Not Created\n";
 		}
-
-		// Init Scripting Engine
-		ScriptingEngine::Init();
 	}
 
 	void Application::RenderImGui()

@@ -26,7 +26,6 @@ namespace Arcane
 		std::string workingDirPath = jsonObject["workingdir"];
 		newSpecs.workingDir = std::filesystem::path(workingDirPath);
 
-
 		Project* newProject = new Project(newSpecs);
 		return newProject;
 	}

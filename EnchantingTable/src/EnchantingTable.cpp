@@ -9,7 +9,7 @@ class EnchantingTableApplication : public Arcane::Application
 public:
 	EnchantingTableApplication(Arcane::ApplicationSpecifications& specifications) : Arcane::Application(specifications)
 	{
-		//PushLayer(new OpenGLTestLayer());
+		// PushLayer(new OpenGLTestLayer());
 		PushLayer(new EditorLayer());
 	}
 private:
@@ -28,8 +28,8 @@ int main(int argc, char* argv[])
 	// Set Application Specifications
 	Arcane::ApplicationSpecifications specs;
 	specs.Name = "Arcane Engine";
-	specs.WindowWidth = 1600;
-	specs.WindowHeight = 1200;
+	specs.WindowWidth = 1200;
+	specs.WindowHeight = 800;
 	specs.PushImguiLayer = true;
 	specs.ProjectFilePath = projectFilePath;
 
