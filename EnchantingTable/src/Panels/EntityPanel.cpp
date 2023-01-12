@@ -30,10 +30,6 @@ void EntityPanel::Update()
 {
 	ImGui::Begin("Entity");
 	{
-		if (ImGui::Button("Add Component")) {
-			AddMeshComponent(m_Context);
-		}
-
 		if (m_Context) 
 		{
 			DrawComponents(m_Context);
@@ -57,6 +53,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 			tag = std::string(buffer);
 		}
 	});
+
 
 	DrawComponent<TransformComponent>("Transform", entity, [](auto& component) {
 		ImGui::InputFloat3("Position", glm::value_ptr(component.pos));
@@ -89,7 +86,24 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 
 
 	DrawComponent<MeshRendererComponent>("Mesh Renderer", entity, [this](auto& component) {
-		Material* material = component.material;
+		ImGui::Text("Material");
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
+
+			if (payload != nullptr) {
+				// Get Asset Id
+				AssetInfo assetInfo = *static_cast<AssetInfo*>(payload->Data);
+				Asset* meshAsset = Application::Get().GetAssetDatabase().GetAsset(assetInfo.id);
+
+				if (meshAsset != nullptr && meshAsset->GetAssetType() == AssetType::MESH) {
+					Mesh* mesh = static_cast<Mesh*>(meshAsset);
+					component.mesh = mesh;
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
 
 		if (material != nullptr) {
 			if (ImGui::Button("View Material"))
@@ -107,16 +121,34 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		ImGui::ColorEdit3("Color", glm::value_ptr(currentValue));
 		component.color = currentValue;
 	});
+
+	ImGui::SameLine();
+	ImGui::PushItemWidth(-1);
+
+	if (ImGui::Button("Add Component"))
+		ImGui::OpenPopup("AddComponent");
+
+	if (ImGui::BeginPopup("AddComponent"))
+	{
+		DisplayAddComponentEntry<MeshComponent>("Mesh");
+		DisplayAddComponentEntry<MeshRendererComponent>("Mesh Renderer");
+		ImGui::EndPopup();
+	}
+
+	ImGui::PopItemWidth();
+
 	
 }
 
-void EntityPanel::AddMeshComponent(Arcane::Entity& entity)
+template<typename T>
+void EntityPanel::DisplayAddComponentEntry(std::string entryName)
 {
-	Arcane::MeshComponent meshComponent;
-	Arcane::MeshRendererComponent meshRendererComponent;
-
-	meshRendererComponent.material = Arcane::Material::Create(Arcane::ShaderLibrary::GetShader("Mesh"));
-	entity.AddComponent<Arcane::MeshComponent>(meshComponent);
-	entity.AddComponent<Arcane::MeshRendererComponent>(meshRendererComponent);
+	if (!m_Context.HasComponent<T>())
+	{
+		if (ImGui::MenuItem(entryName.c_str()))
+		{
+			m_Context.AddComponent<T>();
+			ImGui::CloseCurrentPopup();
+		}
+	}
 }
-

@@ -29,6 +29,10 @@ namespace Arcane
 		// Update Material data from internal structures
 		virtual void UpdateMaterialData() = 0;
 
+		// Get the shader from the material
+
+
+
 		static Material* Create(Shader* shader);
 	private:
 	};

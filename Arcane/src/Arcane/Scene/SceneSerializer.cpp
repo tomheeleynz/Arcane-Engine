@@ -2,6 +2,7 @@
 
 #include "SceneSerializer.h"
 #include "Arcane/ECS/Entity.h"
+#include "Arcane/Renderer/MaterialSerializer.h"
 
 namespace Arcane
 {
@@ -70,6 +71,9 @@ namespace Arcane
 
 				meshRendererObject["name"] = "MeshRenderer";
 				meshRendererObject["AssetID"] = component.material->GetID();
+
+				MaterialSerializer serializer(component.material);
+				serializer.Serialize(savePath.string());
 
 				componentArray.push_back(meshRendererObject);
 			}

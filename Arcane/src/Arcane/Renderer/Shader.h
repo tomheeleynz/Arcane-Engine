@@ -3,6 +3,8 @@
 #include <string>
 #include <map>
 #include <vector>
+
+#include "Arcane/Assets/Asset.h"
 #include "DescriptorSet.h"
 
 namespace Arcane 
@@ -28,7 +30,7 @@ namespace Arcane
 	/////////////////////////////////////////////////////////////
 	//// Shader
 	/////////////////////////////////////////////////////////////
-	class Shader
+	class Shader : public Asset
 	{
 	public:
 		virtual DescriptorSet* GetMaterialDescriptor() = 0;

@@ -15,7 +15,8 @@ public:
 
 	Arcane::Material* GetSelectedMaterial() { return m_SelectedMaterial; }
 private:
-	void AddMeshComponent(Arcane::Entity& entity);
+	template<typename T>
+	void DisplayAddComponentEntry(std::string entryName);
 
 private:
 	Arcane::Entity m_Context;

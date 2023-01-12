@@ -35,6 +35,12 @@ namespace Arcane
 			if (dirEntry.is_regular_file()) {
 				std::filesystem::path file = dirEntry.path();
 
+				// Check if asset should be generated, as some
+				// things should be excluded
+				if (file.extension() == ".arcaneproj")
+					continue;
+
+
 				bool isAssetGenerated = GenerateAsset(file);
 				if (!isAssetGenerated) {
 					return false;
