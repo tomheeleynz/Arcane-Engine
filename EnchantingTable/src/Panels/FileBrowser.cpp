@@ -3,6 +3,7 @@
 #include "PanelStructs.h"
 
 
+
 FileBrowserPanel::FileBrowserPanel()
 {
 	m_Watcher = new Arcane::FileWatcher(Arcane::Application::Get().GetProject()->GetWorkingPath().string(), std::chrono::milliseconds(5000));
@@ -84,6 +85,26 @@ void FileBrowserPanel::OnUpdate()
 		}
 	}
 	ImGui::Columns(1);
+
+	// Popup to create new files 
+	if (ImGui::Button("Create Asset"))
+		ImGui::OpenPopup("CreateAsset");
+
+	if (ImGui::BeginPopup("CreateAsset"))
+	{
+		if (ImGui::MenuItem("New Material"))
+		{
+			std::string filename = Arcane::FileDialog::SaveFile();
+
+			if (!filename.empty()) {
+				// Save asset to database
+				Arcane::Application::Get().GetAssetDatabase().GenerateAsset(std::filesystem::path(filename));
+			}
+
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
 	ImGui::End();
 }
 

@@ -95,19 +95,18 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 			if (payload != nullptr) {
 				// Get Asset Id
 				AssetInfo assetInfo = *static_cast<AssetInfo*>(payload->Data);
-				Asset* meshAsset = Application::Get().GetAssetDatabase().GetAsset(assetInfo.id);
+				Asset* materialAsset = Application::Get().GetAssetDatabase().GetAsset(assetInfo.id);
 
-				if (meshAsset != nullptr && meshAsset->GetAssetType() == AssetType::MESH) {
-					Mesh* mesh = static_cast<Mesh*>(meshAsset);
-					component.mesh = mesh;
+				if (materialAsset != nullptr && materialAsset->GetAssetType() == AssetType::MATERIAL) {
+					Material* material = static_cast<Material*>(materialAsset);
+					component.material = material;
 				}
 			}
 			ImGui::EndDragDropTarget();
 		}
 
-		if (material != nullptr) {
-			if (ImGui::Button("View Material"))
-				m_SelectedMaterial = material;
+		if (component.material != nullptr) { 
+			m_SelectedMaterial = component.material;
 		}
 	});
 	

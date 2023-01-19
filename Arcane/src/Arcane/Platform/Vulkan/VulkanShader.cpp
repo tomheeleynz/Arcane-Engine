@@ -1,3 +1,5 @@
+#include <shaderc/shaderc.hpp>
+
 #include "Arcane/Core/Application.h"
 #include "Arcane/Renderer/DescriptorSet.h"
 #include "VulkanShader.h"
@@ -81,6 +83,54 @@ namespace Arcane {
 		Reflect();
 	}
 
+	VulkanShader::VulkanShader(std::string shaderFile)
+	{
+		// Get GLSL string of both vertex and fragent shader
+		ShaderProgramSource sources = ParseShader(shaderFile);
+
+		// Get Vulkan Context to be able to get the devices
+		Application& app = Application::Get();
+		Window& window = app.GetWindow();
+		VulkanContext* _context = static_cast<VulkanContext*>(window.GetContext());
+
+		// -- Get Logical Device
+		VkDevice& logicalDevice = _context->GetDevice().GetLogicalDevice();
+
+		// Create Vertex Shader
+		{
+			std::vector<uint32_t> vertexBytes = CompileShader("vertexShader", shaderc_glsl_vertex_shader, sources.vertexShader);
+			VkShaderModuleCreateInfo createInfo{};
+			createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+			createInfo.codeSize = vertexBytes.size();
+			createInfo.pCode = vertexBytes.data();
+
+			if (vkCreateShaderModule(logicalDevice, &createInfo, nullptr, &m_VertexShaderModule) != VK_SUCCESS) {
+				printf("Vertex shader not created\n");
+			}
+			else {
+				printf("Vertex shader created\n");
+			}
+		}
+
+		// Create Fragment Shader
+		{
+			std::vector<uint32_t> fragmentBytes = CompileShader("fragmentShader", shaderc_glsl_fragment_shader, sources.fragmentShader);
+			VkShaderModuleCreateInfo createInfo{};
+			createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+			createInfo.codeSize = fragmentBytes.size();
+			createInfo.pCode = fragmentBytes.data();
+
+			if (vkCreateShaderModule(logicalDevice, &createInfo, nullptr, &m_FragShaderModule) != VK_SUCCESS) {
+				printf("Fragment shader not created\n");
+			}
+			else {
+				printf("Fragment shader created\n");
+			}
+
+			ReflectModule(fragmentBytes, m_FragShaderModule);
+		}
+	}
+
 	DescriptorSet* VulkanShader::GetMaterialDescriptor()
 	{
 		return m_MaterialSet;
@@ -88,11 +138,9 @@ namespace Arcane {
 
 	void VulkanShader::Reflect() 
 	{
-		// Reflect Fragment Module
-		ReflectModule(m_FragmentByteCode, m_FragShaderModule);
 	}
 
-	void VulkanShader::ReflectModule(std::vector<char> byteCode, VkShaderModule module)
+	void VulkanShader::ReflectModule(std::vector<uint32_t> byteCode, VkShaderModule module)
 	{
 		// Get Vulkan Context to be able to get the devices
 		Application& app = Application::Get();
@@ -207,5 +255,23 @@ namespace Arcane {
 			}
 			m_MaterialSize = size;
 		}
+	}
+
+	std::vector<uint32_t> VulkanShader::CompileShader(const std::string& source_name, shaderc_shader_kind kind, const std::string& source, bool optimize)
+	{
+		shaderc::Compiler compiler;
+		shaderc::CompileOptions options;
+		
+		if (optimize) options.SetOptimizationLevel(shaderc_optimization_level_size);
+		std::cout << source << std::endl;
+		std::cout << std::endl;
+		shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(source, kind, source_name.c_str(), options);
+		
+		if (module.GetCompilationStatus() != shaderc_compilation_status_success) {
+			std::cerr << module.GetErrorMessage();
+			return std::vector<uint32_t>();
+		}
+
+		return {module.cbegin(), module.cend()};
 	}
 }

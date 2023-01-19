@@ -12,7 +12,7 @@ file(GLOB PROJECT_SYSTEM_FILES "src/Arcane/Project/*.h" "src/Arcane/Project/*.cp
 
 if (WIN32 OR (UNIX AND NOT APPLE))
 	# Find Vulkan
-	find_package(Vulkan REQUIRED)
+	find_package(Vulkan REQUIRED COMPONENTS shaderc_combined)
 
 	# Find OpenGL
 	find_package(OpenGL REQUIRED)
@@ -20,8 +20,10 @@ if (WIN32 OR (UNIX AND NOT APPLE))
 	# Only add spirv-reflect on windows and linux
 	add_subdirectory("vendor/SPIRV-Reflect")
 
+	message(STATUS ${Vulkan_shaderc_combined_LIBRARY})
+
 	# Set Libraries
-	set(LIBS glfw imgui ${Vulkan_LIBRARIES} assimp SPIRV-REFLECT glad ${OPENGL_LIBRARIES} spirv-cross-glsl)
+	set(LIBS glfw imgui ${Vulkan_LIBRARIES} "C:/VulkanSDK/1.3.231.1/Lib/shaderc_combinedd.lib" assimp SPIRV-REFLECT glad ${OPENGL_LIBRARIES} spirv-cross-glsl)
 
 	# Set Vulkan engine files
 	file(GLOB VULKAN_FILES "src/Arcane/Platform/Vulkan/*.h" "src/Arcane/Platform/Vulkan/*.cpp")

@@ -3,6 +3,8 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <fstream>
+#include <sstream>
 
 #include "Arcane/Assets/Asset.h"
 #include "DescriptorSet.h"
@@ -27,6 +29,12 @@ namespace Arcane
 		uint32_t binding;
 	};
 
+	struct ShaderProgramSource
+	{
+		std::string vertexShader;
+		std::string fragmentShader;
+	};
+
 	/////////////////////////////////////////////////////////////
 	//// Shader
 	/////////////////////////////////////////////////////////////
@@ -36,7 +44,10 @@ namespace Arcane
 		virtual DescriptorSet* GetMaterialDescriptor() = 0;
 		virtual std::vector<ShaderVariable> GetMaterialVariables() = 0;
 		virtual uint32_t GetMaterialSize() = 0;
+
+		static ShaderProgramSource ParseShader(std::string shaderFile);
 		static Shader* Create(std::string vertexShader, std::string fragmentShader);
+		static Shader* Create(std::string shaderFile);
 	private:
 
 	};
