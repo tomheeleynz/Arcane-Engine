@@ -90,6 +90,13 @@ namespace Arcane
 			newScriptAsset->SetID(Arcane::Core::UUID(assetID));
 			m_Assets[assetID] = newScriptAsset;
 		}
+		else if (currentAssetPath.extension() == ".arcaneshader")
+		{
+			Shader* newShaderAsset = Shader::Create(currentAssetPath.string());
+			newShaderAsset->SetAssetType(AssetType::SHADER);
+			newShaderAsset->SetID(Arcane::Core::UUID(assetID));
+			m_Assets[assetID] = newShaderAsset;
+		}
 		return true;
 	}
 

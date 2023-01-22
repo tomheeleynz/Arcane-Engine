@@ -85,6 +85,7 @@ namespace Arcane {
 
 	VulkanShader::VulkanShader(std::string shaderFile)
 	{
+
 		// Get GLSL string of both vertex and fragent shader
 		ShaderProgramSource sources = ParseShader(shaderFile);
 
@@ -101,8 +102,8 @@ namespace Arcane {
 			std::vector<uint32_t> vertexBytes = CompileShader("vertexShader", shaderc_glsl_vertex_shader, sources.vertexShader);
 			VkShaderModuleCreateInfo createInfo{};
 			createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-			createInfo.codeSize = vertexBytes.size();
-			createInfo.pCode = vertexBytes.data();
+			createInfo.codeSize = vertexBytes.size() * 4;
+			createInfo.pCode = static_cast<uint32_t*>(vertexBytes.data());
 
 			if (vkCreateShaderModule(logicalDevice, &createInfo, nullptr, &m_VertexShaderModule) != VK_SUCCESS) {
 				printf("Vertex shader not created\n");
@@ -113,22 +114,22 @@ namespace Arcane {
 		}
 
 		// Create Fragment Shader
-		{
-			std::vector<uint32_t> fragmentBytes = CompileShader("fragmentShader", shaderc_glsl_fragment_shader, sources.fragmentShader);
-			VkShaderModuleCreateInfo createInfo{};
-			createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-			createInfo.codeSize = fragmentBytes.size();
-			createInfo.pCode = fragmentBytes.data();
+		//{
+		//	std::vector<uint32_t> fragmentBytes = CompileShader("fragmentShader", shaderc_glsl_fragment_shader, sources.fragmentShader);
+		//	VkShaderModuleCreateInfo createInfo{};
+		//	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+		//	createInfo.codeSize = fragmentBytes.size();
+		//	createInfo.pCode = fragmentBytes.data();
 
-			if (vkCreateShaderModule(logicalDevice, &createInfo, nullptr, &m_FragShaderModule) != VK_SUCCESS) {
-				printf("Fragment shader not created\n");
-			}
-			else {
-				printf("Fragment shader created\n");
-			}
+		//	if (vkCreateShaderModule(logicalDevice, &createInfo, nullptr, &m_FragShaderModule) != VK_SUCCESS) {
+		//		printf("Fragment shader not created\n");
+		//	}
+		//	else {
+		//		printf("Fragment shader created\n");
+		//	}
 
-			ReflectModule(fragmentBytes, m_FragShaderModule);
-		}
+		//	ReflectModule(fragmentBytes, m_FragShaderModule);
+		//}
 	}
 
 	DescriptorSet* VulkanShader::GetMaterialDescriptor()
@@ -263,8 +264,10 @@ namespace Arcane {
 		shaderc::CompileOptions options;
 		
 		if (optimize) options.SetOptimizationLevel(shaderc_optimization_level_size);
+		
 		std::cout << source << std::endl;
 		std::cout << std::endl;
+		
 		shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(source, kind, source_name.c_str(), options);
 		
 		if (module.GetCompilationStatus() != shaderc_compilation_status_success) {

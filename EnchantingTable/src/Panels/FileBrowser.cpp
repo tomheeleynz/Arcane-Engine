@@ -23,6 +23,9 @@ FileBrowserPanel::FileBrowserPanel()
 
 	// -- Script Icon
 	m_Icons["Script"] = Arcane::UI::AddTexture(Arcane::Texture::Create("./src/EditorAssets/Icons/script_icon.png"));
+
+	// -- Shader Icon
+	m_Icons["Shader"] = Arcane::UI::AddTexture(Arcane::Texture::Create("./src/EditorAssets/Icons/shader_icon.png"));
 }
 
 void FileBrowserPanel::OnUpdate()
@@ -124,6 +127,10 @@ std::string FileBrowserPanel::GetIconType(std::string extension)
 
 	if (extension == ".py") {
 		return "Script";
+	}
+
+	if (extension == ".arcaneshader") {
+		return "Shader";
 	}
 
 	return std::string();

@@ -86,7 +86,7 @@ namespace Arcane
 			".\\src\\EditorAssets\\Shaders\\ScreenFrag.spv"
 		);
 
-		m_Shaders["TestSingle"] = Shader::Create(".\\src\\EditorAssets\\Shaders\\Mesh.arcaneshader");
+		// m_Shaders["TestSingle"] = Shader::Create(".\\src\\EditorAssets\\Shaders\\Mesh.arcaneshader");
 	}
 
 	ShaderLibrary* ShaderLibrary::GetInstance()

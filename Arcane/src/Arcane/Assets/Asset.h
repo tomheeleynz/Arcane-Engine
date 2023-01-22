@@ -9,7 +9,8 @@ namespace Arcane
 		MESH,
 		TEXTURE,
 		MATERIAL,
-		SCRIPT
+		SCRIPT,
+		SHADER
 	};
 
 	class Asset
