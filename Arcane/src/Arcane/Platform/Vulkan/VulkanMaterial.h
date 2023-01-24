@@ -26,6 +26,9 @@ namespace Arcane
 
 		void UpdateMaterialData() override;
 
+		virtual Shader* GetShader() override;
+		virtual void SetShader(Shader* shader) override;
+
 		std::vector<ShaderVariable> GetMaterialVariables();
 	private:
 		// Things to render material

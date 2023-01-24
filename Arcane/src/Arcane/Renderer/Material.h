@@ -30,8 +30,8 @@ namespace Arcane
 		virtual void UpdateMaterialData() = 0;
 
 		// Get the shader from the material
-
-
+		virtual Shader* GetShader() = 0;
+		virtual void SetShader(Shader* shader) = 0;
 
 		static Material* Create(Shader* shader);
 	private:

@@ -114,22 +114,22 @@ namespace Arcane {
 		}
 
 		// Create Fragment Shader
-		//{
-		//	std::vector<uint32_t> fragmentBytes = CompileShader("fragmentShader", shaderc_glsl_fragment_shader, sources.fragmentShader);
-		//	VkShaderModuleCreateInfo createInfo{};
-		//	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-		//	createInfo.codeSize = fragmentBytes.size();
-		//	createInfo.pCode = fragmentBytes.data();
+		{
+			std::vector<uint32_t> fragmentBytes = CompileShader("fragmentShader", shaderc_glsl_fragment_shader, sources.fragmentShader);
+			VkShaderModuleCreateInfo createInfo{};
+			createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+			createInfo.codeSize = fragmentBytes.size() * 4;
+			createInfo.pCode = fragmentBytes.data();
 
-		//	if (vkCreateShaderModule(logicalDevice, &createInfo, nullptr, &m_FragShaderModule) != VK_SUCCESS) {
-		//		printf("Fragment shader not created\n");
-		//	}
-		//	else {
-		//		printf("Fragment shader created\n");
-		//	}
+			if (vkCreateShaderModule(logicalDevice, &createInfo, nullptr, &m_FragShaderModule) != VK_SUCCESS) {
+				printf("Fragment shader not created\n");
+			}
+			else {
+				printf("Fragment shader created\n");
+			}
 
-		//	ReflectModule(fragmentBytes, m_FragShaderModule);
-		//}
+			// ReflectModule(fragmentBytes, m_FragShaderModule);
+		}
 	}
 
 	DescriptorSet* VulkanShader::GetMaterialDescriptor()

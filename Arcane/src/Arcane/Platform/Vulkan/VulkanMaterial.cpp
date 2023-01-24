@@ -5,6 +5,8 @@ namespace Arcane
 {
 	VulkanMaterial::VulkanMaterial(Shader* shader)
 	{
+		if (shader == nullptr) return;
+
 		m_Shader = shader;
 
 		// Reflect Shader to get descriptor info
@@ -41,6 +43,47 @@ namespace Arcane
 	{
 		for (auto& uniformBuffer : m_UniformBuffers) {
 			uniformBuffer.second->WriteData((void*)m_UniformBuffersData[uniformBuffer.first].second, m_UniformBuffersData[uniformBuffer.first].first * sizeof(float));
+		}
+	}
+
+	Shader* VulkanMaterial::GetShader()
+	{
+		return m_Shader;
+	}
+
+	void VulkanMaterial::SetShader(Shader* shader)
+	{
+		m_Shader = shader;
+
+		// Reflect Shader to get descriptor info
+		VulkanShader* vulkanShader = static_cast<VulkanShader*>(shader);
+		m_DescriptorSet = vulkanShader->GetMaterialDescriptor();
+
+		// Get Default Texture
+		Texture* defaultTexture = static_cast<Texture*>(Application::Get().GetAssetDatabase().GetDefaultAsset("DefaultTexture"));
+			
+		m_UniformBuffers.clear();
+		m_UniformBuffersData.clear();
+		m_MaterialTextures.clear();
+
+		// Actually parse these variables
+		for (ShaderVariable variable : GetMaterialVariables())
+		{
+			if (variable.Type == ShaderVariableType::Vec3) {
+				m_UniformBuffersData[variable.binding].first += 3;
+			}
+
+			if (variable.Type == ShaderVariableType::Sampler) {
+				m_MaterialTextures[variable.binding] = defaultTexture;
+				m_DescriptorSet->AddImageSampler(m_MaterialTextures[variable.binding], 2, variable.binding);
+			}
+		}
+
+		for (auto& uniformBufferData : m_UniformBuffersData) {
+			// Create the memory
+			uniformBufferData.second.second = new float[uniformBufferData.second.first];
+			m_UniformBuffers[uniformBufferData.first] = UniformBuffer::Create(sizeof(float) * uniformBufferData.second.first);
+			m_DescriptorSet->AddUniformBuffer(m_UniformBuffers[uniformBufferData.first], 2, uniformBufferData.first);
 		}
 	}
 

@@ -97,6 +97,9 @@ namespace Arcane
 			newShaderAsset->SetID(Arcane::Core::UUID(assetID));
 			m_Assets[assetID] = newShaderAsset;
 		}
+		else if (currentAssetPath.extension() == ".arcanemat") 
+		{	
+		}
 		return true;
 	}
 
