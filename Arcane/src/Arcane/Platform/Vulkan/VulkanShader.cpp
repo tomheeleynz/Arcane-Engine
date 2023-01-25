@@ -128,7 +128,7 @@ namespace Arcane {
 				printf("Fragment shader created\n");
 			}
 
-			// ReflectModule(fragmentBytes, m_FragShaderModule);
+			ReflectModule(fragmentBytes, m_FragShaderModule);
 		}
 	}
 
@@ -158,7 +158,7 @@ namespace Arcane {
 			SpvReflectShaderModule module;
 
 			SpvReflectResult result = spvReflectCreateShaderModule(
-				byteCode.size(),
+				byteCode.size() * 4,
 				byteCode.data(),
 				&module
 			);

@@ -32,7 +32,7 @@ namespace Arcane
 		std::vector<ShaderVariable> GetMaterialVariables();
 	private:
 		// Things to render material
-		Shader* m_Shader;
+		Shader* m_Shader = nullptr;
 		DescriptorSet* m_DescriptorSet;
 		UniformBuffer* m_UniformBuffer;
 

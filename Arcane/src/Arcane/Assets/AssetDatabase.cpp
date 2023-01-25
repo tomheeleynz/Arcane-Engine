@@ -10,6 +10,7 @@
 #include "Arcane/Renderer/Mesh.h"
 #include "Arcane/Renderer/Texture.h"
 #include "Arcane/Scripting/Script.h"
+#include "Arcane/Renderer/MaterialDeserializer.h"
 
 namespace Arcane
 {
@@ -99,6 +100,12 @@ namespace Arcane
 		}
 		else if (currentAssetPath.extension() == ".arcanemat") 
 		{	
+			// Set path for material deserialization
+			MaterialDeserializer deserializer(currentAssetPath);
+			Material* material = deserializer.Deserialize();
+			material->SetAssetType(AssetType::MATERIAL);
+			material->SetID(Arcane::Core::UUID(assetID));
+			m_Assets[assetID] = material;
 		}
 		return true;
 	}

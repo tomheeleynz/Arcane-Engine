@@ -15,6 +15,7 @@ namespace Arcane
 
 		// Set Name of scene
 		jsonObject["name"] = "DefaultMaterial";
+		jsonObject["shader"] = m_Material->GetShader()->GetID();
 
 		// variable array
 		nlohmann::json variableArray = nlohmann::json::array();

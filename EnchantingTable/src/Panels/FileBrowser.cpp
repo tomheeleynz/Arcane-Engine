@@ -26,6 +26,9 @@ FileBrowserPanel::FileBrowserPanel()
 
 	// -- Shader Icon
 	m_Icons["Shader"] = Arcane::UI::AddTexture(Arcane::Texture::Create("./src/EditorAssets/Icons/shader_icon.png"));
+
+	// -- Material Icon
+	m_Icons["Material"] = Arcane::UI::AddTexture(Arcane::Texture::Create("./src/EditorAssets/Icons/material_icon.png"));
 }
 
 void FileBrowserPanel::OnUpdate()
@@ -117,7 +120,7 @@ std::string FileBrowserPanel::GetIconType(std::string extension)
 		return "Image";
 	}
 
-	if (extension == ".arcmat") {
+	if (extension == ".arcanemat") {
 		return "Material";
 	}
 

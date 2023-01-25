@@ -23,6 +23,7 @@
 #include "Arcane/Renderer/Camera.h"
 #include "Arcane/Renderer/DescriptorSet.h"
 #include "Arcane/Renderer/MeshFactory.h"
+#include "Arcane/Renderer/MaterialSerializer.h"
 
 /////////////////////////////////////////////////////
 ////////// ImGui

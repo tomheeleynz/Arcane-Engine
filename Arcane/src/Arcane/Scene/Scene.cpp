@@ -74,10 +74,11 @@ namespace Arcane
 				auto& transform = view.get<TransformComponent>(entity);
 				auto& meshRenderer = view.get<MeshRendererComponent>(entity);
 
-				if (mesh.mesh != nullptr)
+				if (mesh.mesh != nullptr && meshRenderer.material != nullptr && meshRenderer.material->GetShader() != nullptr)
 					m_SceneRenderer->SubmitMesh(mesh.mesh, transform, meshRenderer.material);
 			}
 		}
+		
 		m_SceneRenderer->RenderScene();
 	}
 }
