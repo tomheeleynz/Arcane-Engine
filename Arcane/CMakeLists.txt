@@ -23,7 +23,7 @@ if (WIN32 OR (UNIX AND NOT APPLE))
 	message(STATUS ${Vulkan_shaderc_combined_LIBRARY})
 
 	# Set Libraries
-	set(LIBS glfw imgui ${Vulkan_LIBRARIES} "C:/VulkanSDK/1.3.231.1/Lib/shaderc_combinedd.lib" assimp SPIRV-REFLECT glad ${OPENGL_LIBRARIES} spirv-cross-glsl)
+	set(LIBS glfw imgui ${Vulkan_LIBRARIES} "C:/VulkanSDK/1.3.216.0/Lib/shaderc_combinedd.lib" assimp SPIRV-REFLECT glad ${OPENGL_LIBRARIES} spirv-cross-glsl)
 
 	# Set Vulkan engine files
 	file(GLOB VULKAN_FILES "src/Arcane/Platform/Vulkan/*.h" "src/Arcane/Platform/Vulkan/*.cpp")
@@ -54,6 +54,9 @@ message(STATUS ${Python_INCLUDE_DIRS})
 message(STATUS ${Python_LIBRARIES})
 message(STATUS ${Python_LIBRARY_DIRS})
 
+# Setup pybind & create python module
+add_subdirectory("vendor/pybind11")
+
 # Create Library
 add_library(
 	${PROJECT_NAME}
@@ -71,7 +74,19 @@ add_library(
 )
 
 # Link Source Directories
-target_include_directories(${PROJECT_NAME} PUBLIC "src" "vendor/glm" "vendor/stb" "vendor/entt/single_include" "vendor/json/single_include" "vendor/dotnet" ${OPENGL_INCLUDE_DIRS} "vendor/SPIRV-Cross"  ${Python_INCLUDE_DIRS})
+target_include_directories(
+	${PROJECT_NAME} PUBLIC 
+	"src" 
+	"vendor/glm" 
+	"vendor/stb" 
+	"vendor/entt/single_include" 
+	"vendor/json/single_include" 
+	"vendor/dotnet" 
+	${OPENGL_INCLUDE_DIRS} 
+	"vendor/SPIRV-Cross"  
+	"vendor/pybind11/include"
+	${Python_INCLUDE_DIRS}
+)
 
 # Link Libraries
 target_link_libraries(${PROJECT_NAME} ${LIBS} ${Python_LIBRARIES})
