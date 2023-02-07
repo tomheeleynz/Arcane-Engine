@@ -5,6 +5,7 @@
 #include "Shader.h"
 #include "DescriptorSet.h"
 #include "UniformBuffer.h"
+#include "Pipeline.h"
 
 namespace Arcane
 {

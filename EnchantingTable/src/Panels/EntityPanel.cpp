@@ -121,6 +121,26 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		component.color = currentValue;
 	});
 
+	DrawComponent<ScriptComponent>("Script", entity, [](auto& component) {
+		ImGui::Text("Load Script");
+		if (ImGui::BeginDragDropTarget())
+		{
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
+
+			if (payload != nullptr) {
+				// Get Asset Id
+				AssetInfo assetInfo = *static_cast<AssetInfo*>(payload->Data);
+				Asset* scriptAsset = Application::Get().GetAssetDatabase().GetAsset(assetInfo.id);
+
+				if (scriptAsset != nullptr && scriptAsset->GetAssetType() == AssetType::SCRIPT) {
+					Script* script = static_cast<Script*>(scriptAsset);
+					component.script = script;
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
+	});
+
 	ImGui::SameLine();
 	ImGui::PushItemWidth(-1);
 

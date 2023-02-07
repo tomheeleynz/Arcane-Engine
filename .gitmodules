@@ -25,3 +25,6 @@
 [submodule "Arcane/vendor/SPIRV-Cross"]
 	path = Arcane/vendor/SPIRV-Cross
 	url = https://github.com/KhronosGroup/SPIRV-Cross.git
+[submodule "Arcane/vendor/pybind11"]
+	path = Arcane/vendor/pybind11
+	url = https://github.com/pybind/pybind11.git

@@ -151,9 +151,6 @@ namespace Arcane {
 
 		// -- Get Logical Device
 		VkDevice& logicalDevice = _context->GetDevice().GetLogicalDevice();
-
-		// Reflect Fragment Module
-		std::vector<DescriptorSetLayoutData> setLayouts;
 		{
 			SpvReflectShaderModule module;
 
@@ -181,80 +178,38 @@ namespace Arcane {
 				printf("Failed to load reflect descriptor sets\n");
 			}
 
-			uint32_t offset = 0;
-			uint32_t size = 0;
+			std::vector<DescriptorSetLayoutData> setLayouts(sets.size(), DescriptorSetLayoutData{});
+
 			for (int i = 0; i < sets.size(); i++) {
-				SpvReflectDescriptorSet* reflectSet = sets[i];
-				// DescriptorSetLayoutData newData;
+				SpvReflectDescriptorSet& reflectSet = *(sets[i]);
+				DescriptorSetLayoutData& layout = setLayouts[i];
 
-				if (reflectSet->set == 2)
-				{
-					DescriptorSetSpecs newSetSpecs;
-					newSetSpecs.SetNumber = reflectSet->set;
+				layout.Bindings.resize(reflectSet.binding_count);
 
-					std::vector<DescriptorLayoutSpecs> bindings;
-					bindings.resize(reflectSet->binding_count);
-					for (int j = 0; j < reflectSet->binding_count; j++) {
-						// Get the reflected binding
-						const SpvReflectDescriptorBinding& reflBinding = *(reflectSet->bindings[j]);
-						ShaderVariable newVariable;
+				for (int j = 0; j < reflectSet.binding_count; j++) {
+					SpvReflectDescriptorBinding& reflectBinding = *(reflectSet.bindings[j]);
+					VkDescriptorSetLayoutBinding& layoutBinding = layout.Bindings[j];
 
-						for (int k = 0; k < reflBinding.type_description->member_count; k++)
-						{
-							// This gets the member variable
-							SpvReflectTypeDescription& memberDesc = reflBinding.type_description->members[k];
+					layoutBinding.binding = reflectBinding.binding;
+					
+					layoutBinding.descriptorType =
+						static_cast<VkDescriptorType>(reflectBinding.descriptor_type);
+					
+					layoutBinding.descriptorCount = 1;
 
-							if (memberDesc.traits.numeric.vector.component_count == 3)
-							{
-								// This is a vector 3
-								newVariable.Type = ShaderVariableType::Vec3;
-								newVariable.offset = offset;
-								newVariable.size = sizeof(float) * 3;
-								newVariable.Name = memberDesc.struct_member_name;
-								newVariable.binding = reflBinding.binding;
-
-								m_MaterialVariables.push_back(newVariable);
-
-								size += sizeof(float) * 3;
-								offset += 3;
-							}
-						}
-
-						if (reflBinding.descriptor_type == SpvReflectDescriptorType::SPV_REFLECT_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER) {
-							newVariable.Type = ShaderVariableType::Sampler;
-							newVariable.binding = reflBinding.binding;
-							m_MaterialVariables.push_back(newVariable);
-							// Process that material variable
-						}
-
-						// Create my struct for a binding
-						DescriptorLayoutSpecs& binding = bindings[j];
-
-						// Binding number
-						binding.Binding = reflBinding.binding;
-
-						// location
-						binding.Location = DescriptorLocation::FRAGMENT;
-
-						// descriptor count
-						binding.DescriptorCount = 1;
-
-						// material
-						binding.Name = "Material";
-
-						if (reflBinding.descriptor_type == SpvReflectDescriptorType::SPV_REFLECT_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER) {
-							binding.Type = DescriptorType::SAMPLER;
-						}
-
-						if (reflBinding.descriptor_type == SpvReflectDescriptorType::SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER) {
-							binding.Type = DescriptorType::UNIFORM_BUFFER;
-						}
+					for (uint32_t i_dim = 0; i_dim < reflectBinding.array.dims_count; ++i_dim) {
+						layoutBinding.descriptorCount *= reflectBinding.array.dims[i_dim];
 					}
 
-					m_MaterialSet = DescriptorSet::Create(newSetSpecs, bindings);
+					layoutBinding.stageFlags =
+						static_cast<VkShaderStageFlagBits>(module.shader_stage);
 				}
+
+				layout.SetNumber = reflectSet.set;
+				layout.CreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+				layout.CreateInfo.bindingCount = reflectSet.binding_count;
+				layout.CreateInfo.pBindings = layout.Bindings.data();
 			}
-			m_MaterialSize = size;
 		}
 	}
 

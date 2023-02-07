@@ -54,6 +54,9 @@ message(STATUS ${Python_INCLUDE_DIRS})
 message(STATUS ${Python_LIBRARIES})
 message(STATUS ${Python_LIBRARY_DIRS})
 
+# Add pybind as a subdirectory
+add_subdirectory("vendor/pybind11")
+
 # Create Library
 add_library(
 	${PROJECT_NAME}
@@ -71,7 +74,7 @@ add_library(
 )
 
 # Link Source Directories
-target_include_directories(${PROJECT_NAME} PUBLIC "src" "vendor/glm" "vendor/stb" "vendor/entt/single_include" "vendor/json/single_include" "vendor/dotnet" ${OPENGL_INCLUDE_DIRS} "vendor/SPIRV-Cross"  ${Python_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PUBLIC "src" "vendor/pybind11/include" "vendor/glm" "vendor/stb" "vendor/entt/single_include" "vendor/json/single_include" "vendor/dotnet" ${OPENGL_INCLUDE_DIRS} "vendor/SPIRV-Cross"  ${Python_INCLUDE_DIRS})
 
 # Link Libraries
 target_link_libraries(${PROJECT_NAME} ${LIBS} ${Python_LIBRARIES})
