@@ -13,7 +13,7 @@ namespace Arcane
 		OpenGLShader(std::string vertexShader, std::string fragmentShader);
 
 		DescriptorSet* GetMaterialDescriptor() override;
-		std::vector<ShaderVariable> GetMaterialVariables() override;
+		std::vector<ShaderSet> GetShaderSets() override;
 		uint32_t GetMaterialSize() override;
 
 		void Bind();

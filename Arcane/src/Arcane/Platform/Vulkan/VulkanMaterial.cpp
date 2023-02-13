@@ -6,15 +6,6 @@ namespace Arcane
 	VulkanMaterial::VulkanMaterial(Shader* shader)
 	{
 		if (shader == nullptr) return;
-
-		m_Shader = shader;
-
-		// Reflect Shader to get descriptor info
-		VulkanShader* vulkanShader = static_cast<VulkanShader*>(shader);
-
-		// Get Descriptor Sets From Shader
-
-		// 
 	}
 
 	void VulkanMaterial::UpdateMaterialData()
@@ -28,12 +19,26 @@ namespace Arcane
 
 	void VulkanMaterial::SetShader(Shader* shader)
 	{
+		m_Shader = shader;
+
+		std::vector<ShaderSet> shaderSets = GetShaderSets();
+
+		for (int i = 0; i < shaderSets.size(); i++) {
+			ShaderSet& set = shaderSets[i];
+
+			// We only care about the material set in this instance
+			if (set.SetNumber == 2) {
+				for (int j = 0; j < set.Bindings.size(); j++) {
+					ShaderBinding& binding = set.Bindings[j];
+				}
+			}
+		}
 	}
 
-	std::vector<ShaderVariable> VulkanMaterial::GetMaterialVariables()
+	std::vector<ShaderSet> VulkanMaterial::GetShaderSets()
 	{
 		VulkanShader* vulkanShader = static_cast<VulkanShader*>(m_Shader);
-		return m_Shader->GetMaterialVariables();
+		return m_Shader->GetShaderSets();
 	}
 
 	DescriptorSet* VulkanMaterial::GetDescriptorSet()

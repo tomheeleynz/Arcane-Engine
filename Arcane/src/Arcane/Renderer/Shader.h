@@ -11,22 +11,39 @@
 
 namespace Arcane 
 {
-	enum class ShaderVariableType
+	enum class ShaderVariableLocation
 	{
-		Float,
-		Vec3,
-		Vec2,
-		Int,
-		Sampler
+		VERTEX,
+		FRAGMENT
 	};
 
-	struct ShaderVariable
+	enum class ShaderBindingType
+	{
+		SAMPLER,
+		UNIFORM
+	};
+
+	struct ShaderMember
 	{
 		std::string Name;
-		ShaderVariableType Type;
-		uint32_t size;
-		uint32_t offset;
-		uint32_t binding;
+		uint32_t Offset;
+		std::vector<ShaderMember> Members;
+	};
+
+	struct ShaderBinding
+	{
+		uint32_t Size;
+		uint32_t Offset;
+		ShaderBindingType Type;
+		std::vector<ShaderMember> Members;
+	};
+
+	struct ShaderSet
+	{
+		std::string Name;
+		uint32_t SetNumber;
+		uint32_t Size;
+		std::vector<ShaderBinding> Bindings;
 	};
 
 	struct ShaderProgramSource
@@ -42,7 +59,7 @@ namespace Arcane
 	{
 	public:
 		virtual DescriptorSet* GetMaterialDescriptor() = 0;
-		virtual std::vector<ShaderVariable> GetMaterialVariables() = 0;
+		virtual std::vector<ShaderSet> GetShaderSets() = 0;
 		virtual uint32_t GetMaterialSize() = 0;
 
 		static ShaderProgramSource ParseShader(std::string shaderFile);

@@ -33,32 +33,12 @@ void MaterialViewerPanel::OnUpdate()
 	}
 
 	if (m_Material->GetShader() != nullptr) {
-		std::vector<Arcane::ShaderVariable> materialVariables = m_Material->GetMaterialVariables();
-		for (auto& variable : materialVariables)
-		{
-			// Image Sampler
-			if (variable.Type == Arcane::ShaderVariableType::Sampler)
-			{
-				Arcane::Texture* texture = m_Material->GetTexture(variable.binding);
-				Arcane::UI::Image(texture);
-
-				// Add drag and drop
-				if (ImGui::BeginDragDropTarget())
-				{
-					const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
-
-					if (payload != nullptr) {
-						AssetInfo assetInfo = *static_cast<AssetInfo*>(payload->Data);
-						Asset* asset = Arcane::Application::Get().GetAssetDatabase().GetAsset(assetInfo.id);
-
-						if (asset != nullptr && asset->GetAssetType() == AssetType::TEXTURE)
-						{
-							Texture* texture = static_cast<Texture*>(asset);
-							m_Material->WriteTexture(variable.binding, texture);
-						}
-					}
-					ImGui::EndDragDropTarget();
-				}
+		std::vector<ShaderSet> sets = m_Material->GetShaderSets();
+			
+		// This will display the material set
+		for (int i = 0; i < sets.size(); i++) {
+			if (sets[i].SetNumber == 2) {
+				
 			}
 		}
 	}

@@ -85,7 +85,6 @@ namespace Arcane {
 
 	VulkanShader::VulkanShader(std::string shaderFile)
 	{
-
 		// Get GLSL string of both vertex and fragent shader
 		ShaderProgramSource sources = ParseShader(shaderFile);
 
@@ -179,22 +178,35 @@ namespace Arcane {
 			}
 
 			std::vector<DescriptorSetLayoutData> setLayouts(sets.size(), DescriptorSetLayoutData{});
+			m_ShaderSets.resize(sets.size());
 
 			for (int i = 0; i < sets.size(); i++) {
 				SpvReflectDescriptorSet& reflectSet = *(sets[i]);
 				DescriptorSetLayoutData& layout = setLayouts[i];
+					
+				// Custom type for platform agnostic to use
+				ShaderSet& shaderSet = m_ShaderSets[i];
+				shaderSet.SetNumber = reflectSet.set;
+				shaderSet.Bindings.resize(reflectSet.binding_count);
 
 				layout.Bindings.resize(reflectSet.binding_count);
 
 				for (int j = 0; j < reflectSet.binding_count; j++) {
 					SpvReflectDescriptorBinding& reflectBinding = *(reflectSet.bindings[j]);
-					VkDescriptorSetLayoutBinding& layoutBinding = layout.Bindings[j];
+					VkDescriptorSetLayoutBinding& layoutBinding = layout.Bindings[j];					
 
 					layoutBinding.binding = reflectBinding.binding;
 					
 					layoutBinding.descriptorType =
 						static_cast<VkDescriptorType>(reflectBinding.descriptor_type);
-					
+
+					if (reflectBinding.descriptor_type == SPV_REFLECT_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER) {
+						shaderSet.Bindings[j].Type = ShaderBindingType::SAMPLER;
+					}
+					else if (reflectBinding.descriptor_type == SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER) {
+						shaderSet.Bindings[j].Type = ShaderBindingType::UNIFORM;
+					}
+
 					layoutBinding.descriptorCount = 1;
 
 					for (uint32_t i_dim = 0; i_dim < reflectBinding.array.dims_count; ++i_dim) {
@@ -203,6 +215,30 @@ namespace Arcane {
 
 					layoutBinding.stageFlags =
 						static_cast<VkShaderStageFlagBits>(module.shader_stage);
+
+					// Getting member variables
+					// if the member count is 0, just get the name of the block
+					// if its more than 0, have to recursively find all the members of each block
+
+					if (reflectBinding.block.member_count != 0) {
+						m_ShaderSets[i].Bindings[j].Members.resize(reflectBinding.block.member_count);
+						
+						for (int k = 0; k < reflectBinding.block.member_count; k++) {
+							// Setting up my internal structure
+							ShaderMember& member = m_ShaderSets[i].Bindings[j].Members[k];
+							member.Name = reflectBinding.block.members[k].name;
+
+							// Getting the binding variable
+							SpvReflectBlockVariable& variable = reflectBinding.block.members[k];
+							
+							// Get the members of the above member variable recursively
+							FindShaderMembers(variable, member);
+						}
+					}
+					else {
+						m_ShaderSets[i].Bindings[j].Members.resize(1);
+						m_ShaderSets[i].Bindings[j].Members[0].Name = reflectBinding.name;
+					}
 				}
 
 				layout.SetNumber = reflectSet.set;
@@ -231,5 +267,23 @@ namespace Arcane {
 		}
 
 		return {module.cbegin(), module.cend()};
+	}
+
+	void VulkanShader::FindShaderMembers(SpvReflectBlockVariable& variable, ShaderMember& member)
+	{
+		if (variable.member_count == 0) {
+			return;
+		}
+		else {
+			member.Members.resize(variable.member_count);
+
+			for (int i = 0; i < variable.member_count; i++) {
+				ShaderMember& newMember = member.Members[i];
+				SpvReflectBlockVariable newBlockVariable = variable.members[i];
+
+				newMember.Name = newBlockVariable.name;
+				FindShaderMembers(newBlockVariable, newMember);
+			}
+		}
 	}
 }

@@ -2,6 +2,8 @@
 
 #include "Arcane/Renderer/Material.h"
 #include "Arcane/Renderer/UniformBuffer.h"
+
+#include "VulkanPipeline.h"
 #include "VulkanShader.h"
 #include "VulkanTexture.h"
 
@@ -29,7 +31,7 @@ namespace Arcane
 		virtual Shader* GetShader() override;
 		virtual void SetShader(Shader* shader) override;
 
-		std::vector<ShaderVariable> GetMaterialVariables();
+		std::vector<ShaderSet> GetShaderSets();
 	private:
 		// Things to render material
 		Shader* m_Shader = nullptr;
