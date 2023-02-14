@@ -22,6 +22,7 @@ namespace Arcane
 		VkShaderModule GetVertexShaderModule() { return m_VertexShaderModule; }
 		VkShaderModule GetFragmentShaderModule() { return m_FragShaderModule; }
 		DescriptorSet* GetMaterialDescriptor() override;
+		std::vector<DescriptorSet*> GetDescriptorSets() { return m_DescriptorSets; }
 
 		void FindShaderMembers(SpvReflectBlockVariable& block, ShaderMember& member);
 
@@ -43,5 +44,6 @@ namespace Arcane
 
 		// Descriptor Sets of Shader
 		std::vector<DescriptorSet*> m_DescriptorSets;
+		DescriptorSet* m_MaterialDescriptorSet;
 	};
 }

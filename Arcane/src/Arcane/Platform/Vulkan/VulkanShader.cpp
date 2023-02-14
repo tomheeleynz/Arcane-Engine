@@ -133,7 +133,7 @@ namespace Arcane {
 
 	DescriptorSet* VulkanShader::GetMaterialDescriptor()
 	{
-		return m_MaterialSet;
+		return m_MaterialDescriptorSet;
 	}
 
 	void VulkanShader::Reflect() 
@@ -194,7 +194,8 @@ namespace Arcane {
 				std::vector<DescriptorLayoutSpecs> layoutSpecs(reflectSet.binding_count, DescriptorLayoutSpecs{});
 
 				for (int j = 0; j < reflectSet.binding_count; j++) {
-					SpvReflectDescriptorBinding& reflectBinding = *(reflectSet.bindings[j]);			
+					SpvReflectDescriptorBinding& reflectBinding = *(reflectSet.bindings[j]);	
+					shaderSet.Bindings[j].Binding = reflectBinding.binding;
 					
 					DescriptorLayoutSpecs& layoutSpec = layoutSpecs[j];
 					layoutSpec.Binding = reflectBinding.binding;
@@ -215,11 +216,11 @@ namespace Arcane {
 						layoutSpec.DescriptorCount *= reflectBinding.array.dims[i_dim];
 					}
 
-					if (module.shader_stage == VK_SHADER_STAGE_VERTEX_BIT) {
+					if (module.shader_stage & VK_SHADER_STAGE_VERTEX_BIT) {
 						layoutSpec.Location = DescriptorLocation::VERTEX;
 					}
 
-					if (module.shader_stage == VK_SHADER_STAGE_FRAGMENT_BIT) {
+					if (module.shader_stage & VK_SHADER_STAGE_FRAGMENT_BIT) {
 						layoutSpec.Location = DescriptorLocation::FRAGMENT;
 					}
 
@@ -249,6 +250,9 @@ namespace Arcane {
 				}
 
 				m_DescriptorSets[i] = DescriptorSet::Create(setSpecs, layoutSpecs);
+
+				if (setSpecs.SetNumber == 2)
+					m_MaterialDescriptorSet = m_DescriptorSets[i];
 			}
 		}
 	}

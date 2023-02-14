@@ -32,6 +32,7 @@ namespace Arcane
 
 	struct ShaderBinding
 	{
+		uint32_t Binding;
 		uint32_t Size;
 		uint32_t Offset;
 		ShaderBindingType Type;

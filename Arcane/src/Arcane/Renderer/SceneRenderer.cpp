@@ -119,52 +119,6 @@ namespace Arcane
 		geometryRenderpassSpecs.TargetFramebuffer = s_Data.GeometryFramebuffer;
 		s_Data.GeometryRenderPass = RenderPass::Create(geometryRenderpassSpecs);
 
-		s_Data.GeometryShader = ShaderLibrary::GetShader("Mesh");
-
-		s_Data.GeometryVertexDescriptor = VertexDescriptor::Create({
-			VertexType::float3,
-			VertexType::float3,
-			VertexType::float2
-		});
-
-		// Create Object Descriptor Set
-		DescriptorSetSpecs objectDescriptorSetSpecs;
-		objectDescriptorSetSpecs.SetNumber = 3;
-		s_Data.ObjectDescriptorSet = DescriptorSet::Create(
-			objectDescriptorSetSpecs, {
-				{0, 1, DescriptorType::UNIFORM_BUFFER, "Model", DescriptorLocation::VERTEX}
-			}
-		);
-
-		s_Data.ObjectUniformBuffer = UniformBuffer::Create(sizeof(Model));
-		s_Data.ObjectDescriptorSet->AddUniformBuffer(s_Data.ObjectUniformBuffer, 1, 0);
-
-		// Create Geomertry pass descriptor
-		DescriptorSetSpecs geometryPassDescriptorSetSpecs;
-		geometryPassDescriptorSetSpecs.SetNumber = 1;
-		s_Data.GeometryPassDescriptorSet = DescriptorSet::Create(
-			geometryPassDescriptorSetSpecs, {
-				{0, 1, DescriptorType::UNIFORM_BUFFER, "Lights", DescriptorLocation::FRAGMENT}
-			}
-		);
-
-		s_Data.GeometryPassUniformBuffer = UniformBuffer::Create(sizeof(DirectionaLight));
-		s_Data.GeometryPassDescriptorSet->AddUniformBuffer(s_Data.GeometryPassUniformBuffer, 1, 0);
-
-
-		// Create Pipeline
-		PipelineSpecification geometrySpecs;
-		geometrySpecs.renderPass = s_Data.GeometryRenderPass;
-		geometrySpecs.shader = s_Data.GeometryShader;
-		geometrySpecs.descriptor = s_Data.GeometryVertexDescriptor;
-
-		if (s_Data.GeometryShader->GetMaterialDescriptor() != nullptr)
-			geometrySpecs.DescriptorSets = {s_Data.GlobalDescriptorSet, s_Data.GeometryPassDescriptorSet, s_Data.GeometryShader->GetMaterialDescriptor(), s_Data.ObjectDescriptorSet};
-		else 
-			geometrySpecs.DescriptorSets = { s_Data.GlobalDescriptorSet, s_Data.ObjectDescriptorSet };
-		
-		s_Data.GeometryPipeline = Pipeline::Create(geometrySpecs);
-
 		///////////////////////////////////////////////////////////////
 		//// Grid (Part of Geo Pass)
 		///////////////////////////////////////////////////////////////
@@ -284,39 +238,10 @@ namespace Arcane
 
 	void SceneRenderer::GeometryPass()
 	{
-		DirectionaLight currentDirLight;
-		currentDirLight.direction = s_Data.directionalLightTransform.pos;
-		currentDirLight.color = s_Data.directionaLight.color;
-		s_Data.GeometryPassUniformBuffer->WriteData((void*)&currentDirLight, sizeof(DirectionaLight));
-
 		// Update any per pass resources
 		Renderer::BeginRenderPass(s_Data.GeometryRenderPass);
 		{	
-			for (int i = 0; i < s_Data.Meshes.size(); i++)
-			{
-				Mesh* currentMesh = s_Data.Meshes[i];
-				Material* material = s_Data.materials[i];
-				material->UpdateMaterialData();
-
-				// Create Transform Component
-				TransformComponent& currentMeshComponent = s_Data.MeshTransforms[i];
-
-				// Create Model Matrix
-				Model currentTransform;
-				currentTransform.transform = glm::translate(glm::mat4(1), currentMeshComponent.pos) * 
-					glm::mat4_cast(currentMeshComponent.rotation) *
-					glm::scale(glm::mat4(1), currentMeshComponent.scale);
-
-				// Write to uniform buffer
-				s_Data.ObjectUniformBuffer->WriteData((void*)&currentTransform, sizeof(Model));
-
-				for (int j = 0; j < currentMesh->GetSubMeshes().size(); j++) {
-					SubMesh* currentSubMesh = currentMesh->GetSubMeshes()[j];
-					Renderer::RenderMesh(currentSubMesh->GetVertexBuffer(), s_Data.GeometryPipeline, {s_Data.GlobalDescriptorSet, s_Data.GeometryPassDescriptorSet,  material->GetDescriptorSet(), s_Data.ObjectDescriptorSet});
-				}
-
-			}
-			Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, {s_Data.GlobalDescriptorSet});
+			Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, { s_Data.GlobalDescriptorSet });
 		}
 		Renderer::EndRenderPass(s_Data.GeometryRenderPass);
 	}

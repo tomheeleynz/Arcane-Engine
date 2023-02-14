@@ -44,7 +44,7 @@ namespace Arcane
 
 	DescriptorSet* VulkanMaterial::GetDescriptorSet()
 	{
-		return m_DescriptorSet;
+		return m_Shader->GetMaterialDescriptor();
 	}
 
 	UniformBuffer* VulkanMaterial::GetUniformBuffer()
@@ -65,7 +65,7 @@ namespace Arcane
 	void VulkanMaterial::WriteTexture(int binding, Texture* texture)
 	{
 		m_MaterialTextures[binding] = texture;
-		m_DescriptorSet->AddImageSampler(m_MaterialTextures[binding], 2, binding);
+		m_Shader->GetMaterialDescriptor()->AddImageSampler(m_MaterialTextures[binding], 2, binding);
 	}
 
 	void VulkanMaterial::WriteTexture(int binding, glm::vec4 color)

@@ -40,7 +40,7 @@ void MaterialViewerPanel::OnUpdate()
 
 			for (int j = 0; j < binding.Members.size(); j++) {
 				ShaderMember& member = binding.Members[j];
-				DisplayMaterialVariable(member);
+				DisplayMaterialVariable(member, binding.Type, binding.Binding);
 			}
 		}
 	}
@@ -63,18 +63,46 @@ void MaterialViewerPanel::SetMaterial(Arcane::Material* material)
 	m_Material = material;
 }
 
-void MaterialViewerPanel::DisplayMaterialVariable(Arcane::ShaderMember& member)
+void MaterialViewerPanel::DisplayMaterialVariable(Arcane::ShaderMember& member, Arcane::ShaderBindingType type, uint32_t binding)
 {
+	using namespace Arcane;
 	if (member.Members.size() != 0) {
 		std::string variableName = "--" + member.Name;
 		ImGui::Text(variableName.c_str());
 
 		for (int i = 0; i < member.Members.size(); i++) {
-			DisplayMaterialVariable(member.Members[i]);
+			DisplayMaterialVariable(member.Members[i], type, binding);
 		}
 	}
 	else {
-		ImGui::Text(member.Name.c_str());
+		if (type == Arcane::ShaderBindingType::SAMPLER) {
+			Arcane::Texture* texture = m_Material->GetTexture(binding);
+
+			if (texture == nullptr) 
+				ImGui::Text(member.Name.c_str());
+			else
+				Arcane::UI::Image(texture);
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
+
+				if (payload != nullptr) {
+					AssetInfo assetInfo = *static_cast<AssetInfo*>(payload->Data);
+					Asset* asset = Arcane::Application::Get().GetAssetDatabase().GetAsset(assetInfo.id);
+
+					if (asset != nullptr && asset->GetAssetType() == AssetType::TEXTURE)
+					{
+						Texture* texture = static_cast<Texture*>(asset);
+						m_Material->WriteTexture(binding, texture);
+					}
+				}
+				ImGui::EndDragDropTarget();
+			}
+		}
+		else {
+			ImGui::Text(member.Name.c_str());
+		}
 		return;
 	}
 }
