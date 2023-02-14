@@ -40,5 +40,8 @@ namespace Arcane
 		std::vector<char> m_FragmentByteCode;
 
 		std::vector<ShaderSet> m_ShaderSets;
+
+		// Descriptor Sets of Shader
+		std::vector<DescriptorSet*> m_DescriptorSets;
 	};
 }

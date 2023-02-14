@@ -16,6 +16,7 @@ namespace Arcane
 
 		DescriptorSet* GetDescriptorSet() override;
 		UniformBuffer* GetUniformBuffer() override;
+		Pipeline* GetPipeline() override;
 
 		// Get Material Variables from material buffer
 		virtual glm::vec3 GetVec3(int binding, uint32_t offset) override;
@@ -31,8 +32,11 @@ namespace Arcane
 		virtual Shader* GetShader() override;
 		virtual void SetShader(Shader* shader) override;
 
-		std::vector<ShaderSet> GetShaderSets();
+		ShaderSet& GetMaterialSet() override;
 	private:
+		// Material Set from shader, if present
+		ShaderSet m_Set;
+
 		// Things to render material
 		Shader* m_Shader = nullptr;
 		DescriptorSet* m_DescriptorSet;
@@ -47,5 +51,8 @@ namespace Arcane
 		
 		// For textures
 		std::map<int, Texture*> m_MaterialTextures;
+
+		// Pipeline
+		Pipeline* m_Pipeline = nullptr;
 	};
 }

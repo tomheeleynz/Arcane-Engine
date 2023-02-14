@@ -140,9 +140,9 @@ namespace Arcane
 		return nullptr;
 	}
 
-	std::vector<ShaderVariable> OpenGLShader::GetMaterialVariables()
+	std::vector<ShaderSet> OpenGLShader::GetShaderSets()
 	{
-		return std::vector<ShaderVariable>();
+		return std::vector<ShaderSet>();
 	}
 
 	uint32_t OpenGLShader::GetMaterialSize()

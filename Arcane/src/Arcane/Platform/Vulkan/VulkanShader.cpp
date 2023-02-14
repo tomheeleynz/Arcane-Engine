@@ -177,44 +177,51 @@ namespace Arcane {
 				printf("Failed to load reflect descriptor sets\n");
 			}
 
-			std::vector<DescriptorSetLayoutData> setLayouts(sets.size(), DescriptorSetLayoutData{});
+			m_DescriptorSets.resize(sets.size());
 			m_ShaderSets.resize(sets.size());
 
 			for (int i = 0; i < sets.size(); i++) {
 				SpvReflectDescriptorSet& reflectSet = *(sets[i]);
-				DescriptorSetLayoutData& layout = setLayouts[i];
-					
+
 				// Custom type for platform agnostic to use
 				ShaderSet& shaderSet = m_ShaderSets[i];
 				shaderSet.SetNumber = reflectSet.set;
 				shaderSet.Bindings.resize(reflectSet.binding_count);
 
-				layout.Bindings.resize(reflectSet.binding_count);
+				// Create Descriptor Shaders for material 
+				DescriptorSetSpecs setSpecs;
+				setSpecs.SetNumber = reflectSet.set;
+				std::vector<DescriptorLayoutSpecs> layoutSpecs(reflectSet.binding_count, DescriptorLayoutSpecs{});
 
 				for (int j = 0; j < reflectSet.binding_count; j++) {
-					SpvReflectDescriptorBinding& reflectBinding = *(reflectSet.bindings[j]);
-					VkDescriptorSetLayoutBinding& layoutBinding = layout.Bindings[j];					
-
-					layoutBinding.binding = reflectBinding.binding;
+					SpvReflectDescriptorBinding& reflectBinding = *(reflectSet.bindings[j]);			
 					
-					layoutBinding.descriptorType =
-						static_cast<VkDescriptorType>(reflectBinding.descriptor_type);
+					DescriptorLayoutSpecs& layoutSpec = layoutSpecs[j];
+					layoutSpec.Binding = reflectBinding.binding;
+					layoutSpec.Name = reflectBinding.name;
 
 					if (reflectBinding.descriptor_type == SPV_REFLECT_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER) {
 						shaderSet.Bindings[j].Type = ShaderBindingType::SAMPLER;
+						layoutSpec.Type = DescriptorType::SAMPLER;
 					}
 					else if (reflectBinding.descriptor_type == SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER) {
 						shaderSet.Bindings[j].Type = ShaderBindingType::UNIFORM;
+						layoutSpec.Type = DescriptorType::UNIFORM_BUFFER;
 					}
 
-					layoutBinding.descriptorCount = 1;
+					layoutSpec.DescriptorCount = 1;
 
 					for (uint32_t i_dim = 0; i_dim < reflectBinding.array.dims_count; ++i_dim) {
-						layoutBinding.descriptorCount *= reflectBinding.array.dims[i_dim];
+						layoutSpec.DescriptorCount *= reflectBinding.array.dims[i_dim];
 					}
 
-					layoutBinding.stageFlags =
-						static_cast<VkShaderStageFlagBits>(module.shader_stage);
+					if (module.shader_stage == VK_SHADER_STAGE_VERTEX_BIT) {
+						layoutSpec.Location = DescriptorLocation::VERTEX;
+					}
+
+					if (module.shader_stage == VK_SHADER_STAGE_FRAGMENT_BIT) {
+						layoutSpec.Location = DescriptorLocation::FRAGMENT;
+					}
 
 					// Getting member variables
 					// if the member count is 0, just get the name of the block
@@ -241,10 +248,7 @@ namespace Arcane {
 					}
 				}
 
-				layout.SetNumber = reflectSet.set;
-				layout.CreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-				layout.CreateInfo.bindingCount = reflectSet.binding_count;
-				layout.CreateInfo.pBindings = layout.Bindings.data();
+				m_DescriptorSets[i] = DescriptorSet::Create(setSpecs, layoutSpecs);
 			}
 		}
 	}

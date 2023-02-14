@@ -6,6 +6,9 @@ namespace Arcane
 	VulkanMaterial::VulkanMaterial(Shader* shader)
 	{
 		if (shader == nullptr) return;
+		
+		m_Shader = shader;
+		SetShader(m_Shader);
 	}
 
 	void VulkanMaterial::UpdateMaterialData()
@@ -21,24 +24,22 @@ namespace Arcane
 	{
 		m_Shader = shader;
 
-		std::vector<ShaderSet> shaderSets = GetShaderSets();
+		VulkanShader* vulkanShader = static_cast<VulkanShader*>(m_Shader);
+		std::vector<ShaderSet> shaderSets = m_Shader->GetShaderSets();
 
 		for (int i = 0; i < shaderSets.size(); i++) {
 			ShaderSet& set = shaderSets[i];
 
 			// We only care about the material set in this instance
 			if (set.SetNumber == 2) {
-				for (int j = 0; j < set.Bindings.size(); j++) {
-					ShaderBinding& binding = set.Bindings[j];
-				}
+				m_Set = set;
 			}
 		}
 	}
 
-	std::vector<ShaderSet> VulkanMaterial::GetShaderSets()
+	ShaderSet& VulkanMaterial::GetMaterialSet()
 	{
-		VulkanShader* vulkanShader = static_cast<VulkanShader*>(m_Shader);
-		return m_Shader->GetShaderSets();
+		return m_Set;
 	}
 
 	DescriptorSet* VulkanMaterial::GetDescriptorSet()
@@ -84,6 +85,11 @@ namespace Arcane
 	Texture* VulkanMaterial::GetTexture(int binding)
 	{
 		return m_MaterialTextures[binding];
+	}
+
+	Pipeline* VulkanMaterial::GetPipeline()
+	{
+		return nullptr;
 	}
 
 }

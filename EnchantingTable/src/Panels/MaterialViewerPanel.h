@@ -12,6 +12,8 @@ public:
 
 	void SetMaterial(Arcane::Material* material);
 	Arcane::Material* GetMaterial() { return m_Material; }
+
+	void DisplayMaterialVariable(Arcane::ShaderMember& member);
 private:
 	Arcane::Material* m_Material = nullptr;
 };

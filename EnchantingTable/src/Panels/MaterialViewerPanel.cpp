@@ -33,12 +33,14 @@ void MaterialViewerPanel::OnUpdate()
 	}
 
 	if (m_Material->GetShader() != nullptr) {
-		std::vector<ShaderSet> sets = m_Material->GetShaderSets();
-			
-		// This will display the material set
-		for (int i = 0; i < sets.size(); i++) {
-			if (sets[i].SetNumber == 2) {
-				
+		ShaderSet& set = m_Material->GetMaterialSet();
+
+		for (int i = 0; i < set.Bindings.size(); i++) {
+			ShaderBinding& binding = set.Bindings[i];
+
+			for (int j = 0; j < binding.Members.size(); j++) {
+				ShaderMember& member = binding.Members[j];
+				DisplayMaterialVariable(member);
 			}
 		}
 	}
@@ -59,4 +61,20 @@ void MaterialViewerPanel::OnUpdate()
 void MaterialViewerPanel::SetMaterial(Arcane::Material* material)
 {
 	m_Material = material;
+}
+
+void MaterialViewerPanel::DisplayMaterialVariable(Arcane::ShaderMember& member)
+{
+	if (member.Members.size() != 0) {
+		std::string variableName = "--" + member.Name;
+		ImGui::Text(variableName.c_str());
+
+		for (int i = 0; i < member.Members.size(); i++) {
+			DisplayMaterialVariable(member.Members[i]);
+		}
+	}
+	else {
+		ImGui::Text(member.Name.c_str());
+		return;
+	}
 }
