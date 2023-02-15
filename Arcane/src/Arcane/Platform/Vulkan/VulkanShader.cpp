@@ -110,6 +110,8 @@ namespace Arcane {
 			else {
 				printf("Vertex shader created\n");
 			}
+
+			// ReflectModule(vertexBytes, m_VertexShaderModule);
 		}
 
 		// Create Fragment Shader
@@ -280,6 +282,25 @@ namespace Arcane {
 	void VulkanShader::FindShaderMembers(SpvReflectBlockVariable& variable, ShaderMember& member)
 	{
 		if (variable.member_count == 0) {
+			if (variable.type_description->op == SpvOpTypeVector) {
+				if (variable.type_description->traits.numeric.vector.component_count == 3)
+				{
+					member.type = ShaderMemberType::Vec3;
+				}
+				else if (variable.type_description->traits.numeric.vector.component_count == 2)
+				{
+					member.type = ShaderMemberType::Vec2;
+				}
+			}
+			else if (variable.type_description->op == SpvOpTypeMatrix)
+			{
+				if (variable.type_description->traits.numeric.matrix.column_count == 4) {
+					member.type = ShaderMemberType::Mat4;
+				}
+				else if (variable.type_description->traits.numeric.matrix.column_count == 3) {
+					member.type = ShaderMemberType::Mat3;
+				}
+			}
 			return;
 		}
 		else {

@@ -1,6 +1,8 @@
 #include "MaterialViewerPanel.h"
 #include "PanelStructs.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 MaterialViewerPanel::MaterialViewerPanel()
 {
 
@@ -99,9 +101,22 @@ void MaterialViewerPanel::DisplayMaterialVariable(Arcane::ShaderMember& member, 
 				}
 				ImGui::EndDragDropTarget();
 			}
+
+			if (texture != nullptr) {
+				ImGui::Text(member.Name.c_str());
+			}
 		}
 		else {
-			ImGui::Text(member.Name.c_str());
+			if (member.type == ShaderMemberType::Vec3)
+			{
+				glm::vec3 test = {0.0f, 0.0f, 0.0f};
+				ImGui::InputFloat3(member.Name.c_str(), glm::value_ptr(test));
+			}
+			else if (member.type == ShaderMemberType::Vec2)
+			{
+				glm::vec2 test = { 0.0f, 0.0f };
+				ImGui::InputFloat2(member.Name.c_str(), glm::value_ptr(test));
+			}
 		}
 		return;
 	}

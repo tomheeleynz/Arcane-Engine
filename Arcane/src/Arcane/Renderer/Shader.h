@@ -9,7 +9,7 @@
 #include "Arcane/Assets/Asset.h"
 #include "DescriptorSet.h"
 
-namespace Arcane 
+namespace Arcane
 {
 	enum class ShaderVariableLocation
 	{
@@ -23,10 +23,19 @@ namespace Arcane
 		UNIFORM
 	};
 
+	enum class ShaderMemberType
+	{
+		Vec3,
+		Vec2,
+		Mat4,
+		Mat3
+	};
+
 	struct ShaderMember
 	{
 		std::string Name;
 		uint32_t Offset;
+		ShaderMemberType type;
 		std::vector<ShaderMember> Members;
 	};
 
