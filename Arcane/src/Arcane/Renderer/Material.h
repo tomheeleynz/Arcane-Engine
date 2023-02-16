@@ -19,8 +19,12 @@ namespace Arcane
 	public:
 		virtual ShaderSet& GetMaterialSet() = 0;
 		virtual DescriptorSet* GetDescriptorSet() = 0;
+		virtual std::vector<DescriptorSet*> GetDescriptorSets() = 0;
+
 		virtual UniformBuffer* GetUniformBuffer() = 0;
+
 		virtual Pipeline* GetPipeline() = 0;
+		virtual void SetRenderPass(RenderPass* renderPass) = 0;
 
 		// Get Material Variables from material buffer
 		virtual glm::vec3 GetVec3(int binding, uint32_t offset) = 0;

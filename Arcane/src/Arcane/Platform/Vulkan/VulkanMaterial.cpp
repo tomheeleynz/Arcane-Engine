@@ -64,6 +64,12 @@ namespace Arcane
 				}
 			}
 		}
+
+		m_VertexDescriptor = VertexDescriptor::Create({
+			VertexType::float3,
+			VertexType::float3,
+			VertexType::float2
+		});
 	}
 
 	ShaderSet& VulkanMaterial::GetMaterialSet()
@@ -74,6 +80,12 @@ namespace Arcane
 	DescriptorSet* VulkanMaterial::GetDescriptorSet()
 	{
 		return m_Shader->GetMaterialDescriptor();
+	}
+
+	std::vector<DescriptorSet*> VulkanMaterial::GetDescriptorSets()
+	{
+		VulkanShader* vulkanShader = static_cast<VulkanShader*>(m_Shader);
+		return vulkanShader->GetDescriptorSets();
 	}
 
 	UniformBuffer* VulkanMaterial::GetUniformBuffer()
@@ -120,8 +132,31 @@ namespace Arcane
 		return m_MaterialTextures[binding];
 	}
 
+	void VulkanMaterial::SetRenderPass(RenderPass* renderPass)
+	{
+		if (m_RenderPass != nullptr)
+			return;
+
+		m_RenderPass = renderPass;
+		RecreatePipeline();
+	}
+
 	Pipeline* VulkanMaterial::GetPipeline()
 	{
-		return nullptr;
+		return m_Pipeline;
+	}
+
+	void VulkanMaterial::RecreatePipeline()
+	{
+		VulkanShader* vulkanShader = static_cast<VulkanShader*>(m_Shader);
+		std::vector<DescriptorSet*> descriptorSets = vulkanShader->GetDescriptorSets();
+
+		PipelineSpecification specs;
+		specs.DescriptorSets = descriptorSets;
+		specs.shader = m_Shader;
+		specs.renderPass = m_RenderPass;
+		specs.descriptor = m_VertexDescriptor;
+
+		m_Pipeline = Pipeline::Create(specs);
 	}
 }

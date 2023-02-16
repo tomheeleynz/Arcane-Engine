@@ -240,7 +240,30 @@ namespace Arcane
 	{
 		// Update any per pass resources
 		Renderer::BeginRenderPass(s_Data.GeometryRenderPass);
-		{	
+		{
+			for (int i = 0; i < s_Data.Meshes.size(); i++)
+			{
+				Mesh* currentMesh = s_Data.Meshes[i];
+				Material* material = s_Data.materials[i];
+
+				// Create Transform Component
+				TransformComponent& currentMeshComponent = s_Data.MeshTransforms[i];
+
+				// Create Model Matrix
+				Model currentTransform;
+				currentTransform.transform = glm::translate(glm::mat4(1), currentMeshComponent.pos) *
+					glm::rotate(glm::mat4(1), glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f)) *
+					glm::scale(glm::mat4(1), currentMeshComponent.scale);
+
+				// Write to uniform buffer
+				s_Data.ObjectUniformBuffer->WriteData((void*)&currentTransform, sizeof(Model));
+
+				for (int j = 0; j < currentMesh->GetSubMeshes().size(); j++) {
+					SubMesh* currentSubMesh = currentMesh->GetSubMeshes()[j];
+					Renderer::RenderMesh(currentSubMesh->GetVertexBuffer(), material->GetPipeline(), material->GetDescriptorSets());
+				}
+			}
+
 			Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, { s_Data.GlobalDescriptorSet });
 		}
 		Renderer::EndRenderPass(s_Data.GeometryRenderPass);
@@ -270,6 +293,9 @@ namespace Arcane
 	{
 		s_Data.Meshes.push_back(mesh);
 		s_Data.MeshTransforms.push_back(transform);
+
+		// Set Renderpass to material
+		material->SetRenderPass(s_Data.GeometryRenderPass);
 		s_Data.materials.push_back(material);
 	}
 
@@ -282,7 +308,6 @@ namespace Arcane
 		// Update Geo Framebuffer
 		s_Data.GeometryFramebuffer->Resize(width, height);
 		s_Data.CompositeDescriptorSet->AddImageSampler(s_Data.GeometryFramebuffer, 1, 0);
-
 		s_Data.CompositeFramebuffer->Resize(width, height);
 	}
 

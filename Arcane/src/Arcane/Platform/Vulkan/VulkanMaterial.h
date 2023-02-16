@@ -15,8 +15,10 @@ namespace Arcane
 		VulkanMaterial(Shader* shader);
 
 		DescriptorSet* GetDescriptorSet() override;
+		std::vector<DescriptorSet*> GetDescriptorSets() override;
 		UniformBuffer* GetUniformBuffer() override;
 		Pipeline* GetPipeline() override;
+		void SetRenderPass(RenderPass* renderPass) override;
 
 		// Get Material Variables from material buffer
 		virtual glm::vec3 GetVec3(int binding, uint32_t offset) override;
@@ -33,6 +35,9 @@ namespace Arcane
 		virtual void SetShader(Shader* shader) override;
 
 		ShaderSet& GetMaterialSet() override;
+
+	private:
+		void RecreatePipeline();
 	private:
 		// Material Set from shader, if present
 		ShaderSet m_Set;
@@ -54,7 +59,7 @@ namespace Arcane
 
 		// Pipeline
 		Pipeline* m_Pipeline = nullptr;
-
-		// Vector of uniform buffers to map to every binding
+		RenderPass* m_RenderPass = nullptr;
+		VertexDescriptor* m_VertexDescriptor;
 	};
 }
