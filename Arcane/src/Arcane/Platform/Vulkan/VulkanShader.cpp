@@ -4,6 +4,7 @@
 #include "Arcane/Renderer/DescriptorSet.h"
 #include "VulkanShader.h"
 #include "VulkanContext.h"
+#include "VulkanSet.h"
 
 namespace Arcane {
 
@@ -111,7 +112,7 @@ namespace Arcane {
 				printf("Vertex shader created\n");
 			}
 
-			// ReflectModule(vertexBytes, m_VertexShaderModule);
+			ReflectModule(vertexBytes, m_VertexShaderModule);
 		}
 
 		// Create Fragment Shader
@@ -179,6 +180,7 @@ namespace Arcane {
 				printf("Failed to load reflect descriptor sets\n");
 			}
 
+			// Need to get all descriptor sets of the pipeline
 			m_DescriptorSets.resize(sets.size());
 			m_ShaderSets.resize(sets.size());
 
@@ -230,7 +232,6 @@ namespace Arcane {
 					// Getting member variables
 					// if the member count is 0, just get the name of the block
 					// if its more than 0, have to recursively find all the members of each block
-
 					if (reflectBinding.block.member_count != 0) {
 						m_ShaderSets[i].Bindings[j].Members.resize(reflectBinding.block.member_count);
 						
@@ -278,6 +279,15 @@ namespace Arcane {
 		}
 
 		return {module.cbegin(), module.cend()};
+	}
+
+	bool VulkanShader::CheckIfSetExists(uint32_t setNumber)
+	{
+		for (int i = 0; i < m_DescriptorSets.size(); i++) {
+			VulkanSet* set = static_cast<VulkanSet*>(m_DescriptorSets[i]);
+			if (set->GetSetNumber() == setNumber) return true;
+		}
+		return false;
 	}
 
 	void VulkanShader::FindShaderMembers(SpvReflectBlockVariable& variable, ShaderMember& member)
