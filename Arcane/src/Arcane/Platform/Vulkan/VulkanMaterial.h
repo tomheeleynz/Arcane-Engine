@@ -46,7 +46,7 @@ namespace Arcane
 		float* m_UniformBufferMemory;
 
 		// Able to keep track of things
-		std::map<int, std::pair<int, float*>> m_UniformBuffersData;
+		std::map<int, float*> m_UniformBuffersData;
 		std::map<int, UniformBuffer*> m_UniformBuffers;
 		
 		// For textures
@@ -54,5 +54,7 @@ namespace Arcane
 
 		// Pipeline
 		Pipeline* m_Pipeline = nullptr;
+
+		// Vector of uniform buffers to map to every binding
 	};
 }

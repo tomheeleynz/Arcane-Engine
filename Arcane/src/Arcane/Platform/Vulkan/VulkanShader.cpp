@@ -198,7 +198,8 @@ namespace Arcane {
 				for (int j = 0; j < reflectSet.binding_count; j++) {
 					SpvReflectDescriptorBinding& reflectBinding = *(reflectSet.bindings[j]);	
 					shaderSet.Bindings[j].Binding = reflectBinding.binding;
-					
+					shaderSet.Bindings[j].Size = reflectBinding.block.size;
+
 					DescriptorLayoutSpecs& layoutSpec = layoutSpecs[j];
 					layoutSpec.Binding = reflectBinding.binding;
 					layoutSpec.Name = reflectBinding.name;
@@ -290,6 +291,12 @@ namespace Arcane {
 				else if (variable.type_description->traits.numeric.vector.component_count == 2)
 				{
 					member.type = ShaderMemberType::Vec2;
+				}
+				else if (variable.type_description->traits.numeric.vector.component_count == 4) 
+				{
+					member.type = ShaderMemberType::Vec4;
+					member.Offset = variable.offset;
+					member.Size = variable.size;
 				}
 			}
 			else if (variable.type_description->op == SpvOpTypeMatrix)

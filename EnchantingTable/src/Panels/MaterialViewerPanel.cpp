@@ -107,10 +107,11 @@ void MaterialViewerPanel::DisplayMaterialVariable(Arcane::ShaderMember& member, 
 			}
 		}
 		else {
-			if (member.type == ShaderMemberType::Vec3)
+			if (member.type == ShaderMemberType::Vec4)
 			{
-				glm::vec3 test = {0.0f, 0.0f, 0.0f};
-				ImGui::InputFloat3(member.Name.c_str(), glm::value_ptr(test));
+				glm::vec3 value = m_Material->GetVec3(binding, member.Offset);
+				ImGui::InputFloat3(member.Name.c_str(), glm::value_ptr(value));
+				m_Material->WriteVec3(binding, member.Offset, value);
 			}
 			else if (member.type == ShaderMemberType::Vec2)
 			{

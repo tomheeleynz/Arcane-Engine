@@ -42,7 +42,7 @@ namespace Arcane
 		virtual void AddImageSampler(Texture* texture, uint32_t setNum, uint32_t bindingNum) = 0;
 		virtual void AddImageSampler(Framebuffer* framebuffer, uint32_t setNum, uint32_t bindingNum) = 0;
 		virtual void AddUniformBuffer(UniformBuffer* buffer, uint32_t setNum, uint32_t bindingNum) = 0;
-		
+	
 		static DescriptorSet* Create(DescriptorSetSpecs& setSpecs, std::initializer_list<DescriptorLayoutSpecs> layoutSpecs);
 		static DescriptorSet* Create(DescriptorSetSpecs& setSpecs, std::vector<DescriptorLayoutSpecs> layoutSpecs);
 	private:

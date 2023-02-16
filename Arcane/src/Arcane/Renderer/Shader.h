@@ -25,6 +25,7 @@ namespace Arcane
 
 	enum class ShaderMemberType
 	{
+		Vec4,
 		Vec3,
 		Vec2,
 		Mat4,
@@ -35,6 +36,7 @@ namespace Arcane
 	{
 		std::string Name;
 		uint32_t Offset;
+		uint32_t Size;
 		ShaderMemberType type;
 		std::vector<ShaderMember> Members;
 	};
