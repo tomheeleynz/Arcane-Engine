@@ -119,6 +119,17 @@ namespace Arcane
 		geometryRenderpassSpecs.TargetFramebuffer = s_Data.GeometryFramebuffer;
 		s_Data.GeometryRenderPass = RenderPass::Create(geometryRenderpassSpecs);
 
+		DescriptorSetSpecs geometryPassDescriptorSetSpecs;
+		geometryPassDescriptorSetSpecs.SetNumber = 1;
+		s_Data.GeometryPassDescriptorSet = DescriptorSet::Create(
+			geometryPassDescriptorSetSpecs, {
+				{0, 1, DescriptorType::UNIFORM_BUFFER, "Lights", DescriptorLocation::FRAGMENT}
+			}
+		);
+
+		s_Data.GeometryPassUniformBuffer = UniformBuffer::Create(sizeof(DirectionaLight));
+		s_Data.GeometryPassDescriptorSet->AddUniformBuffer(s_Data.GeometryPassUniformBuffer, 1, 0);
+
 		///////////////////////////////////////////////////////////////
 		//// Grid (Part of Geo Pass)
 		///////////////////////////////////////////////////////////////
@@ -238,6 +249,11 @@ namespace Arcane
 
 	void SceneRenderer::GeometryPass()
 	{
+		DirectionaLight currentDirLight;
+		currentDirLight.direction = s_Data.directionalLightTransform.pos;
+		currentDirLight.color = s_Data.directionaLight.color;
+		s_Data.GeometryPassUniformBuffer->WriteData((void*)&currentDirLight, sizeof(DirectionaLight));
+
 		// Update any per pass resources
 		Renderer::BeginRenderPass(s_Data.GeometryRenderPass);
 		{
@@ -296,6 +312,11 @@ namespace Arcane
 
 		// Set Renderpass to material
 		material->SetRenderPass(s_Data.GeometryRenderPass);
+		
+		material->SetGlobalData(s_Data.GlobalDescriptorSet);
+		material->SetFrameData(s_Data.GeometryPassDescriptorSet);
+		material->SetDrawData(s_Data.ObjectDescriptorSet);
+		
 		s_Data.materials.push_back(material);
 	}
 

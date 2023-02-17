@@ -31,6 +31,8 @@ namespace Arcane
 		void ReflectModule(std::vector<uint32_t> byteCode, VkShaderModule module);
 		std::vector<uint32_t> CompileShader(const std::string& source_name, shaderc_shader_kind kind, const std::string& source, bool optimize = false);
 		bool CheckIfSetExists(uint32_t setNumber);
+		ShaderSet& GetExistingSet(uint32_t setNumber);
+		void GenerateDescriptorSets();
 	private:
 		VkShaderModule m_VertexShaderModule;
 		VkShaderModule m_FragShaderModule;

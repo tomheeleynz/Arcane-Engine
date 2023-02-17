@@ -36,6 +36,10 @@ namespace Arcane
 
 		ShaderSet& GetMaterialSet() override;
 
+		void SetGlobalData(DescriptorSet* set) override;
+		void SetFrameData(DescriptorSet* set) override;
+		void SetDrawData(DescriptorSet* set) override;
+
 	private:
 		void RecreatePipeline();
 	private:

@@ -46,7 +46,9 @@ namespace Arcane
 		uint32_t Binding;
 		uint32_t Size;
 		uint32_t Offset;
+		uint32_t DescriptorCount;
 		ShaderBindingType Type;
+		ShaderVariableLocation Location;
 		std::vector<ShaderMember> Members;
 	};
 

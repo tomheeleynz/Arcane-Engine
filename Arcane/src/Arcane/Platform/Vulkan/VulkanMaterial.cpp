@@ -1,5 +1,6 @@
 #include "VulkanMaterial.h"
 #include "VulkanSet.h"
+#include "VulkanSet.h"
 #include "Arcane/Core/Application.h"
 
 namespace Arcane
@@ -75,6 +76,48 @@ namespace Arcane
 	ShaderSet& VulkanMaterial::GetMaterialSet()
 	{
 		return m_Set;
+	}
+
+	void VulkanMaterial::SetGlobalData(DescriptorSet* set)
+	{
+		VulkanShader* shader = static_cast<VulkanShader*>(m_Shader);
+		std::vector<DescriptorSet*> descriptorSets = shader->GetDescriptorSets();
+
+		for (int i = 0; i < descriptorSets.size(); i++) {
+			VulkanSet* set = static_cast<VulkanSet*>(descriptorSets[i]);
+			if (set->GetSetNumber() == 0) {
+				descriptorSets[i] = set;
+				break;
+			}
+		}
+	}
+
+	void VulkanMaterial::SetFrameData(DescriptorSet* set)
+	{
+		VulkanShader* shader = static_cast<VulkanShader*>(m_Shader);
+		std::vector<DescriptorSet*> descriptorSets = shader->GetDescriptorSets();
+
+		for (int i = 0; i < descriptorSets.size(); i++) {
+			VulkanSet* set = static_cast<VulkanSet*>(descriptorSets[i]);
+			if (set->GetSetNumber() == 1) {
+				descriptorSets[i] = set;
+				break;
+			}
+		}
+	}
+
+	void VulkanMaterial::SetDrawData(DescriptorSet* set)
+	{
+		VulkanShader* shader = static_cast<VulkanShader*>(m_Shader);
+		std::vector<DescriptorSet*> descriptorSets = shader->GetDescriptorSets();
+
+		for (int i = 0; i < descriptorSets.size(); i++) {
+			VulkanSet* set = static_cast<VulkanSet*>(descriptorSets[i]);
+			if (set->GetSetNumber() == 3) {
+				descriptorSets[i] = set;
+				break;
+			}
+		}
 	}
 
 	DescriptorSet* VulkanMaterial::GetDescriptorSet()

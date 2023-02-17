@@ -45,6 +45,11 @@ namespace Arcane
 		virtual void SetShader(Shader* shader) = 0;
 
 		static Material* Create(Shader* shader);
+
+		// Set Different Levels of Data for material
+		virtual void SetGlobalData(DescriptorSet* set) = 0;
+		virtual void SetFrameData(DescriptorSet* set) = 0;
+		virtual void SetDrawData(DescriptorSet* set) = 0;
 	private:
 	};
 }
