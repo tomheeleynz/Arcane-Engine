@@ -55,6 +55,7 @@ namespace Arcane
 	{
 		std::string metaFileName = currentAssetPath.stem().string() + ".arcmeta";
 		std::filesystem::path metaPath = currentAssetPath.parent_path() / metaFileName;
+		std::string name = currentAssetPath.stem().string();
 
 		// Either Create asset id or get from the meta file
 		uint64_t assetID = 0;
@@ -71,24 +72,28 @@ namespace Arcane
 			Mesh* newMeshAsset = new Mesh(currentAssetPath.string());
 			newMeshAsset->SetID(Arcane::Core::UUID(assetID));
 			newMeshAsset->SetAssetType(AssetType::MESH);
+			newMeshAsset->SetName(name);
 			m_Assets[assetID] = newMeshAsset;
 		}
 		else if (currentAssetPath.extension() == ".fbx") {
 			Mesh* newMeshAsset = new Mesh(currentAssetPath.string());
 			newMeshAsset->SetAssetType(AssetType::MESH);
 			newMeshAsset->SetID(Arcane::Core::UUID(assetID));
+			newMeshAsset->SetName(name);
 			m_Assets[assetID] = newMeshAsset;
 		}
 		else if (currentAssetPath.extension() == ".jpg") {
 			Texture* newTextureAsset = Texture::Create(currentAssetPath.string());
 			newTextureAsset->SetAssetType(AssetType::TEXTURE);
 			newTextureAsset->SetID(Arcane::Core::UUID(assetID));
+			newTextureAsset->SetName(name);
 			m_Assets[assetID] = newTextureAsset;
 		}
 		else if (currentAssetPath.extension() == ".py") {
 			Script* newScriptAsset = new Script(currentAssetPath.string());
 			newScriptAsset->SetAssetType(AssetType::SCRIPT);
 			newScriptAsset->SetID(Arcane::Core::UUID(assetID));
+			newScriptAsset->SetName(name);
 			m_Assets[assetID] = newScriptAsset;
 		}
 		else if (currentAssetPath.extension() == ".arcaneshader")
@@ -96,6 +101,7 @@ namespace Arcane
 			Shader* newShaderAsset = Shader::Create(currentAssetPath.string());
 			newShaderAsset->SetAssetType(AssetType::SHADER);
 			newShaderAsset->SetID(Arcane::Core::UUID(assetID));
+			newShaderAsset->SetName(name);
 			m_Assets[assetID] = newShaderAsset;
 		}
 		else if (currentAssetPath.extension() == ".arcanemat") 
@@ -105,6 +111,7 @@ namespace Arcane
 			Material* material = deserializer.Deserialize();
 			material->SetAssetType(AssetType::MATERIAL);
 			material->SetID(Arcane::Core::UUID(assetID));
+			material->SetName(name);
 			m_Assets[assetID] = material;
 		}
 		return true;

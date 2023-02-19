@@ -348,10 +348,14 @@ namespace Arcane {
 				if (variable.type_description->traits.numeric.vector.component_count == 3)
 				{
 					member.type = ShaderMemberType::Vec3;
+					member.Offset = variable.offset;
+					member.Size = variable.size;
 				}
 				else if (variable.type_description->traits.numeric.vector.component_count == 2)
 				{
 					member.type = ShaderMemberType::Vec2;
+					member.Offset = variable.offset;
+					member.Size = variable.size;
 				}
 				else if (variable.type_description->traits.numeric.vector.component_count == 4) 
 				{

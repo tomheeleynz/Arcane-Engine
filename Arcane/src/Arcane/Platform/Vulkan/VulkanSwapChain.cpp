@@ -384,7 +384,6 @@ namespace Arcane {
 
         vkQueueWaitIdle(m_VulkanDevice->GetPresentQueue());
 
-
         if (present == VK_ERROR_OUT_OF_DATE_KHR || present == VK_SUBOPTIMAL_KHR || m_FramebufferResized) {
             m_FramebufferResized = false;
             RecreateSwapchain();
