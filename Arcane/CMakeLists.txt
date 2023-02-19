@@ -75,8 +75,8 @@ add_library(
 
 # Link Source Directories
 target_include_directories(
-	"src" 
 	${PROJECT_NAME} PUBLIC 
+	"src" 
 	"vendor/glm" 
 	"vendor/stb" 
 	"vendor/entt/single_include" 
