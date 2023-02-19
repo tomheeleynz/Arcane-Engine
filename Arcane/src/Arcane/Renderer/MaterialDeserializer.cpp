@@ -19,32 +19,33 @@ namespace Arcane
 
 		// Get name of material
 		std::string name = jsonObject["name"];
-		// uint64_t shaderID = jsonObject["shader"];
+		uint64_t shaderID = jsonObject["shader"];
 
 		// Get the asset database
-		// Shader* shader = static_cast<Shader*>(Application::Get().GetAssetDatabase().GetAsset(shaderID));
+		Shader* shader = static_cast<Shader*>(Application::Get().GetAssetDatabase().GetAsset(shaderID));
 		
 		// Creating material
-		Material* material = Material::Create(nullptr);
+		Material* material = Material::Create(shader);
 		
 		// Iterate through bindings to get data into buffers
-		//for (auto& element : jsonObject["bindings"]) {
-		//	uint32_t bindingNum = element["binding"];
+		for (auto& element : jsonObject["bindings"]) {
+			uint32_t bindingNum = element["binding"];
 
-		//	for (auto& member : jsonObject["members"]) {
-		//		int type = member["type"];
-		//		int offset = member["offset"];
+			for (auto& member : element["members"]) {
+				int type = member["type"];
+				int offset = member["offset"];
 
-		//		if (type == 1) {
-		//			material->WriteVec3(bindingNum, offset, glm::vec3());
-		//		}
-		//		else if (type == 0) {
-		//			uint64_t textureID = member["texture"];
-		//			Texture* texture = static_cast<Texture*>(Application::Get().GetAssetDatabase().GetAsset(textureID));
-		//			material->WriteTexture(bindingNum, texture);
-		//		}
-		//	}
-		//}
+				if (type == 1) {
+					glm::vec3 value = { member["value"][0], member["value"][1] , member["value"][2] };
+					material->WriteVec3(bindingNum, offset, value);
+				}
+				else if (type == 0) {
+					uint64_t textureID = member["texture"];
+					Texture* texture = static_cast<Texture*>(Application::Get().GetAssetDatabase().GetAsset(textureID));
+					material->WriteTexture(bindingNum, texture);
+				}
+			}
+		}
 
 		return material;
 	}

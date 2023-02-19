@@ -104,7 +104,7 @@ void FileBrowserPanel::OnUpdate()
 
 			if (!filename.empty()) {
 				// Save asset to database
-				Arcane::Application::Get().GetAssetDatabase().GenerateAsset(std::filesystem::path(filename));
+				Arcane::Application::Get().GetAssetDatabase().GenerateAsset(std::filesystem::path(filename), false);
 			}
 
 			ImGui::CloseCurrentPopup();

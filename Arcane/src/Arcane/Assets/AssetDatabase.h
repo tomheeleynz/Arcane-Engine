@@ -18,7 +18,7 @@ namespace Arcane
 		
 		bool GenerateDatabase();
 
-		bool GenerateAsset(std::filesystem::path currentAssetPath);
+		bool GenerateAsset(std::filesystem::path currentAssetPath, bool dependent);
 		
 		bool CheckMetaInfo(std::filesystem::path currentMetaPath);
 		void GenerateMetaFile(std::filesystem::path metaPath, uint64_t newID);
@@ -30,6 +30,7 @@ namespace Arcane
 	private:
 		std::unordered_map<std::string, uint64_t> m_DefaultAssets;
 		std::unordered_map<uint64_t, Asset*> m_Assets;
+		std::vector<std::filesystem::path> m_DependentAssets;
 		
 		std::filesystem::path m_AssetDirPath;
 	};

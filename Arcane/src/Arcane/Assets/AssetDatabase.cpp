@@ -42,16 +42,24 @@ namespace Arcane
 					continue;
 
 
-				bool isAssetGenerated = GenerateAsset(file);
+				bool isAssetGenerated = GenerateAsset(file, false);
 				if (!isAssetGenerated) {
 					return false;
 				}
 			}
 		}
+
+		// Need to generate the dependant assets
+		for (auto& element : m_DependentAssets) {
+			bool isAssetGenerated = GenerateAsset(element, true);
+			if (!isAssetGenerated) {
+				return false;
+			}
+		}
 		return true;
 	}
 
-	bool AssetDatabase::GenerateAsset(std::filesystem::path currentAssetPath)
+	bool AssetDatabase::GenerateAsset(std::filesystem::path currentAssetPath, bool dependent)
 	{
 		std::string metaFileName = currentAssetPath.stem().string() + ".arcmeta";
 		std::filesystem::path metaPath = currentAssetPath.parent_path() / metaFileName;
@@ -106,13 +114,18 @@ namespace Arcane
 		}
 		else if (currentAssetPath.extension() == ".arcanemat") 
 		{	
-			// Set path for material deserialization
-			MaterialDeserializer deserializer(currentAssetPath);
-			Material* material = deserializer.Deserialize();
-			material->SetAssetType(AssetType::MATERIAL);
-			material->SetID(Arcane::Core::UUID(assetID));
-			material->SetName(name);
-			m_Assets[assetID] = material;
+			if (!dependent) {
+				m_DependentAssets.push_back(currentAssetPath);
+			}
+			else {
+				// Set path for material deserialization
+				MaterialDeserializer deserializer(currentAssetPath);
+				Material* material = deserializer.Deserialize();
+				material->SetAssetType(AssetType::MATERIAL);
+				material->SetID(Arcane::Core::UUID(assetID));
+				material->SetName(name);
+				m_Assets[assetID] = material;
+			}
 		}
 		return true;
 	}
