@@ -60,7 +60,7 @@ namespace Arcane
 							m_UniformBuffersData[binding.Binding][k] = 0.0f;
 						}
 
-						materialSet->AddUniformBuffer(m_UniformBuffers[binding.Binding], set.SetNumber, binding.Binding);
+						m_MaterialDescriptorSet->AddUniformBuffer(m_UniformBuffers[binding.Binding], set.SetNumber, binding.Binding);
 					}
 				}
 			}

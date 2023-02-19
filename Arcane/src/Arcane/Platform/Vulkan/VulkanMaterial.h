@@ -65,5 +65,6 @@ namespace Arcane
 		Pipeline* m_Pipeline = nullptr;
 		RenderPass* m_RenderPass = nullptr;
 		VertexDescriptor* m_VertexDescriptor;
+		DescriptorSet* m_MaterialDescriptorSet;
 	};
 }

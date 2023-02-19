@@ -205,7 +205,6 @@ namespace Arcane
 		imageInfo.imageView = vulkanTexture->GetImageDescriptorInfo().imageView;
 		imageInfo.sampler = vulkanTexture->GetImageDescriptorInfo().sampler;
 
-
 		for (int i = 0; i < imageCount; i++) {
 			// Create a descriptor write, then update descriptor set
 			VkWriteDescriptorSet descriptorWrite{};

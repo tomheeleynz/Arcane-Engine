@@ -302,8 +302,6 @@ namespace Arcane {
 			VulkanSet* vB = static_cast<VulkanSet*>(b);
 			return vA->GetSetNumber() < vB->GetSetNumber();
 		});
-
-		int x = 2;
 	}
 
 	std::vector<uint32_t> VulkanShader::CompileShader(const std::string& source_name, shaderc_shader_kind kind, const std::string& source, bool optimize)
