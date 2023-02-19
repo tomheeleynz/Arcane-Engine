@@ -22,6 +22,8 @@ namespace Arcane {
 		VulkanSwapChain& GetSwapChain() { return *m_SwapChain; }
 		VkSurfaceKHR GetSurface() { return m_Surface; }
 		VkDescriptorPool GetPool() { return m_DescriptorPool; }
+
+		void Resize(bool resize) override;
 	private:
 		bool CheckValidationLayerSupport();
 		std::vector<const char*> GetRequiredExtensions();

@@ -33,7 +33,7 @@ namespace Arcane {
         VkSemaphoreCreateInfo semaphoreInfo{};
         semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
         semaphoreInfo.pNext = nullptr;
-        
+
         if (vkCreateSemaphore(m_VulkanDevice->GetLogicalDevice(), &semaphoreInfo, nullptr, &m_PresentCompleteSemaphore) != VK_SUCCESS) {
             printf("Present Complete Semaphore Not Created\n");
         }
@@ -56,7 +56,7 @@ namespace Arcane {
         }
     }
 
-    void VulkanSwapChain::CreateSwapChain() 
+    void VulkanSwapChain::CreateSwapChain()
     {
         SwapChainSupportDetails& details = m_VulkanDevice->GetVulkanPhysicalDevice().QuerySupportDetails(m_Surface);
         QueueFamilyIndices& indices = m_VulkanDevice->GetVulkanPhysicalDevice().GetIndices();
@@ -107,7 +107,8 @@ namespace Arcane {
 
         if (vkCreateSwapchainKHR(m_VulkanDevice->GetLogicalDevice(), &createInfo, nullptr, &m_SwapChain) != VK_SUCCESS) {
             printf("Swapchain Not Created");
-        } else {
+        }
+        else {
             printf("Swapchain Created\n");
         }
     }
@@ -148,7 +149,7 @@ namespace Arcane {
     }
 
 
-    void VulkanSwapChain::CreateRenderPass() 
+    void VulkanSwapChain::CreateRenderPass()
     {
         // Create Renderpass
         VkAttachmentDescription colorAttachment{};
@@ -223,7 +224,7 @@ namespace Arcane {
         }
     }
 
-    void VulkanSwapChain::CreateCommandPool() 
+    void VulkanSwapChain::CreateCommandPool()
     {
         QueueFamilyIndices& indices = m_VulkanDevice->GetVulkanPhysicalDevice().GetIndices();
 
@@ -241,7 +242,7 @@ namespace Arcane {
         }
     }
 
-    void VulkanSwapChain::CreateCommandBuffers() 
+    void VulkanSwapChain::CreateCommandBuffers()
     {
         // Create Command Buffers
         m_CommandBuffers.resize(m_SwapChainFramebuffers.size());
@@ -311,7 +312,7 @@ namespace Arcane {
 
         // Free Command Buffers
         vkFreeCommandBuffers(m_VulkanDevice->GetLogicalDevice(), m_CommandPool, static_cast<uint32_t>(m_CommandBuffers.size()), m_CommandBuffers.data());
-       
+
         // Destroy Image Views
         for (size_t i = 0; i < m_SwapChainImageViews.size(); i++) {
             vkDestroyImageView(m_VulkanDevice->GetLogicalDevice(), m_SwapChainImageViews[i], nullptr);
@@ -369,25 +370,24 @@ namespace Arcane {
         VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
         VkSubmitInfo submitInfo = {};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        submitInfo.pWaitDstStageMask = &waitStageMask;               
-        submitInfo.pWaitSemaphores = &m_PresentCompleteSemaphore;     
-        submitInfo.waitSemaphoreCount = 1;                          
-        submitInfo.pSignalSemaphores = &m_RenderCompleteSemaphore;     
-        submitInfo.signalSemaphoreCount = 1;                       
-        submitInfo.pCommandBuffers = &m_CommandBuffers[m_CurrentBuffer]; 
-        submitInfo.commandBufferCount = 1;                          
+        submitInfo.pWaitDstStageMask = &waitStageMask;
+        submitInfo.pWaitSemaphores = &m_PresentCompleteSemaphore;
+        submitInfo.waitSemaphoreCount = 1;
+        submitInfo.pSignalSemaphores = &m_RenderCompleteSemaphore;
+        submitInfo.signalSemaphoreCount = 1;
+        submitInfo.pCommandBuffers = &m_CommandBuffers[m_CurrentBuffer];
+        submitInfo.commandBufferCount = 1;
 
         vkQueueSubmit(m_VulkanDevice->GetPresentQueue(), 1, &submitInfo, m_WaitFences[m_CurrentBuffer]);
 
         VkResult present = QueuePresent(m_VulkanDevice->GetPresentQueue(), m_CurrentBuffer, m_RenderCompleteSemaphore);
-        
+
         vkQueueWaitIdle(m_VulkanDevice->GetPresentQueue());
 
 
-        if (present != VK_SUCCESS || present == VK_SUBOPTIMAL_KHR) {
-            if (present == VK_ERROR_OUT_OF_DATE_KHR) {
-                RecreateSwapchain();
-            }
+        if (present == VK_ERROR_OUT_OF_DATE_KHR || present == VK_SUBOPTIMAL_KHR || m_FramebufferResized) {
+            m_FramebufferResized = false;
+            RecreateSwapchain();
         }
 
         m_CurrentBuffer = (m_CurrentBuffer + 1) % m_MaxFramesInFlight;

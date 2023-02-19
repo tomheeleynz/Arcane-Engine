@@ -38,6 +38,8 @@ namespace Arcane {
 		if (RendererAPI::Current() == RendererAPIType::OpenGL)
 			glViewport(0, 0, m_Data.Width, m_Data.Height);
 		
+		glfwSetWindowUserPointer(m_Window, this);
+
 		// Mouse Coords
 		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos) {
 			InputManager::SetMouseCoords((float)xpos, (float)ypos);
@@ -95,6 +97,11 @@ namespace Arcane {
 		// Scroll Callback
 		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xoffset, double yoffset) {
 			InputManager::SetScrollOffsets((float)xoffset, (float)yoffset);
+		});
+
+		glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
+			auto app = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+			app->GetContext()->Resize(true);
 		});
 	}
 

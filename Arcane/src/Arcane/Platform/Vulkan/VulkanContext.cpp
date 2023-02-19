@@ -121,6 +121,11 @@ namespace Arcane {
 		}
 	}
 
+	void VulkanContext::Resize(bool resize)
+	{
+		m_SwapChain->SetResize(resize);
+	}
+
 	bool VulkanContext::CheckValidationLayerSupport()
 	{
 		uint32_t layerCount;

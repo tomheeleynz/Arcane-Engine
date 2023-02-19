@@ -38,6 +38,7 @@ namespace Arcane
 				
 				if (vulkanSet->GetSetNumber() == 2) {
 					materialSet = descriptorSets[i];
+					m_MaterialDescriptorSet = descriptorSets[i];
 				}
 			}
 		}

@@ -10,6 +10,7 @@ namespace Arcane
 		OpenGLContext();
 
 		void SwapBuffers() override;
+		void Resize(bool resize) override;
 	private:
 	};
 }

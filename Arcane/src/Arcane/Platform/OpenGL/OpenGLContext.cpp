@@ -20,4 +20,7 @@ namespace Arcane
 		GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		glfwSwapBuffers(window);
 	}
+	void OpenGLContext::Resize(bool resize)
+	{
+	}
 }
