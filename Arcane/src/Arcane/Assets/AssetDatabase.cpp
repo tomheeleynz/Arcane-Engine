@@ -11,6 +11,7 @@
 #include "Arcane/Renderer/Texture.h"
 #include "Arcane/Scripting/Script.h"
 #include "Arcane/Renderer/MaterialDeserializer.h"
+#include "Arcane/Scene/SceneDeserializer.h"
 
 namespace Arcane
 {
@@ -126,6 +127,15 @@ namespace Arcane
 				material->SetName(name);
 				m_Assets[assetID] = material;
 			}
+		}
+		else if (currentAssetPath.extension() == ".arcanescene") 
+		{
+			SceneDeserializer deserializer(currentAssetPath.string());
+			Scene* scene = deserializer.Deserialize();
+			scene->SetAssetType(AssetType::SCENE);
+			scene->SetID(Arcane::Core::UUID(assetID));
+			scene->SetName(name);
+			m_Assets[assetID] = scene;
 		}
 		return true;
 	}

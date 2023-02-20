@@ -5,7 +5,9 @@
 #include <imgui.h>
 #include <backends/imgui_impl_vulkan.h>
 #include <Arcane/Platform/Vulkan/VulkanFramebuffer.h>
+
 #include "EditorLayer.h"
+#include "Panels/PanelStructs.h"
 
 struct TestVertex
 {
@@ -169,7 +171,16 @@ void EditorLayer::OnImGuiRender()
 			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
 
 			if (payload != nullptr) {
-				uint64_t assetID = *static_cast<uint64_t*>(payload->Data);
+				// Get Asset Id
+				AssetInfo assetInfo = *static_cast<AssetInfo*>(payload->Data);
+				Arcane::Asset* sceneAsset = Arcane::Application::Get().GetAssetDatabase().GetAsset(assetInfo.id);
+
+				if (sceneAsset != nullptr && sceneAsset->GetAssetType() == Arcane::AssetType::SCENE) {
+					Arcane::Scene* scene = static_cast<Arcane::Scene*>(sceneAsset);
+					m_ActiveScene = scene;
+					m_ActiveScene->SetSceneRenderer(m_SceneRenderer);
+					m_ScenePanel->SetContext(m_ActiveScene);
+				}
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -203,5 +214,6 @@ void EditorLayer::SaveScene()
 	if (!filename.empty()) {
 		Arcane::SceneSerializer serializer(m_ActiveScene);
 		serializer.Serialize(filename);
+		Arcane::Application::Get().GetAssetDatabase().GenerateAsset(filename, false);
 	}
 }

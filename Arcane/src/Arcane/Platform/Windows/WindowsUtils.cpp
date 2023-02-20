@@ -23,7 +23,7 @@ namespace Arcane
 			ofn.hwndOwner = handle;
 			ofn.lpstrFile = szFile;
 			ofn.nMaxFile = sizeof(szFile);
-			ofn.lpstrFilter = "Material Files\0*.arcanemat*\0\0";
+			ofn.lpstrFilter = "All Files\0*.*\0\0";
 			ofn.nFilterIndex = 1;
 			ofn.lpstrFileTitle = NULL;
 			ofn.nMaxFileTitle = 0;
@@ -50,7 +50,7 @@ namespace Arcane
 			ofn.hwndOwner = handle;
 			ofn.lpstrFile = szFile;
 			ofn.nMaxFile = sizeof(szFile);
-			ofn.lpstrFilter = "Material Files\0*.arcanemat*\0\0";
+			ofn.lpstrFilter = "All Files\0*.*\0\0";
 			ofn.nFilterIndex = 1;
 			ofn.lpstrFileTitle = NULL;
 			ofn.nMaxFileTitle = 0;

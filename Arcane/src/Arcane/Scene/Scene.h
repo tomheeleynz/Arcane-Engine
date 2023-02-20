@@ -5,12 +5,13 @@
 
 #include "Arcane/ECS/Component.h"
 #include "Arcane/Renderer/SceneRenderer.h"
+#include "Arcane/Assets/Asset.h"
 
 namespace Arcane
 {
 	class Entity;
 
-	class Scene
+	class Scene : public Asset
 	{
 	public:
 		Scene();
@@ -22,8 +23,8 @@ namespace Arcane
 
 		void OnUpdate();
 
-		void SetName(std::string name) { m_Name = name; }
-		std::string GetName() { return m_Name;  }
+		void SetSceneName(std::string name) { m_Name = name; }
+		std::string GetSceneName() { return m_Name;  }
 		
 		// Making Registry Public for ease
 		entt::registry m_Registry;

@@ -18,7 +18,7 @@ namespace Arcane
 		nlohmann::json jsonObject;
 		
 		// Set Name of scene
-		jsonObject["name"] = "Test";
+		jsonObject["name"] = m_Scene->GetName();
 		
 		nlohmann::json entityArray = nlohmann::json::array();
 		nlohmann::json entityObject = nlohmann::json::object();
@@ -71,9 +71,6 @@ namespace Arcane
 
 				meshRendererObject["name"] = "MeshRenderer";
 				meshRendererObject["AssetID"] = component.material->GetID();
-
-				MaterialSerializer serializer(component.material);
-				serializer.Serialize(savePath.string());
 
 				componentArray.push_back(meshRendererObject);
 			}
