@@ -29,7 +29,7 @@ EditorLayer::EditorLayer()
 
 void EditorLayer::OnAttach()
 {
-	m_ActiveScene = new Arcane::Scene();
+	m_ActiveScene = new Arcane::Scene(true);
 	m_SceneRenderer = new Arcane::SceneRenderer();
 	
 	m_ActiveScene->SetSceneRenderer(m_SceneRenderer);

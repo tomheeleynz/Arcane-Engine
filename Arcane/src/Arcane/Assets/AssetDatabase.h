@@ -11,6 +11,12 @@ namespace Arcane
 	class AssetDatabase
 	{
 	public:
+		struct DependentAssetSpec
+		{
+			AssetType type;
+			std::filesystem::path path;
+		};
+
 		AssetDatabase(std::filesystem::path assetDir);
 		
 		Asset* GetAsset(uint64_t id);
@@ -30,7 +36,7 @@ namespace Arcane
 	private:
 		std::unordered_map<std::string, uint64_t> m_DefaultAssets;
 		std::unordered_map<uint64_t, Asset*> m_Assets;
-		std::vector<std::filesystem::path> m_DependentAssets;
+		std::vector<DependentAssetSpec> m_DependentAssets;
 		
 		std::filesystem::path m_AssetDirPath;
 	};

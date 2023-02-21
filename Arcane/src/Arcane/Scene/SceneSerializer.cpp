@@ -72,6 +72,10 @@ namespace Arcane
 				meshRendererObject["name"] = "MeshRenderer";
 				meshRendererObject["AssetID"] = component.material->GetID();
 
+				// Need to serialize materil
+				Arcane::MaterialSerializer serialize(component.material);
+				serialize.Serialize(component.material->GetPath().string());
+
 				componentArray.push_back(meshRendererObject);
 			}
 

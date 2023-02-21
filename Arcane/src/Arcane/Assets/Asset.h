@@ -1,17 +1,19 @@
 #pragma once
 
 #include <string>
+#include <filesystem>
+
 #include "Arcane/Core/UUID.h"
 
 namespace Arcane
 {
 	enum class AssetType
 	{
-		MESH,
+		MESH = 0,
 		TEXTURE,
-		MATERIAL,
 		SCRIPT,
 		SHADER,
+		MATERIAL,
 		SCENE
 	};
 
@@ -28,9 +30,13 @@ namespace Arcane
 
 		std::string GetName() { return m_Name; }
 		void SetName(std::string name) { m_Name = name; }
+
+		std::filesystem::path GetPath() { return m_Path; }
+		void SetPath(std::filesystem::path path) { m_Path = path; }
 	private:
 		Core::UUID m_UUID;
 		AssetType m_Type;
 		std::string m_Name;
+		std::filesystem::path m_Path;
 	};
 }

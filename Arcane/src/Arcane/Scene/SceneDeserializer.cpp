@@ -15,7 +15,7 @@ namespace Arcane
 
 	Scene* SceneDeserializer::Deserialize()
 	{
-		Scene* newScene = new Scene();
+		Scene* newScene = new Scene(false);
 
 		// Read Json File
 		nlohmann::json jsonObject;

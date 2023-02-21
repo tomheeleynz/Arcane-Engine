@@ -14,7 +14,7 @@ namespace Arcane
 	class Scene : public Asset
 	{
 	public:
-		Scene();
+		Scene(bool newScene);
 
 		Entity* CreateEntity(std::string name);
 		Entity* CreateEntityWithUUID(std::string name, uint64_t uuid);

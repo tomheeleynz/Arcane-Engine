@@ -50,9 +50,13 @@ namespace Arcane
 			}
 		}
 
+		std::sort(m_DependentAssets.begin(), m_DependentAssets.end(), [](DependentAssetSpec& a, DependentAssetSpec& b)->bool {
+			return a.type < b.type;
+		});
+
 		// Need to generate the dependant assets
 		for (auto& element : m_DependentAssets) {
-			bool isAssetGenerated = GenerateAsset(element, true);
+			bool isAssetGenerated = GenerateAsset(element.path, true);
 			if (!isAssetGenerated) {
 				return false;
 			}
@@ -82,12 +86,14 @@ namespace Arcane
 			newMeshAsset->SetID(Arcane::Core::UUID(assetID));
 			newMeshAsset->SetAssetType(AssetType::MESH);
 			newMeshAsset->SetName(name);
+			newMeshAsset->SetPath(currentAssetPath);
 			m_Assets[assetID] = newMeshAsset;
 		}
 		else if (currentAssetPath.extension() == ".fbx") {
 			Mesh* newMeshAsset = new Mesh(currentAssetPath.string());
 			newMeshAsset->SetAssetType(AssetType::MESH);
 			newMeshAsset->SetID(Arcane::Core::UUID(assetID));
+			newMeshAsset->SetPath(currentAssetPath);
 			newMeshAsset->SetName(name);
 			m_Assets[assetID] = newMeshAsset;
 		}
@@ -96,6 +102,7 @@ namespace Arcane
 			newTextureAsset->SetAssetType(AssetType::TEXTURE);
 			newTextureAsset->SetID(Arcane::Core::UUID(assetID));
 			newTextureAsset->SetName(name);
+			newTextureAsset->SetPath(currentAssetPath);
 			m_Assets[assetID] = newTextureAsset;
 		}
 		else if (currentAssetPath.extension() == ".py") {
@@ -103,6 +110,7 @@ namespace Arcane
 			newScriptAsset->SetAssetType(AssetType::SCRIPT);
 			newScriptAsset->SetID(Arcane::Core::UUID(assetID));
 			newScriptAsset->SetName(name);
+			newScriptAsset->SetPath(currentAssetPath);
 			m_Assets[assetID] = newScriptAsset;
 		}
 		else if (currentAssetPath.extension() == ".arcaneshader")
@@ -111,12 +119,16 @@ namespace Arcane
 			newShaderAsset->SetAssetType(AssetType::SHADER);
 			newShaderAsset->SetID(Arcane::Core::UUID(assetID));
 			newShaderAsset->SetName(name);
+			newShaderAsset->SetPath(currentAssetPath);
 			m_Assets[assetID] = newShaderAsset;
 		}
 		else if (currentAssetPath.extension() == ".arcanemat") 
 		{	
 			if (!dependent) {
-				m_DependentAssets.push_back(currentAssetPath);
+				DependentAssetSpec spec;
+				spec.path = currentAssetPath;
+				spec.type = AssetType::MATERIAL;
+				m_DependentAssets.push_back(spec);
 			}
 			else {
 				// Set path for material deserialization
@@ -125,17 +137,27 @@ namespace Arcane
 				material->SetAssetType(AssetType::MATERIAL);
 				material->SetID(Arcane::Core::UUID(assetID));
 				material->SetName(name);
+				material->SetPath(currentAssetPath);
 				m_Assets[assetID] = material;
 			}
 		}
 		else if (currentAssetPath.extension() == ".arcanescene") 
 		{
-			SceneDeserializer deserializer(currentAssetPath.string());
-			Scene* scene = deserializer.Deserialize();
-			scene->SetAssetType(AssetType::SCENE);
-			scene->SetID(Arcane::Core::UUID(assetID));
-			scene->SetName(name);
-			m_Assets[assetID] = scene;
+			if (!dependent) {
+				DependentAssetSpec spec;
+				spec.path = currentAssetPath;
+				spec.type = AssetType::SCENE;
+				m_DependentAssets.push_back(spec);
+			}
+			else {
+				SceneDeserializer deserializer(currentAssetPath.string());
+				Scene* scene = deserializer.Deserialize();
+				scene->SetAssetType(AssetType::SCENE);
+				scene->SetID(Arcane::Core::UUID(assetID));
+				scene->SetName(name);
+				scene->SetPath(currentAssetPath);
+				m_Assets[assetID] = scene;
+			}
 		}
 		return true;
 	}

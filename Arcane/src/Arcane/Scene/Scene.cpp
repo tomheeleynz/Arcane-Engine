@@ -4,9 +4,20 @@
 
 namespace Arcane
 {
-	Scene::Scene()
+	Scene::Scene(bool newScene)
 	{
 		m_SceneRenderer = nullptr;
+
+		if (newScene) {
+			// Add a directional light to scene
+			entt::entity newHandle = m_Registry.create();
+			Entity* newEntity = new Entity(newHandle, this);
+
+			newEntity->AddComponent<IDComponent>();
+			newEntity->AddComponent<TagComponent>("Directional Light");
+			newEntity->AddComponent<TransformComponent>();
+			newEntity->AddComponent<LightComponent>(LightType::DIRECTIONAL, glm::vec3(5.0f, 2.0f, 0.0f));
+		}
 	}
 
 	Entity* Scene::CreateEntity(std::string name)

@@ -106,8 +106,10 @@ void FileBrowserPanel::OnUpdate()
 			std::string filename = Arcane::FileDialog::SaveFile();
 
 			if (!filename.empty()) {
+				Arcane::MaterialSerializer serializer(nullptr);
+				serializer.Serialize(filename);
 				// Save asset to database
-				Arcane::Application::Get().GetAssetDatabase().GenerateAsset(std::filesystem::path(filename), false);
+				Arcane::Application::Get().GetAssetDatabase().GenerateAsset(std::filesystem::path(filename), true);
 			}
 
 			ImGui::CloseCurrentPopup();
