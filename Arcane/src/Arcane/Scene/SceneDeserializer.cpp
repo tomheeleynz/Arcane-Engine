@@ -37,6 +37,9 @@ namespace Arcane
 				if (name == "Transform") 
 				{
 					TransformComponent newComponent;
+					newComponent.pos = {element["position"][0], element["position"][1], element["position"][2] };
+					newComponent.scale = { element["scale"][0], element["scale"][1], element["scale"][2] };
+				
 					newEntity->AddComponent<TransformComponent>(newComponent);
 				}
 				else if (name == "Mesh") 
