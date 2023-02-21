@@ -79,6 +79,16 @@ namespace Arcane
 				componentArray.push_back(meshRendererObject);
 			}
 
+			if (sceneEntity.HasComponent<LightComponent>())
+			{
+				LightComponent& component = sceneEntity.GetComponent<LightComponent>();
+				nlohmann::json lightObject = nlohmann::json::object();
+				lightObject["name"] = "Light";
+				lightObject["type"] = component.type;
+				lightObject["color"] = { component.color.x, component.color.y, component.color.z };
+				componentArray.push_back(lightObject);
+			}
+
 			entityObject["Components"] = componentArray;
 			entityArray.push_back(entityObject);
 		});

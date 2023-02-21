@@ -12,7 +12,7 @@ namespace Arcane
 {
 	enum class LightType
 	{
-		DIRECTIONAL,
+		DIRECTIONAL = 0,
 		POINT
 	};
 
