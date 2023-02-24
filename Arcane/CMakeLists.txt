@@ -9,6 +9,7 @@ file(GLOB UTIL_FILES "src/Arcane/Utils/*.h" "src/Arcane/Utils/*.cpp")
 file(GLOB ASSET_MANAGER_FILES "src/Arcane/Assets/*.h" "src/Arcane/Assets/*.cpp")
 file(GLOB SCRIPTING_FILES "src/Arcane/Scripting/*.h" "src/Arcane/Scripting/*.cpp")
 file(GLOB PROJECT_SYSTEM_FILES "src/Arcane/Project/*.h" "src/Arcane/Project/*.cpp")
+file(GLOB PHYSICS_FILES "src/Arcane/Physics/*.h" "src/Arcane/Physics/*.cpp")
 
 if (WIN32 OR (UNIX AND NOT APPLE))
 	# Find Vulkan
@@ -21,6 +22,12 @@ if (WIN32 OR (UNIX AND NOT APPLE))
 	add_subdirectory("vendor/SPIRV-Reflect")
 
 	message(STATUS ${Vulkan_shaderc_combined_LIBRARY})
+
+	# Set Physx Library Dir Location
+	set(PHYSX_LIB_DIR "C:/Projects/Arcane-Engine/Arcane/vendor/PhysX/physx/bin/win.x86_64.vc143.md/debug")
+
+	# Get all the Physx Libraries I need
+	set(PHYSX_LIBS ${PHYSX_LIB_DIR}/PhysX_64.lib ${PHYSX_LIB_DIR}/PhysXCommon_64.lib ${PHYSX_LIB_DIR}/PhysXCooking_64.lib ${PHYSX_LIB_DIR}/PhysXFoundation_64.lib ${PHYSX_LIB_DIR}/PhysXExtensions_static_64.lib)
 
 	# Set Libraries
 	set(LIBS glfw imgui ${Vulkan_LIBRARIES} "C:/VulkanSDK/1.3.216.0/Lib/shaderc_combinedd.lib" assimp SPIRV-REFLECT glad ${OPENGL_LIBRARIES} spirv-cross-glsl)
@@ -71,6 +78,7 @@ add_library(
 	${ASSET_MANAGER_FILES}
 	${SCRIPTING_FILES}
 	${PROJECT_SYSTEM_FILES}
+	${PHYSICS_FILES}
 )
 
 # Link Source Directories
@@ -86,10 +94,11 @@ target_include_directories(
 	"vendor/SPIRV-Cross"  
 	"vendor/pybind11/include"
 	${Python_INCLUDE_DIRS}
+	"vendor/PhysX/physx/include"
 )
 
 # Link Libraries
-target_link_libraries(${PROJECT_NAME} ${LIBS} ${Python_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${LIBS} ${Python_LIBRARIES} ${PHYSX_LIBS})
 
 # Set Folder
 set_target_properties(Arcane PROPERTIES FOLDER "Core")

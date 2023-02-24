@@ -10,6 +10,7 @@
 #include "Arcane/ImGui/ImGuiLayer.h"
 #include "Arcane/Assets/AssetDatabase.h"
 #include "Arcane/Project/ProjectDeserializer.h"
+#include "Arcane/Physics/PhysicsEngine.h"
 
 namespace Arcane 
 {
