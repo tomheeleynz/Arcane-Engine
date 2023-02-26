@@ -11,13 +11,18 @@ namespace Arcane
 		static PhysicsEngine* GetInstance();
 
 		static void Init();
+		static physx::PxPhysics* GetPhysics();
+		static physx::PxDefaultCpuDispatcher* GetDispatcher();
 	private:
 		PhysicsEngine();
 		static PhysicsEngine* s_Instance;
 
+		physx::PxPhysics* GetPhysicsImpl();
+		physx::PxDefaultCpuDispatcher* GetDispatcherImpl();
 	private:
 		physx::PxFoundation* m_Foundation;
-		physx::PxPvd* m_Pvd;
+		physx::PxPhysics* m_Physics;
+		physx::PxDefaultCpuDispatcher* m_CpuDispatcher;
 		bool m_RecordMemoryAllocation = true;
 	};
 }

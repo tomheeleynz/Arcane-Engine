@@ -141,6 +141,10 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		}
 	});
 
+	DrawComponent<RigidBodyComponent>("Rigid Body", entity, [](auto& components) {
+		
+	});
+
 	ImGui::SameLine();
 	ImGui::PushItemWidth(-1);
 
@@ -151,6 +155,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	{
 		DisplayAddComponentEntry<MeshComponent>("Mesh");
 		DisplayAddComponentEntry<MeshRendererComponent>("Mesh Renderer");
+		DisplayAddComponentEntry<RigidBodyComponent>("Rigid Body");
 		ImGui::EndPopup();
 	}
 

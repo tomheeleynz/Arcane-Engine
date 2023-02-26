@@ -3,6 +3,7 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include "PxPhysicsAPI.h"
 
 #include "Arcane/Core/UUID.h"
 #include "Arcane/Renderer/Mesh.h"
@@ -53,5 +54,10 @@ namespace Arcane
 	struct ScriptComponent
 	{
 		Script* script;
+	};
+
+	struct RigidBodyComponent
+	{
+		physx::PxRigidBody* rigidBody;
 	};
 }

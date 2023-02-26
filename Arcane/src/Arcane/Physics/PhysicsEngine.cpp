@@ -2,6 +2,8 @@
 
 namespace Arcane
 {
+	#define PVD_HOST "127.0.0.1"
+
 	PhysicsEngine* PhysicsEngine::s_Instance = nullptr;
 
 	PhysicsEngine::PhysicsEngine()
@@ -14,6 +16,30 @@ namespace Arcane
 		
 		if (!m_Foundation)
 			std::cout << "PxCreateFoundation failed!" << std::endl;
+
+		m_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, physx::PxTolerancesScale(), true, nullptr);
+
+		m_CpuDispatcher = physx::PxDefaultCpuDispatcherCreate(2);
+	}
+
+	physx::PxPhysics* PhysicsEngine::GetPhysics()
+	{
+		return GetInstance()->GetPhysicsImpl();
+	}
+
+	physx::PxDefaultCpuDispatcher* PhysicsEngine::GetDispatcher()
+	{
+		return GetInstance()->GetDispatcherImpl();
+	}
+	
+	physx::PxDefaultCpuDispatcher* PhysicsEngine::GetDispatcherImpl()
+	{
+		return m_CpuDispatcher;
+	}
+
+	physx::PxPhysics* PhysicsEngine::GetPhysicsImpl()
+	{
+		return m_Physics;
 	}
 
 	PhysicsEngine* PhysicsEngine::GetInstance()
@@ -28,4 +54,5 @@ namespace Arcane
 	{
 		GetInstance();
 	}
+
 }
