@@ -18,6 +18,13 @@ namespace Arcane
 			newEntity->AddComponent<TransformComponent>();
 			newEntity->AddComponent<LightComponent>(LightType::DIRECTIONAL, glm::vec3(5.0f, 2.0f, 0.0f));
 		}
+
+		// Create Physics Scene to go along with scene
+		physx::PxSceneDesc sceneDesc(PhysicsEngine::GetPhysics()->getTolerancesScale());
+		sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
+		sceneDesc.cpuDispatcher = PhysicsEngine::GetDispatcher();
+		sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
+		m_PhysicsScene = PhysicsEngine::GetInstance()->GetPhysics()->createScene(sceneDesc);
 	}
 
 	Entity* Scene::CreateEntity(std::string name)
@@ -66,6 +73,10 @@ namespace Arcane
 				}
 			}
 		}
+
+		// Do Physics Update Here
+		m_PhysicsScene->simulate(1.0f / 60.0f);
+		m_PhysicsScene->fetchResults(true);
 
 		// Render Mesh
 		{
