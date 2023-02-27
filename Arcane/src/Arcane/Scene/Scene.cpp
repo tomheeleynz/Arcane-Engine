@@ -67,6 +67,19 @@ namespace Arcane
 			}
 		}
 
+		// Run Update Scripts
+		{
+			auto view = m_Registry.view<ScriptComponent>();
+			for (auto& entity : view) {
+				auto& scriptComponent = view.get<ScriptComponent>(entity);
+				
+				if (scriptComponent.script != nullptr) {
+					Script* script = scriptComponent.script;
+					script->OnUpdate();
+				}
+			}
+		}
+
 		// Render Mesh
 		{
 			auto view = m_Registry.view<MeshComponent, TransformComponent, MeshRendererComponent>();

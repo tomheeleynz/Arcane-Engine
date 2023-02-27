@@ -23,7 +23,7 @@ namespace Arcane
 		for (auto& file : std::filesystem::directory_iterator(m_Directory)) {
 			auto current_file_last_write_time = std::filesystem::last_write_time(file);
 
-			if (file.path().extension() != ".arcmeta" && file.path().stem() != "venv" && file.path().extension() != ".arcaneproj" && file.path().extension() != ".pyd") {
+			if (file.path().extension() != ".arcmeta" && file.path().stem() != "venv" && file.path().extension() != ".arcaneproj" && file.path().extension() != ".pyi") {
 				if (!contains(file.path().string())) 
 				{
 					FileInfo newFileInfo;

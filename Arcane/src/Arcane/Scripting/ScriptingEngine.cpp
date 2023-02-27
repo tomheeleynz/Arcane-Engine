@@ -22,7 +22,7 @@ namespace Arcane
 
 	ScriptingEngine::ScriptingEngine()
 	{
-		py::scoped_interpreter guard{};
+		py::initialize_interpreter();
 		
 		py::print("Hello from python interp");
 		auto arcanePythonModule = py::module::import("ArcanePythonModule");
@@ -57,5 +57,10 @@ namespace Arcane
 	void ScriptingEngine::CallFuncImpl(PyObject* func)
 	{
 		PyObject_CallObject(func, nullptr);
+	}
+
+	void ScriptingEngine::Shutdown()
+	{
+		py::finalize_interpreter();
 	}
 }

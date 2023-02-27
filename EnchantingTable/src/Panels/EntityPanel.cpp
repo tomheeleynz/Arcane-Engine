@@ -151,6 +151,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	{
 		DisplayAddComponentEntry<MeshComponent>("Mesh");
 		DisplayAddComponentEntry<MeshRendererComponent>("Mesh Renderer");
+		DisplayAddComponentEntry<ScriptComponent>("Script");
 		ImGui::EndPopup();
 	}
 

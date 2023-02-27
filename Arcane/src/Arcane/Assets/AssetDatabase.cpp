@@ -106,7 +106,11 @@ namespace Arcane
 			m_Assets[assetID] = newTextureAsset;
 		}
 		else if (currentAssetPath.extension() == ".py") {
-			Script* newScriptAsset = new Script(currentAssetPath.string());
+			// Get Name Of File
+			std::string scriptName = currentAssetPath.stem().string();
+
+			// Create Script Asset
+			Script* newScriptAsset = new Script(scriptName);
 			newScriptAsset->SetAssetType(AssetType::SCRIPT);
 			newScriptAsset->SetID(Arcane::Core::UUID(assetID));
 			newScriptAsset->SetName(name);
