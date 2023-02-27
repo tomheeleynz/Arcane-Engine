@@ -49,7 +49,7 @@ namespace Arcane
 		entity.DeleteEntity();
 	}
 
-	void Scene::OnUpdate()
+	void Scene::OnUpdate(float deltaTime)
 	{
 		// Add Lights to scene
 		{
@@ -75,7 +75,7 @@ namespace Arcane
 				
 				if (scriptComponent.script != nullptr) {
 					Script* script = scriptComponent.script;
-					script->OnUpdate();
+					script->OnUpdate(deltaTime);
 				}
 			}
 		}

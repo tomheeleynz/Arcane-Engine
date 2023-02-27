@@ -17,8 +17,12 @@ namespace Arcane
 		Script(std::string name);
 
 		void OnStart();
-		void OnUpdate();
+		void OnUpdate(float deltaTime);
 	private:
 		py::module m_Module;
+		
+		// Class and Object of python class
+		py::object m_Class;
+		py::object m_Object;
 	};
 }

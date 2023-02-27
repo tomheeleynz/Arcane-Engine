@@ -39,7 +39,7 @@ namespace Arcane
 
 				// Check if asset should be generated, as some
 				// things should be excluded
-				if (file.extension() == ".arcaneproj")
+				if (file.extension() == ".arcaneproj" || file.extension() == ".pyi")
 					continue;
 
 

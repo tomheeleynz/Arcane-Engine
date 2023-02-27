@@ -21,7 +21,7 @@ namespace Arcane
 
 		void DeleteEntity(Entity& entity);
 
-		void OnUpdate();
+		void OnUpdate(float deltaTime);
 
 		void SetSceneName(std::string name) { m_Name = name; }
 		std::string GetSceneName() { return m_Name;  }
