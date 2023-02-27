@@ -12,20 +12,10 @@ namespace py = pybind11;
 
 namespace Arcane
 {
-	class TestClass
-	{
-	public:
-		TestClass() {}
-
-		int TestMethod() { return 2; }
-	private:
-
-	};
-
 	PYBIND11_EMBEDDED_MODULE(ArcanePythonModule, m) {
-		py::class_<TestClass>(m, "TestClass")
-			.def(py::init<>())
-			.def("TestMethod", &TestClass::TestMethod);
+		py::class_<InputManager>(m, "InputManager")
+			.def("GetKeyPressed", &InputManager::GetKeyPressed)
+			.def("GetKeyReleased", &InputManager::GetKeyReleased);
 	}
 
 	ScriptingEngine* ScriptingEngine::s_Instance = nullptr;
@@ -40,9 +30,6 @@ namespace Arcane
 		// Append Working Dir to path
 		py::module_ sys = py::module_::import("sys");
 		sys.attr("path").attr("append")("C:\\Projects\\BasicGame\\Scripts");
-
-		// Get Module
-		auto characterControllerModule = py::module::import("CharacterController");
 	}
 
 	ScriptingEngine* ScriptingEngine::GetInstance()
