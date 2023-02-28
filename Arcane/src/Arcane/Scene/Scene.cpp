@@ -77,6 +77,7 @@ namespace Arcane
 		// Do Physics Update Here
 		m_PhysicsScene->simulate(1.0f / 60.0f);
 		m_PhysicsScene->fetchResults(true);
+
 		// Run Update Scripts
 		{
 			auto view = m_Registry.view<ScriptComponent>();

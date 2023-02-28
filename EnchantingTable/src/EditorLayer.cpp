@@ -75,7 +75,7 @@ void EditorLayer::OnUpdate(float deltaTime)
 		m_Viewport = Arcane::UI::AddTexture(m_SceneRenderer->GetFinalRenderFramebuffer());
 	}
 
-	m_ActiveScene->OnUpdate();
+	m_ActiveScene->OnUpdate(deltaTime);
 }
 
 void EditorLayer::OnImGuiRender()

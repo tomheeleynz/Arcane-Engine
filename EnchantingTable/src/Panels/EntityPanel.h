@@ -18,6 +18,8 @@ private:
 	template<typename T>
 	void DisplayAddComponentEntry(std::string entryName);
 
+	template<typename T>
+	void InitComponent();
 private:
 	Arcane::Entity m_Context;
 	Arcane::Material* m_SelectedMaterial = nullptr;

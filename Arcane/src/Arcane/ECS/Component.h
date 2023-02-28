@@ -58,6 +58,7 @@ namespace Arcane
 
 	struct RigidBodyComponent
 	{
-		physx::PxRigidBody* rigidBody;
+		physx::PxRigidDynamic* rigidBody;
+		physx::PxTransform transform;
 	};
 }

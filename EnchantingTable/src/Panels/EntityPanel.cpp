@@ -15,7 +15,6 @@ static void DrawComponent(std::string name, Arcane::Entity entity, UIFunction ui
 	}
 }
 
-
 EntityPanel::EntityPanel()
 {
 	m_Context = {};
@@ -168,12 +167,48 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 template<typename T>
 void EntityPanel::DisplayAddComponentEntry(std::string entryName)
 {
+	using namespace Arcane;
+	
 	if (!m_Context.HasComponent<T>())
 	{
 		if (ImGui::MenuItem(entryName.c_str()))
 		{
-			m_Context.AddComponent<T>();
+			InitComponent<T>();
 			ImGui::CloseCurrentPopup();
 		}
 	}
 }
+
+template <>
+void EntityPanel::InitComponent<Arcane::RigidBodyComponent>() 
+{
+	Arcane::RigidBodyComponent component;
+	Arcane::TransformComponent& transformComponent = m_Context.GetComponent<Arcane::TransformComponent>();
+
+	component.transform = physx::PxTransform(physx::PxVec3(transformComponent.pos.x, transformComponent.pos.y, transformComponent.pos.z));
+	component.rigidBody = Arcane::PhysicsEngine::GetPhysics()->createRigidDynamic(component.transform);
+	physx::PxRigidBodyExt::updateMassAndInertia(*component.rigidBody, 10.0f);
+	m_Context.GetScene()->AddToPhyicsScene(component.rigidBody);
+	
+	m_Context.AddComponent<Arcane::RigidBodyComponent>(component);
+}
+
+template <>
+void EntityPanel::InitComponent<Arcane::ScriptComponent>()
+{
+	m_Context.AddComponent<Arcane::ScriptComponent>();
+}
+
+template <>
+void EntityPanel::InitComponent<Arcane::MeshComponent>()
+{
+	m_Context.AddComponent<Arcane::MeshComponent>();
+}
+
+template <>
+void EntityPanel::InitComponent<Arcane::MeshRendererComponent>()
+{
+	m_Context.AddComponent<Arcane::MeshRendererComponent>();
+}
+
+

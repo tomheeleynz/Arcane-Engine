@@ -32,6 +32,8 @@ namespace Arcane
 
 		void SetSceneRenderer(SceneRenderer* sceneRenderer) { m_SceneRenderer = sceneRenderer; }
 		void SetSceneCamera(Camera* sceneCamera) { m_SceneRenderer->SetCamera(sceneCamera); }
+
+		void AddToPhyicsScene(physx::PxActor* actor) { m_PhysicsScene->addActor(*actor); }
 	private:
 		std::string m_Name;
 		SceneRenderer* m_SceneRenderer;
