@@ -2,19 +2,21 @@
 
 namespace Arcane
 {
-	Script::Script(std::filesystem::path path)
+	Script::Script(std::string name)
 	{
-		//PySys_SetPath(L"C:\\Projects\\BasicGame\\Scripts");
-		//
-		//PyObject* moduleName = PyUnicode_DecodeFSDefault("CharacterController");
+		m_Module = py::module::import(name.c_str());
 
-		//PyObject* pythonModule = PyImport_Import(moduleName);
-		//if (pythonModule == nullptr) {
-		//	PyErr_Print();
-		//	std::cerr << "Fails to import the module.\n";
-		//	Py_DECREF(moduleName);
-		//	return;
-		//}
+		m_Class = m_Module.attr(name.c_str());
+		m_Object = m_Class.call();
+	}
 
+	void Script::OnStart()
+	{
+		m_Object.attr("OnStart").call();
+	}
+
+	void Script::OnUpdate(float deltaTime)
+	{
+		m_Object.attr("OnUpdate").call(deltaTime);
 	}
 }

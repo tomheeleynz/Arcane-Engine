@@ -9,7 +9,7 @@ namespace Arcane
 	{
 	public:
 		static ScriptingEngine* GetInstance();
-
+		static void Shutdown();
 		static void Init();
 		static void CallFunc(PyObject* func);
 	private:

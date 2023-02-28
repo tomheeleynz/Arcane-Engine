@@ -56,7 +56,7 @@ namespace Arcane
 		entity.DeleteEntity();
 	}
 
-	void Scene::OnUpdate()
+	void Scene::OnUpdate(float deltaTime)
 	{
 		// Add Lights to scene
 		{
@@ -77,6 +77,18 @@ namespace Arcane
 		// Do Physics Update Here
 		m_PhysicsScene->simulate(1.0f / 60.0f);
 		m_PhysicsScene->fetchResults(true);
+		// Run Update Scripts
+		{
+			auto view = m_Registry.view<ScriptComponent>();
+			for (auto& entity : view) {
+				auto& scriptComponent = view.get<ScriptComponent>(entity);
+				
+				if (scriptComponent.script != nullptr) {
+					Script* script = scriptComponent.script;
+					script->OnUpdate(deltaTime);
+				}
+			}
+		}
 
 		// Render Mesh
 		{

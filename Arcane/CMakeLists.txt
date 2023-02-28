@@ -30,6 +30,7 @@ if (WIN32 OR (UNIX AND NOT APPLE))
 	set(PHYSX_LIBS ${PHYSX_LIB_DIR}/PhysX_64.lib ${PHYSX_LIB_DIR}/PhysXCommon_64.lib ${PHYSX_LIB_DIR}/PhysXCooking_64.lib ${PHYSX_LIB_DIR}/PhysXFoundation_64.lib ${PHYSX_LIB_DIR}/PhysXExtensions_static_64.lib)
 
 	# Set Libraries
+	set(LIBS glfw imgui ${Vulkan_LIBRARIES} "C:/VulkanSDK/1.3.231.1/Lib/shaderc_combinedd.lib" assimp SPIRV-REFLECT glad ${OPENGL_LIBRARIES} spirv-cross-glsl)
 	set(LIBS glfw imgui ${Vulkan_LIBRARIES} "C:/VulkanSDK/1.3.216.0/Lib/shaderc_combinedd.lib" assimp SPIRV-REFLECT glad ${OPENGL_LIBRARIES} spirv-cross-glsl)
 
 	# Set Vulkan engine files
@@ -98,7 +99,7 @@ target_include_directories(
 )
 
 # Link Libraries
-target_link_libraries(${PROJECT_NAME} ${LIBS} ${Python_LIBRARIES} ${PHYSX_LIBS})
+target_link_libraries(${PROJECT_NAME} ${LIBS} ${Python_LIBRARIES}  pybind11::embed ${PHYSX_LIBS})
 
 # Set Folder
 set_target_properties(Arcane PROPERTIES FOLDER "Core")
