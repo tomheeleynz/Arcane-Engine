@@ -91,6 +91,21 @@ namespace Arcane
 			}
 		}
 
+		// Update position with physics
+		{
+			auto view = m_Registry.view<RigidBodyComponent, TransformComponent>();
+			for (auto& entity : view) {
+				auto& rigidBodyComponent = view.get<RigidBodyComponent>(entity);
+				auto& transformComponent = view.get<TransformComponent>(entity);
+
+				// Update Position
+				transformComponent.pos.x = rigidBodyComponent.rigidBody->getGlobalPose().p.x;
+				transformComponent.pos.y = rigidBodyComponent.rigidBody->getGlobalPose().p.y;
+				transformComponent.pos.z = rigidBodyComponent.rigidBody->getGlobalPose().p.z;
+			}
+		}
+
+
 		// Render Mesh
 		{
 			auto view = m_Registry.view<MeshComponent, TransformComponent, MeshRendererComponent>();
