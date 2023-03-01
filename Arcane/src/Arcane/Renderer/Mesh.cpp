@@ -8,6 +8,7 @@ namespace Arcane
 	Mesh::Mesh(std::string filepath)
 	{
 		Assimp::Importer import;
+
 		const aiScene* scene = import.ReadFile(
 			filepath, 
 			s_MeshImportFlags

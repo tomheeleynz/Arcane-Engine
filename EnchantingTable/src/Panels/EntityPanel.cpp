@@ -140,8 +140,10 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		}
 	});
 
-	DrawComponent<RigidBodyComponent>("Rigid Body", entity, [](auto& components) {
-		
+	DrawComponent<RigidBodyComponent>("Rigid Body", entity, [](auto& component) {
+		float currentMass = component.rigidBody->GetMass();
+		ImGui::InputFloat("Mass", &currentMass);
+		component.rigidBody->SetMass(currentMass);
 	});
 
 	ImGui::SameLine();
@@ -185,10 +187,10 @@ void EntityPanel::InitComponent<Arcane::RigidBodyComponent>()
 	Arcane::RigidBodyComponent component;
 	Arcane::TransformComponent& transformComponent = m_Context.GetComponent<Arcane::TransformComponent>();
 
-	component.transform = physx::PxTransform(physx::PxVec3(transformComponent.pos.x, transformComponent.pos.y, transformComponent.pos.z));
-	component.rigidBody = Arcane::PhysicsEngine::GetPhysics()->createRigidDynamic(component.transform);
-	physx::PxRigidBodyExt::updateMassAndInertia(*component.rigidBody, 10.0f);
-	m_Context.GetScene()->AddToPhyicsScene(component.rigidBody);
+	Arcane::RigidBody* rigidBody = new Arcane::RigidBody(transformComponent.pos);
+	component.rigidBody = rigidBody;
+
+	m_Context.GetScene()->AddToPhyicsScene(rigidBody->GetRigidBody());
 	
 	m_Context.AddComponent<Arcane::RigidBodyComponent>(component);
 }

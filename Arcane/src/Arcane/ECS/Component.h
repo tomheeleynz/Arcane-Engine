@@ -8,6 +8,7 @@
 #include "Arcane/Core/UUID.h"
 #include "Arcane/Renderer/Mesh.h"
 #include "Arcane/Scripting/Script.h"
+#include "Arcane/Physics/RigidBody.h"
 
 namespace Arcane
 {
@@ -58,7 +59,6 @@ namespace Arcane
 
 	struct RigidBodyComponent
 	{
-		physx::PxRigidDynamic* rigidBody;
-		physx::PxTransform transform;
+		RigidBody* rigidBody;
 	};
 }

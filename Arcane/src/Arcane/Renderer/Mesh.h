@@ -12,6 +12,12 @@
 
 namespace Arcane
 {
+	struct BoundingBox
+	{
+		aiVector3D bbMin;
+		aiVector3D bbMax;
+	};
+
 	class Mesh : public Asset
 	{
 	public:
@@ -24,5 +30,6 @@ namespace Arcane
 		SubMesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
 	private:
 		std::vector<SubMesh*> m_SubMeshes;
+		BoundingBox m_BoundingBox;
 	};
 }

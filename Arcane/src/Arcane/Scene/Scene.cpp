@@ -98,10 +98,7 @@ namespace Arcane
 				auto& rigidBodyComponent = view.get<RigidBodyComponent>(entity);
 				auto& transformComponent = view.get<TransformComponent>(entity);
 
-				// Update Position
-				transformComponent.pos.x = rigidBodyComponent.rigidBody->getGlobalPose().p.x;
-				transformComponent.pos.y = rigidBodyComponent.rigidBody->getGlobalPose().p.y;
-				transformComponent.pos.z = rigidBodyComponent.rigidBody->getGlobalPose().p.z;
+				transformComponent.pos = rigidBodyComponent.rigidBody->GetPosition();
 			}
 		}
 
