@@ -7,15 +7,34 @@
 #include "ScriptingEngine.h"
 
 #include "Arcane/Core/InputManager.h"
+#include "Arcane/ECS/Entity.h"
 
 namespace py = pybind11;
 
 namespace Arcane
 {
 	PYBIND11_EMBEDDED_MODULE(ArcanePythonModule, m) {
+		//////////////////////////////////////////////
+		//// Maths Classes
+		//////////////////////////////////////////////
+		py::class_<glm::vec3>(m, "Vec3")
+			.def(py::init<float, float, float>())
+			.def_readwrite("x", &glm::vec3::x)
+			.def_readwrite("y", &glm::vec3::y)
+			.def_readwrite("z", &glm::vec3::z);
+
+
+		//////////////////////////////////////////////
+		//// Core Classes
+		//////////////////////////////////////////////
 		py::class_<InputManager>(m, "InputManager")
 			.def("GetKeyPressed", &InputManager::GetKeyPressed)
 			.def("GetKeyReleased", &InputManager::GetKeyReleased);
+
+
+		//////////////////////////////////////////////
+		//// Physics Classes
+		//////////////////////////////////////////////
 	}
 
 	ScriptingEngine* ScriptingEngine::s_Instance = nullptr;
