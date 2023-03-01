@@ -74,6 +74,41 @@ namespace Arcane
 			}
 		}
 
+		// Render Mesh
+		{
+			auto view = m_Registry.view<MeshComponent, TransformComponent, MeshRendererComponent>();
+			for (auto& entity : view) 
+			{
+				auto& mesh = view.get<MeshComponent>(entity);
+				auto& transform = view.get<TransformComponent>(entity);
+				auto& meshRenderer = view.get<MeshRendererComponent>(entity);
+
+				if (mesh.mesh != nullptr && meshRenderer.material != nullptr && meshRenderer.material->GetShader() != nullptr)
+					m_SceneRenderer->SubmitMesh(mesh.mesh, transform, meshRenderer.material);
+			}
+		}
+		
+		m_SceneRenderer->RenderScene();
+	}
+
+	void Scene::OnRuntimeUpdate(float deltaTime)
+	{
+		// Add Lights to scene
+		{
+			auto view = m_Registry.view<TransformComponent, LightComponent>();
+
+			for (auto& entity : view)
+			{
+				auto& light = view.get<LightComponent>(entity);
+				auto& transform = view.get<TransformComponent>(entity);
+
+				if (light.type == LightType::DIRECTIONAL)
+				{
+					m_SceneRenderer->SetDirectionalLight(light, transform);
+				}
+			}
+		}
+
 		// Do Physics Update Here
 		m_PhysicsScene->simulate(1.0f / 60.0f);
 		m_PhysicsScene->fetchResults(true);
@@ -83,7 +118,7 @@ namespace Arcane
 			auto view = m_Registry.view<ScriptComponent>();
 			for (auto& entity : view) {
 				auto& scriptComponent = view.get<ScriptComponent>(entity);
-				
+
 				if (scriptComponent.script != nullptr) {
 					Script* script = scriptComponent.script;
 					script->OnUpdate(deltaTime);
@@ -106,7 +141,7 @@ namespace Arcane
 		// Render Mesh
 		{
 			auto view = m_Registry.view<MeshComponent, TransformComponent, MeshRendererComponent>();
-			for (auto& entity : view) 
+			for (auto& entity : view)
 			{
 				auto& mesh = view.get<MeshComponent>(entity);
 				auto& transform = view.get<TransformComponent>(entity);
@@ -116,7 +151,7 @@ namespace Arcane
 					m_SceneRenderer->SubmitMesh(mesh.mesh, transform, meshRenderer.material);
 			}
 		}
-		
+
 		m_SceneRenderer->RenderScene();
 	}
 }
