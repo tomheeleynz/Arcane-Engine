@@ -158,6 +158,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		DisplayAddComponentEntry<MeshRendererComponent>("Mesh Renderer");
 		DisplayAddComponentEntry<RigidBodyComponent>("Rigid Body");
 		DisplayAddComponentEntry<ScriptComponent>("Script");
+		DisplayAddComponentEntry<BoxColliderComponent>("Box Collider");
 		ImGui::EndPopup();
 	}
 
@@ -193,6 +194,37 @@ void EntityPanel::InitComponent<Arcane::RigidBodyComponent>()
 	m_Context.GetScene()->AddToPhyicsScene(rigidBody->GetRigidBody());
 	
 	m_Context.AddComponent<Arcane::RigidBodyComponent>(component);
+}
+
+template <>
+void EntityPanel::InitComponent<Arcane::BoxColliderComponent>()
+{
+	glm::vec3 min = glm::vec3();
+	glm::vec3 max = glm::vec3();
+
+	if (m_Context.HasComponent<Arcane::MeshComponent>())
+	{
+		auto& meshComponent = m_Context.GetComponent<Arcane::MeshComponent>();
+		
+		min = {
+			meshComponent.mesh->GetBoundingBox().bbMin.x, 
+			meshComponent.mesh->GetBoundingBox().bbMin.y, 
+			meshComponent.mesh->GetBoundingBox().bbMin.z 
+		};
+		
+		max = {
+			meshComponent.mesh->GetBoundingBox().bbMax.x,
+			meshComponent.mesh->GetBoundingBox().bbMax.y,
+			meshComponent.mesh->GetBoundingBox().bbMax.z
+		};
+	}
+
+	auto& rigidBodyComponent = m_Context.GetComponent<Arcane::RigidBodyComponent>();
+
+	Arcane::BoxColliderComponent newComponent;
+	newComponent.boxCollider = new Arcane::BoxCollider(min, max, rigidBodyComponent.rigidBody->GetRigidBody());
+
+	m_Context.AddComponent<Arcane::BoxColliderComponent>(newComponent);
 }
 
 template <>

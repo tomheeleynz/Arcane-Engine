@@ -75,7 +75,18 @@ void EditorLayer::OnUpdate(float deltaTime)
 		m_Viewport = Arcane::UI::AddTexture(m_SceneRenderer->GetFinalRenderFramebuffer());
 	}
 
-	m_ActiveScene->OnUpdate(deltaTime);
+	switch (m_State)
+	{
+	case SceneState::EDIT:
+		m_ActiveScene->OnUpdate(deltaTime);
+		break;
+	case SceneState::PLAY:
+		m_ActiveScene->OnRuntimeUpdate(deltaTime);
+		break;
+	default:
+		break;
+	}
+
 }
 
 void EditorLayer::OnImGuiRender()
@@ -163,7 +174,7 @@ void EditorLayer::OnImGuiRender()
 		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
 
 		m_ViewportSize = { viewportSize.x, viewportSize.y };
-		
+	
 		Arcane::UI::Image(m_Viewport, viewportSize);
 
 		if (ImGui::BeginDragDropTarget())

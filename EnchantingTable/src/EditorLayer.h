@@ -14,6 +14,13 @@
 class EditorLayer : public Arcane::Layer
 {
 public:
+	enum class SceneState
+	{
+		EDIT,
+		PLAY,
+		PAUSE
+	};
+
 	EditorLayer();
 
 	void OnAttach() override;
@@ -42,4 +49,8 @@ private:
 	// Editor Camera
 	Arcane::PerspectiveCamera* m_EditorCamera;
 	PerspectiveController* m_EditorCameraController;
+
+	// Scene State
+	SceneState m_State = SceneState::EDIT;
+
 };

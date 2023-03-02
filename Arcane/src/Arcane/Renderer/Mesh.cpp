@@ -3,7 +3,7 @@
 
 namespace Arcane
 {
-	static const uint32_t s_MeshImportFlags = aiProcess_Triangulate;
+	static const uint32_t s_MeshImportFlags = aiProcess_Triangulate | aiProcess_GenBoundingBoxes;
 
 	Mesh::Mesh(std::string filepath)
 	{
@@ -19,6 +19,9 @@ namespace Arcane
 			std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
 			return;
 		}
+
+        m_BoundingBox.bbMax = scene->mMeshes[0]->mAABB.mMax;
+        m_BoundingBox.bbMin = scene->mMeshes[0]->mAABB.mMin;
 
 		ProcessNode(scene->mRootNode, scene);
 	}
@@ -49,6 +52,26 @@ namespace Arcane
         std::vector<MeshVertex> vertices;
         std::vector<uint32_t> indices;
 
+        // Min Point
+        if (mesh->mAABB.mMin.x < m_BoundingBox.bbMin.x)
+            m_BoundingBox.bbMin.x = mesh->mAABB.mMin.x;
+
+        if (mesh->mAABB.mMin.y < m_BoundingBox.bbMin.y)
+            m_BoundingBox.bbMin.y = mesh->mAABB.mMin.y;
+
+        if (mesh->mAABB.mMin.z < m_BoundingBox.bbMin.z)
+            m_BoundingBox.bbMin.z = mesh->mAABB.mMin.z;
+
+        // Max Point
+        if (mesh->mAABB.mMax.x > m_BoundingBox.bbMax.x)
+            m_BoundingBox.bbMax.x = mesh->mAABB.mMax.x;
+
+        if (mesh->mAABB.mMax.y > m_BoundingBox.bbMax.y)
+            m_BoundingBox.bbMax.y = mesh->mAABB.mMax.y;
+
+        if (mesh->mAABB.mMax.z > m_BoundingBox.bbMax.z)
+            m_BoundingBox.bbMax.z = mesh->mAABB.mMax.z;
+        
         // walk through each of the mesh's vertices
         for (unsigned int i = 0; i < mesh->mNumVertices; i++)
         {

@@ -9,6 +9,7 @@
 #include "Arcane/Renderer/Mesh.h"
 #include "Arcane/Scripting/Script.h"
 #include "Arcane/Physics/RigidBody.h"
+#include "Arcane/Physics/BoxCollider.h"
 
 namespace Arcane
 {
@@ -60,5 +61,10 @@ namespace Arcane
 	struct RigidBodyComponent
 	{
 		RigidBody* rigidBody;
+	};
+
+	struct BoxColliderComponent
+	{
+		BoxCollider* boxCollider;
 	};
 }

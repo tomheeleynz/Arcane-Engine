@@ -25,6 +25,8 @@ namespace Arcane
 		Mesh(std::vector<MeshVertex> vertices, std::vector<uint32_t> indices);
 
 		std::vector<SubMesh*> GetSubMeshes() { return m_SubMeshes; }
+
+		BoundingBox& GetBoundingBox() { return m_BoundingBox; }
 	private:
 		void ProcessNode(aiNode* node, const aiScene* scene);
 		SubMesh* ProcessMesh(aiMesh* mesh, const aiScene* scene);
