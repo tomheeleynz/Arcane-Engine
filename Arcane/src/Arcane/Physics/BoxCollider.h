@@ -14,6 +14,5 @@ namespace Arcane
 		physx::PxShape* GetBox() { return m_Box; }
 	private:
 		physx::PxShape* m_Box;
-	
 	};
 }

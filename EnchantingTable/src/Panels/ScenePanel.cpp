@@ -15,9 +15,6 @@ void ScenePanel::Update()
 {
 	ImGui::Begin("Scene");
 	{
-		if (ImGui::Button("Add Entity"))
-			CreateMeshEntity(MeshEntityType::PLANE);
-	
 		m_Context->m_Registry.each([this](auto entity) {
 			Arcane::Entity Entity(entity, this->m_Context);
 			DrawNode(Entity);
@@ -30,7 +27,20 @@ void ScenePanel::Update()
 		{
 			if (ImGui::MenuItem("Create Empty Entity"))
 				m_Context->CreateEntity("Empty Entity");
-
+			
+			if (ImGui::BeginMenu("3D Object"))
+			{
+				if (ImGui::MenuItem("Plane")) {
+					CreateMeshEntity(MeshEntityType::PLANE);
+				}
+				
+				if (ImGui::MenuItem("Cube")) {
+					std::cout << "Creating a Cube\n";
+				}
+				
+				ImGui::EndMenu();
+			}
+			
 			ImGui::EndPopup();
 		}
 
@@ -67,19 +77,15 @@ void ScenePanel::DrawNode(Arcane::Entity& entity)
 
 Arcane::Entity& ScenePanel::CreateMeshEntity(MeshEntityType type)
 {
-	// Get Default Material
-	Arcane::Asset* materialAsset = Arcane::Application::Get().GetAssetDatabase().GetDefaultAsset("MeshMaterial");
-	Arcane::Material* material = static_cast<Arcane::Material*>(materialAsset);
-
 	// Create Entity
-	Arcane::Entity* entity = m_Context->CreateEntity("New Entity");
+	Arcane::Entity* entity = nullptr;
 	
 	// Create Mesh Component
 	Arcane::MeshComponent meshComponent;
 
 	// Create Mesh Renderer Component
 	Arcane::MeshRendererComponent meshRendererComponent;
-	meshRendererComponent.material = material;
+	meshRendererComponent.material = nullptr;
 
 	// Select what type of mesh to give to
 	// Entity
@@ -87,6 +93,7 @@ Arcane::Entity& ScenePanel::CreateMeshEntity(MeshEntityType type)
 	{
 	case ScenePanel::MeshEntityType::PLANE:
 	{
+		entity = m_Context->CreateEntity("Plane");
 		meshComponent.mesh = Arcane::MeshFactory::CreatePlane();
 		break;
 	}
