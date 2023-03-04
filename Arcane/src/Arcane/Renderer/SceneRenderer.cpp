@@ -44,9 +44,14 @@ namespace Arcane
 		Framebuffer* GeometryFramebuffer;
 		RenderPass* GeometryRenderPass;
 		Pipeline* GeometryPipeline;
-		DescriptorSet* ObjectDescriptorSet;
 		DescriptorSet* GeometryPassDescriptorSet;
+		DescriptorSet* ObjectDescriptorSet;
 		UniformBuffer* ObjectUniformBuffer;
+		
+		// Test for new rendering
+		std::vector<DescriptorSet*> ObjectSets;
+		std::vector<UniformBuffer*> ObjectUniformBuffers;
+		
 		UniformBuffer* GeometryPassUniformBuffer;
 		Shader* GeometryShader;
 		VertexDescriptor* GeometryVertexDescriptor;
@@ -164,6 +169,21 @@ namespace Arcane
 		s_Data.ObjectUniformBuffer = UniformBuffer::Create(sizeof(Model));
 		s_Data.ObjectDescriptorSet->AddUniformBuffer(s_Data.ObjectUniformBuffer, 3, 0);
 
+		s_Data.ObjectSets.resize(5);
+		s_Data.ObjectUniformBuffers.resize(5);
+
+		for (int i = 0; i < 5; i++) {
+			DescriptorSetSpecs newObjectSetSpecs;
+			newObjectSetSpecs.SetNumber = 3;
+
+			s_Data.ObjectSets[i] = DescriptorSet::Create(newObjectSetSpecs, {
+				{0, 1, DescriptorType::UNIFORM_BUFFER, "Transform Data", DescriptorLocation::VERTEX}
+			});
+
+			s_Data.ObjectUniformBuffers[i] = UniformBuffer::Create(sizeof(Model));
+			s_Data.ObjectSets[i]->AddUniformBuffer(s_Data.ObjectUniformBuffers[i], 3, 0);
+		}
+
 
 		PipelineSpecification gridSpecs;
 		gridSpecs.renderPass = s_Data.GeometryRenderPass;
@@ -272,7 +292,7 @@ namespace Arcane
 					glm::scale(glm::mat4(1), currentMeshComponent.scale);
 
 				// Write to uniform buffer
-				s_Data.ObjectUniformBuffer->WriteData((void*)&currentTransform, sizeof(Model));
+				s_Data.ObjectUniformBuffers[i]->WriteData((void*)&currentTransform, sizeof(Model));
 
 				for (int j = 0; j < currentMesh->GetSubMeshes().size(); j++) {
 					SubMesh* currentSubMesh = currentMesh->GetSubMeshes()[j];
@@ -280,7 +300,7 @@ namespace Arcane
 						s_Data.GlobalDescriptorSet,
 						s_Data.GeometryPassDescriptorSet,
 						material->GetDescriptorSet(),
-						s_Data.ObjectDescriptorSet
+						s_Data.ObjectSets[i]
 					});
 				}
 			}
