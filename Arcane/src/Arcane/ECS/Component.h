@@ -29,6 +29,11 @@ namespace Arcane
 		std::string tag;
 	};
 
+	struct CameraComponent
+	{
+		bool isPrimary = false;
+	};
+
 	struct TransformComponent
 	{
 		glm::vec3 pos = {0.0f, 0.0f, 0.0f};

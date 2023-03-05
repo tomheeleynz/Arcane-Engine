@@ -24,6 +24,10 @@ namespace Arcane {
 		VkDescriptorPool GetPool() { return m_DescriptorPool; }
 
 		void Resize(bool resize) override;
+
+		// Secondary Surface
+		VulkanSwapChain& GetSecondarySwapchain() { return *m_SecondarySwapchain; }
+		VkSurfaceKHR GetSecondarySurface() { return m_SecondarySurface; }
 	private:
 		bool CheckValidationLayerSupport();
 		std::vector<const char*> GetRequiredExtensions();
@@ -36,5 +40,9 @@ namespace Arcane {
 		VulkanSwapChain* m_SwapChain;
 		VkDebugUtilsMessengerEXT m_DebugMessenger;
 		VkDescriptorPool m_DescriptorPool;
+
+		// Test for secondary surface
+		VkSurfaceKHR m_SecondarySurface;
+		VulkanSwapChain* m_SecondarySwapchain;
 	};
 }

@@ -93,12 +93,24 @@ namespace Arcane {
 			printf("Surface Created\n");
 		}
 
+		
+		if (glfwCreateWindowSurface(m_Instance, window, nullptr, &m_SecondarySurface) != VK_SUCCESS) {
+			printf("Secondary Surface Not Created\n");
+		}
+		else {
+			printf("Secondary Surface Created\n");
+		}
+
+
 		// Create the vulkan devices
 		m_PhysicalDevice = new VulkanPhysicalDevice(m_Surface);
 		m_Device = new VulkanDevice(*m_PhysicalDevice);
 		
 		// Setup Swapchain
 		m_SwapChain = new VulkanSwapChain(*m_Device, m_Surface);
+
+		// Create Secondary Swapchain
+		m_SecondarySwapchain = new VulkanSwapChain(*m_Device, m_SecondarySurface);
 
 		// Create Descriptor pool (I think this should be a global option)
 		VkDescriptorPoolSize pool_sizes[] = {
