@@ -15,7 +15,6 @@ namespace Arcane
 {
 	PYBIND11_EMBEDDED_MODULE(ArcanePythonModule, m) 
 	{
-
 		//////////////////////////////////////////////
 		//// Maths Classes
 		//////////////////////////////////////////////
@@ -24,6 +23,20 @@ namespace Arcane
 			.def_readwrite("x", &glm::vec3::x)
 			.def_readwrite("y", &glm::vec3::y)
 			.def_readwrite("z", &glm::vec3::z);
+		
+		//////////////////////////////////////////////
+		//// Component Classes
+		//////////////////////////////////////////////
+		py::class_<TransformComponent>(m, "TransformComponent")
+			.def(py::init<>())
+			.def_readwrite("pos", &TransformComponent::pos)
+			.def_readwrite("rotation", &TransformComponent::rotation)
+			.def_readwrite("scale", &TransformComponent::scale);
+
+		
+		//////////////////////////////////////////////
+		//// Entity Class
+		//////////////////////////////////////////////
 
 
 		//////////////////////////////////////////////
