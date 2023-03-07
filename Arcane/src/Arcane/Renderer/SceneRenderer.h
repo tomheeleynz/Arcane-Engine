@@ -34,9 +34,13 @@ namespace Arcane
 		void ResizeScene(uint32_t width, uint32_t height);
 
 		glm::vec2 GetSceneSize() { return m_SceneSize; }
+
+		void RenderGrid(bool render) { m_RenderGrid = render; }
 	private:
 		void CompositeRenderPass();
 		void GeometryPass();
 		glm::vec2 m_SceneSize;
+
+		bool m_RenderGrid = true;
 	};
 }

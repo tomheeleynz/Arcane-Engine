@@ -305,7 +305,8 @@ namespace Arcane
 				}
 			}
 
-			Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, { s_Data.GlobalDescriptorSet });
+			if (m_RenderGrid)
+				Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, { s_Data.GlobalDescriptorSet });
 		}
 		Renderer::EndRenderPass(s_Data.GeometryRenderPass);
 	}

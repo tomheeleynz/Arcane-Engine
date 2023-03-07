@@ -168,7 +168,18 @@ void EditorLayer::OnImGuiRender()
 	ImGui::Begin("Viewport");
 	{
 		if (ImGui::IsWindowHovered()) {
-			m_EditorCameraController->OnUpdate();
+			if (m_State == SceneState::EDIT) {
+				m_EditorCameraController->OnUpdate();
+			}
+
+			if (Arcane::InputManager::GetKeyReleased(32)) {
+				if (m_State == SceneState::EDIT)
+					m_State = SceneState::PLAY;
+				else if (m_State == SceneState::PLAY) {
+					m_State = SceneState::EDIT;
+					m_ActiveScene->SetSceneCamera(m_EditorCamera);
+				}
+			}
 		}
 
 		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
