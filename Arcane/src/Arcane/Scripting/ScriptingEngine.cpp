@@ -13,7 +13,9 @@ namespace py = pybind11;
 
 namespace Arcane
 {
-	PYBIND11_EMBEDDED_MODULE(ArcanePythonModule, m) {
+	PYBIND11_EMBEDDED_MODULE(ArcanePythonModule, m) 
+	{
+
 		//////////////////////////////////////////////
 		//// Maths Classes
 		//////////////////////////////////////////////
@@ -30,11 +32,6 @@ namespace Arcane
 		py::class_<InputManager>(m, "InputManager")
 			.def("GetKeyPressed", &InputManager::GetKeyPressed)
 			.def("GetKeyReleased", &InputManager::GetKeyReleased);
-
-
-		//////////////////////////////////////////////
-		//// Physics Classes
-		//////////////////////////////////////////////
 	}
 
 	ScriptingEngine* ScriptingEngine::s_Instance = nullptr;
@@ -44,11 +41,11 @@ namespace Arcane
 		py::initialize_interpreter();
 		
 		py::print("Hello from python interp");
-		auto arcanePythonModule = py::module::import("ArcanePythonModule");
 
 		// Append Working Dir to path
 		py::module_ sys = py::module_::import("sys");
 		sys.attr("path").attr("append")("C:\\Projects\\BasicGame\\Scripts");
+		auto arcanePythonModule = py::module::import("ArcanePythonModule");
 	}
 
 	ScriptingEngine* ScriptingEngine::GetInstance()
