@@ -1,7 +1,7 @@
 #include <nethost.h>
 #include <coreclr_delegates.h>
 #include <hostfxr.h>
-#include <pybind11/embed.h>
+
 #include <iostream>
 
 #include "ScriptingEngine.h"
@@ -40,7 +40,7 @@ namespace Arcane
 
 
 		//////////////////////////////////////////////
-		//// Core Classes
+		//// Core Classes 
 		//////////////////////////////////////////////
 		py::class_<InputManager>(m, "InputManager")
 			.def("GetKeyPressed", &InputManager::GetKeyPressed)
@@ -56,8 +56,7 @@ namespace Arcane
 		py::print("Hello from python interp");
 
 		// Append Working Dir to path
-		py::module_ sys = py::module_::import("sys");
-		sys.attr("path").attr("append")("C:\\Projects\\BasicGame\\Scripts");
+		m_SystemModule = py::module_::import("sys");
 		auto arcanePythonModule = py::module::import("ArcanePythonModule");
 	}
 
@@ -91,5 +90,15 @@ namespace Arcane
 	void ScriptingEngine::Shutdown()
 	{
 		py::finalize_interpreter();
+	}
+
+	void ScriptingEngine::AddScriptLocation(std::string scriptLocation)
+	{
+		bool is_in = m_ScriptLocations.find(scriptLocation) != m_ScriptLocations.end();
+
+		if (!is_in) {
+			m_ScriptLocations.insert(scriptLocation);
+			m_SystemModule.attr("path").attr("append")(scriptLocation);
+		}
 	}
 }
