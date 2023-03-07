@@ -68,7 +68,6 @@ void FileBrowserPanel::OnUpdate()
 					AssetInfo newInfo;
 					newInfo.id = path.second.assetID;
 					newInfo.name = path.second.name;
-
 					ImGui::SetDragDropPayload("CURRENT_SELECTED_ASSET", &newInfo, sizeof(AssetInfo));
 					ImGui::EndDragDropSource();
 				}
@@ -122,7 +121,7 @@ void FileBrowserPanel::OnUpdate()
 std::string FileBrowserPanel::GetIconType(std::string extension)
 {
 	if (extension == ".jpg" || extension == ".jpeg" || extension == ".png") {
-		return "Image";
+		return "Image"; 
 	}
 
 	if (extension == ".arcanemat") {

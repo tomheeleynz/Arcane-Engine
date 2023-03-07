@@ -67,6 +67,38 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		ImGui::InputFloat3("Scale", glm::value_ptr(component.scale));
 	});
 
+	DrawComponent<CameraComponent>("Camera", entity, [](auto& component) {
+		ImGui::Checkbox("Is Primary:", &component.isPrimary);
+		const char* items[] = { "Orthographic", "Perspective" };
+		int chosenID = 0;
+
+		// Display Combo box
+		const char* combo_label = items[chosenID];
+
+		if (ImGui::BeginCombo("Camera Type", combo_label))
+		{
+			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+			{
+				const bool is_selected = (chosenID == n);
+
+				if (ImGui::Selectable(items[n], is_selected)) {
+					chosenID = n;
+
+					if (chosenID == 0) {
+						component.type = CameraType::Orthographic;
+					}
+					else {
+						component.type = CameraType::Perspective;
+					}
+				}
+
+				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+	});
 
 	DrawComponent<MeshComponent>("Mesh", entity, [](auto& component) {
 		// Create something i can add to 
@@ -166,6 +198,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		DisplayAddComponentEntry<RigidBodyComponent>("Rigid Body");
 		DisplayAddComponentEntry<ScriptComponent>("Script");
 		DisplayAddComponentEntry<BoxColliderComponent>("Box Collider");
+		DisplayAddComponentEntry<CameraComponent>("Camera");
 		ImGui::EndPopup();
 	}
 
@@ -252,4 +285,8 @@ void EntityPanel::InitComponent<Arcane::MeshRendererComponent>()
 	m_Context.AddComponent<Arcane::MeshRendererComponent>();
 }
 
-
+template <>
+void EntityPanel::InitComponent<Arcane::CameraComponent>()
+{	
+	m_Context.AddComponent<Arcane::CameraComponent>();
+}

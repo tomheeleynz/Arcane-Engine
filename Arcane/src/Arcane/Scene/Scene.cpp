@@ -58,6 +58,41 @@ namespace Arcane
 
 	void Scene::OnUpdate(float deltaTime)
 	{
+		Camera* camera = nullptr;
+		{
+			auto view = m_Registry.view<CameraComponent, TransformComponent>();
+
+			for (auto& entity : view) {
+				auto& cameraComponent = m_Registry.get<CameraComponent>(entity);
+				auto& transformComponent = m_Registry.get<TransformComponent>(entity);
+
+				ViewData newData;
+				newData.CameraPosition = { 0.0f, 1.0f, 3.0f };
+				newData.CameraLookDir = { 0.0f, 0.0f, 0.0f };
+				newData.CameraUpDir = { 0.0f, 1.0f, 0.0f };
+
+				if (cameraComponent.isPrimary) {
+					if (cameraComponent.type == CameraType::Orthographic) {
+						if (cameraComponent.orthoCamera == nullptr)
+							cameraComponent.orthoCamera = new OrthoCamera(m_SceneRenderer->GetSceneSize().x, m_SceneRenderer->GetSceneSize().y);
+
+						cameraComponent.orthoCamera->SetViewData(newData);
+						camera = cameraComponent.orthoCamera;
+					}
+					else {
+						if (cameraComponent.perspectiveCamera == nullptr)
+							cameraComponent.perspectiveCamera = new PerspectiveCamera(m_SceneRenderer->GetSceneSize().x, m_SceneRenderer->GetSceneSize().y, 45.0f);
+						cameraComponent.perspectiveCamera->SetViewData(newData);
+						camera = cameraComponent.perspectiveCamera;
+					}
+				}
+			}
+		}
+
+		if (camera != nullptr) {
+			m_SceneRenderer->SetCamera(camera);
+		}
+
 		// Add Lights to scene
 		{
 			auto view = m_Registry.view<TransformComponent, LightComponent>();
@@ -93,6 +128,8 @@ namespace Arcane
 
 	void Scene::OnRuntimeUpdate(float deltaTime)
 	{
+		// Get Primary Camera in scene to render to
+
 		// Add Lights to scene
 		{
 			auto view = m_Registry.view<TransformComponent, LightComponent>();

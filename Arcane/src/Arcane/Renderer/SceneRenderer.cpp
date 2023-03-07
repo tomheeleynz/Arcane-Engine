@@ -351,6 +351,8 @@ namespace Arcane
 	}
 
 	void SceneRenderer::ResizeScene(uint32_t width, uint32_t height) {
+		m_SceneSize = { width, height };
+
 		// Update Geo Framebuffer
 		s_Data.GeometryFramebuffer->Resize(width, height);
 		s_Data.CompositeDescriptorSet->AddImageSampler(s_Data.GeometryFramebuffer, 1, 0);

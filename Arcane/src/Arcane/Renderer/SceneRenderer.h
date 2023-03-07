@@ -32,8 +32,11 @@ namespace Arcane
 		void SetDirectionalLight(LightComponent& light, TransformComponent& transform);
 
 		void ResizeScene(uint32_t width, uint32_t height);
+
+		glm::vec2 GetSceneSize() { return m_SceneSize; }
 	private:
 		void CompositeRenderPass();
 		void GeometryPass();
+		glm::vec2 m_SceneSize;
 	};
 }

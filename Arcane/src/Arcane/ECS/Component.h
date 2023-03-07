@@ -10,6 +10,7 @@
 #include "Arcane/Scripting/Script.h"
 #include "Arcane/Physics/RigidBody.h"
 #include "Arcane/Physics/BoxCollider.h"
+#include "Arcane/Renderer/Camera.h"
 
 namespace Arcane
 {
@@ -29,9 +30,18 @@ namespace Arcane
 		std::string tag;
 	};
 
+	enum class CameraType
+	{
+		Orthographic,
+		Perspective
+	};
+
 	struct CameraComponent
 	{
 		bool isPrimary = false;
+		OrthoCamera* orthoCamera;
+		PerspectiveCamera* perspectiveCamera;
+		CameraType type = CameraType::Perspective;
 	};
 
 	struct TransformComponent
