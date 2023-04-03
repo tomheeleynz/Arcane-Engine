@@ -7,9 +7,6 @@ add_subdirectory(Arcane)
 # EnchantingTable Editor
 add_subdirectory(EnchantingTable)
 
-# Script Core
-add_subdirectory(Arcane-ScriptCore)
-
 # Vendor Libraries
 # -- GLFW 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)

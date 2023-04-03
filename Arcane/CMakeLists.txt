@@ -67,8 +67,33 @@ message(STATUS ${Python_INCLUDE_DIRS})
 message(STATUS ${Python_LIBRARIES})
 message(STATUS ${Python_LIBRARY_DIRS})
 
-# Add pybind as a subdirectory
+######################################################
+#### Creating Pybind Module 
+######################################################
+set(CMAKE_BUILD_TYPE Release)
 add_subdirectory("vendor/pybind11")
+
+PYBIND11_ADD_MODULE(ArcanePythonModule "./src/Arcane/Scripting/ScriptingEngine.cpp" "./src/Arcane/Core/InputManager.cpp")
+
+set_property(TARGET ArcanePythonModule PROPERTY CXX_STANDARD 17)
+
+target_include_directories(
+	ArcanePythonModule
+	PRIVATE 
+	"src" 
+	"vendor/glm" 
+	"vendor/stb" 
+	"vendor/entt/single_include" 
+	"vendor/json/single_include" 
+	"vendor/pybind11/include"
+	"vendor/PhysX/physx/include"
+	"vendor/assimp/include"
+)
+
+set_target_properties(ArcanePythonModule PROPERTIES FOLDER "Core")
+
+set(CMAKE_BUILD_TYPE Debug)
+######################################################
 
 # Create Library
 add_library(
@@ -89,7 +114,8 @@ add_library(
 
 # Link Source Directories
 target_include_directories(
-	${PROJECT_NAME} PUBLIC 
+	${PROJECT_NAME} 
+	PUBLIC 
 	"src" 
 	"vendor/glm" 
 	"vendor/stb" 
@@ -104,7 +130,7 @@ target_include_directories(
 )
 
 # Link Libraries
-target_link_libraries(${PROJECT_NAME} ${LIBS} ${Python_LIBRARIES}  pybind11::embed ${PHYSX_LIBS})
+target_link_libraries(${PROJECT_NAME} ${LIBS} ${Python_LIBRARIES} pybind11::embed ${PHYSX_LIBS})
 
 # Set Folder
 set_target_properties(Arcane PROPERTIES FOLDER "Core")

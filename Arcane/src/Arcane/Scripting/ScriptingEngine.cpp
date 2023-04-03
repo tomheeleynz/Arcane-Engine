@@ -1,7 +1,3 @@
-#include <nethost.h>
-#include <coreclr_delegates.h>
-#include <hostfxr.h>
-
 #include <iostream>
 
 #include "ScriptingEngine.h"
@@ -13,8 +9,9 @@ namespace py = pybind11;
 
 namespace Arcane
 {
-	PYBIND11_EMBEDDED_MODULE(ArcanePythonModule, m) 
+	PYBIND11_MODULE(ArcanePythonModule, m) 
 	{
+		m.doc() = "Hello Doc String";
 		//////////////////////////////////////////////
 		//// Maths Classes
 		//////////////////////////////////////////////
@@ -33,12 +30,6 @@ namespace Arcane
 			.def_readwrite("rotation", &TransformComponent::rotation)
 			.def_readwrite("scale", &TransformComponent::scale);
 
-		
-		//////////////////////////////////////////////
-		//// Entity Class
-		//////////////////////////////////////////////
-
-
 		//////////////////////////////////////////////
 		//// Core Classes 
 		//////////////////////////////////////////////
@@ -53,11 +44,10 @@ namespace Arcane
 	{
 		py::initialize_interpreter();
 		
-		py::print("Hello from python interp");
-
 		// Append Working Dir to path
-		m_SystemModule = py::module_::import("sys");
-		auto arcanePythonModule = py::module::import("ArcanePythonModule");
+		py::module_ sys = py::module_::import("sys");
+		sys.attr("path").attr("append")("C:\\Projects\\BasicGame\\Scripts");
+		py::print(sys.attr("path"));
 	}
 
 	ScriptingEngine* ScriptingEngine::GetInstance()
