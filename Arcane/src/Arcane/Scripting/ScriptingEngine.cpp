@@ -48,6 +48,7 @@ namespace Arcane
 		py::module_ sys = py::module_::import("sys");
 		sys.attr("path").attr("append")("C:\\Projects\\BasicGame\\Scripts");
 		py::print(sys.attr("path"));
+
 	}
 
 	ScriptingEngine* ScriptingEngine::GetInstance()
