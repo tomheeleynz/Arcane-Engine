@@ -9,9 +9,10 @@ namespace py = pybind11;
 
 namespace Arcane
 {
-	PYBIND11_MODULE(ArcanePythonModule, m) 
+	PYBIND11_EMBEDDED_MODULE(ArcanePythonModule, m) 
 	{
 		m.doc() = "Hello Doc String";
+
 		//////////////////////////////////////////////
 		//// Maths Classes
 		//////////////////////////////////////////////
@@ -36,6 +37,10 @@ namespace Arcane
 		py::class_<InputManager>(m, "InputManager")
 			.def("GetKeyPressed", &InputManager::GetKeyPressed)
 			.def("GetKeyReleased", &InputManager::GetKeyReleased);
+
+		py::class_<Entity>(m, "Entity")
+			.def("GetTransformComponent", &Entity::GetComponent<TransformComponent>)
+			.def("HasTransformComponent", &Entity::HasComponent<TransformComponent>);
 	}
 
 	ScriptingEngine* ScriptingEngine::s_Instance = nullptr;
@@ -43,12 +48,14 @@ namespace Arcane
 	ScriptingEngine::ScriptingEngine()
 	{
 		py::initialize_interpreter();
-		
-		// Append Working Dir to path
-		py::module_ sys = py::module_::import("sys");
-		sys.attr("path").attr("append")("C:\\Projects\\BasicGame\\Scripts");
-		py::print(sys.attr("path"));
 
+		PyObject* sysPath = PySys_GetObject((char*)"path");
+		if (!sysPath)
+			PyErr_Print();
+		
+		int appendList = PyList_Append(sysPath, PyUnicode_FromString("C:\\Projects\\BasicGame\\Scripts"));
+		if (appendList != 0)
+			PyErr_Print();
 	}
 
 	ScriptingEngine* ScriptingEngine::GetInstance()
