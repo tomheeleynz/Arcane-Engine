@@ -4,14 +4,16 @@
 
 #include "Arcane/Core/InputManager.h"
 #include "Arcane/ECS/Entity.h"
+#include "Arcane/Scripting/PythonBindings.h"
 
 namespace py = pybind11;
 
 namespace Arcane
 {
-	PYBIND11_MODULE(ArcanePythonModule, m) 
+	PYBIND11_EMBEDDED_MODULE(ArcanePythonModule, m) 
 	{
-		m.doc() = "Hello Doc String";
+		m.doc() = "Arcane Python Module";
+
 		//////////////////////////////////////////////
 		//// Maths Classes
 		//////////////////////////////////////////////
@@ -36,6 +38,10 @@ namespace Arcane
 		py::class_<InputManager>(m, "InputManager")
 			.def("GetKeyPressed", &InputManager::GetKeyPressed)
 			.def("GetKeyReleased", &InputManager::GetKeyReleased);
+
+		py::class_<PyEntity>(m, "Entity")
+			.def(py::init<>())
+			.def_readwrite("id", &PyEntity::m_ID);
 	}
 
 	ScriptingEngine* ScriptingEngine::s_Instance = nullptr;
@@ -43,11 +49,15 @@ namespace Arcane
 	ScriptingEngine::ScriptingEngine()
 	{
 		py::initialize_interpreter();
-		
-		// Append Working Dir to path
-		py::module_ sys = py::module_::import("sys");
-		sys.attr("path").attr("append")("C:\\Projects\\BasicGame\\Scripts");
-		py::print(sys.attr("path"));
+
+		PyObject* sysPath = PySys_GetObject("path");
+
+		if (!sysPath)
+			PyErr_Print();
+
+		int insert = PyList_Append(sysPath, PyUnicode_FromString("C:\\Projects\\BasicGame\\Scripts"));
+		if (insert != 0)
+			PyErr_Print();
 	}
 
 	ScriptingEngine* ScriptingEngine::GetInstance()
@@ -84,11 +94,11 @@ namespace Arcane
 
 	void ScriptingEngine::AddScriptLocation(std::string scriptLocation)
 	{
-		bool is_in = m_ScriptLocations.find(scriptLocation) != m_ScriptLocations.end();
+		//bool is_in = m_ScriptLocations.find(scriptLocation) != m_ScriptLocations.end();
 
-		if (!is_in) {
-			m_ScriptLocations.insert(scriptLocation);
-			m_SystemModule.attr("path").attr("append")(scriptLocation);
-		}
+		//if (!is_in) {
+		//	m_ScriptLocations.insert(scriptLocation);
+		//	m_SystemModule.attr("path").attr("append")(scriptLocation);
+		//}
 	}
 }

@@ -173,8 +173,9 @@ void EditorLayer::OnImGuiRender()
 			}
 
 			if (Arcane::InputManager::GetKeyReleased(32)) {
-				if (m_State == SceneState::EDIT)
+				if (m_State == SceneState::EDIT) {
 					m_State = SceneState::PLAY;
+				}
 				else if (m_State == SceneState::PLAY) {
 					m_State = SceneState::EDIT;
 					m_ActiveScene->SetSceneCamera(m_EditorCamera);

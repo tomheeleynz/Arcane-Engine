@@ -22,6 +22,7 @@ namespace Arcane
 
 		void DeleteEntity(Entity& entity);
 
+		void OnStart();
 		void OnUpdate(float deltaTime);
 		void OnRuntimeUpdate(float deltaTime);
 

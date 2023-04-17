@@ -54,7 +54,7 @@ void ScenePanel::DrawNode(Arcane::Entity& entity)
 	// Get Tag Component of Entity
 	std::string tag = entity.GetComponent<Arcane::TagComponent>().tag;
 	
-	ImGuiTreeNodeFlags flags = ((m_SelectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+	ImGuiTreeNodeFlags flags = (((uint32_t)m_SelectedEntity == (uint32_t)entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 	flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 	
 	bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());

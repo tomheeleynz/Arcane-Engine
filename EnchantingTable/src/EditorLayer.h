@@ -52,5 +52,4 @@ private:
 
 	// Scene State
 	SceneState m_State = SceneState::EDIT;
-
 };

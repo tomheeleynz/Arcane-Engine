@@ -56,6 +56,22 @@ namespace Arcane
 		entity.DeleteEntity();
 	}
 
+	void Scene::OnStart() 
+	{
+		// Run start function of scripts
+		{
+			auto view = m_Registry.view<ScriptComponent>();
+			for (auto& entity : view) {
+				auto& scriptComponent = view.get<ScriptComponent>(entity);
+
+				if (scriptComponent.script != nullptr) {
+					Script* script = scriptComponent.script;
+					script->OnStart();
+				}
+			}
+		}
+	}
+
 	void Scene::OnUpdate(float deltaTime)
 	{
 		// Add Lights to scene
