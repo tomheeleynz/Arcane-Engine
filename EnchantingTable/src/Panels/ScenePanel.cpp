@@ -71,8 +71,6 @@ void ScenePanel::DrawNode(Arcane::Entity& entity)
 			ImGui::TreePop();
 		ImGui::TreePop();
 	}
-
-
 }
 
 Arcane::Entity& ScenePanel::CreateMeshEntity(MeshEntityType type)
