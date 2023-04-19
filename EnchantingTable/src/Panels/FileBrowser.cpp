@@ -132,7 +132,7 @@ std::string FileBrowserPanel::GetIconType(std::string extension)
 		return "Mesh";
 	}
 
-	if (extension == ".py") {
+	if (extension == ".cs") {
 		return "Script";
 	}
 

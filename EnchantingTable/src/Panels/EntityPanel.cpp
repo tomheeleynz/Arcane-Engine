@@ -172,8 +172,6 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 
 				if (scriptAsset != nullptr && scriptAsset->GetAssetType() == AssetType::SCRIPT) {
 					Script* script = static_cast<Script*>(scriptAsset);
-					script->SetEntityID((uint32_t)m_Context);
-					script->SetScriptScene(m_Context.GetScene());
 					component.script = script;
 				}
 			}

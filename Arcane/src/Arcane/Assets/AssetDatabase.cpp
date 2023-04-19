@@ -105,7 +105,7 @@ namespace Arcane
 			newTextureAsset->SetPath(currentAssetPath);
 			m_Assets[assetID] = newTextureAsset;
 		}
-		else if (currentAssetPath.extension() == ".py") {
+		else if (currentAssetPath.extension() == ".cs") {
 			// Get Name Of File
 			std::string scriptName = currentAssetPath.stem().string();
 
