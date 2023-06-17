@@ -132,7 +132,7 @@ std::string FileBrowserPanel::GetIconType(std::string extension)
 		return "Mesh";
 	}
 
-	if (extension == ".cs") {
+	if (extension == ".lua") {
 		return "Script";
 	}
 

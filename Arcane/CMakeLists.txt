@@ -61,13 +61,9 @@ if (APPLE)
 	message(STATUS "Compiling for apple")
 endif()
 
-# Find Python for scripting
-find_package (Python COMPONENTS Interpreter Development)
-message(STATUS ${Python_INCLUDE_DIRS})
-message(STATUS ${Python_LIBRARIES})
-message(STATUS ${Python_LIBRARY_DIRS})
-
-add_subdirectory("vendor/pybind11")
+# Try Find Lua
+list(APPEND CMAKE_PREFIX_PATH "vendor/lua")
+find_package(Lua REQUIRED)
 
 # Create Library
 add_library(
@@ -101,10 +97,11 @@ target_include_directories(
 	"vendor/pybind11/include"
 	${Python_INCLUDE_DIRS}
 	"vendor/PhysX/physx/include"
+	${LUA_INCLUDE_DIR}
 )
 
 # Link Libraries
-target_link_libraries(${PROJECT_NAME} ${LIBS} ${Python_LIBRARIES} pybind11::embed ${PHYSX_LIBS})
+target_link_libraries(${PROJECT_NAME} ${LIBS} ${PHYSX_LIBS} ${LUA_LIBRARIES})
 
 # Set Folder
 set_target_properties(Arcane PROPERTIES FOLDER "Core")

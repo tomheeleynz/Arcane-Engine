@@ -3,6 +3,14 @@
 #include <filesystem>
 
 #include "Arcane/Assets/Asset.h"
+#include "ScriptingEngine.h"
+
+extern "C"
+{
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
+}
 
 namespace Arcane
 {
@@ -14,5 +22,6 @@ namespace Arcane
 		void OnStart();
 		void OnUpdate(float deltaTime);
 	private:
+		lua_State* m_LuaState;
 	};
 }

@@ -105,9 +105,9 @@ namespace Arcane
 			newTextureAsset->SetPath(currentAssetPath);
 			m_Assets[assetID] = newTextureAsset;
 		}
-		else if (currentAssetPath.extension() == ".cs") {
+		else if (currentAssetPath.extension() == ".lua") {
 			// Get Name Of File
-			std::string scriptName = currentAssetPath.stem().string();
+			std::string scriptName = currentAssetPath.string();
 
 			// Create Script Asset
 			Script* newScriptAsset = new Script(scriptName);

@@ -9,6 +9,8 @@ namespace Arcane
 
 	ScriptingEngine::ScriptingEngine()
 	{
+		m_LuaState = luaL_newstate();
+		luaL_openlibs(m_LuaState);
 	}
 
 	ScriptingEngine* ScriptingEngine::GetInstance()
@@ -30,5 +32,15 @@ namespace Arcane
 
 	void ScriptingEngine::Shutdown()
 	{	
+	}
+
+	lua_State* ScriptingEngine::GetLuaState()
+	{
+		return GetInstance()->GetLuaStateImpl();
+	}
+
+	lua_State* ScriptingEngine::GetLuaStateImpl()
+	{
+		return m_LuaState;
 	}
 }
