@@ -26,15 +26,22 @@ if (WIN32 OR (UNIX AND NOT APPLE))
 
 	# Get the parent directory of the shaderc libraries (This might be different depending)
 	get_filename_component(SHADERC_PARENT_DIR ${Vulkan_shaderc_combined_LIBRARY} DIRECTORY)
-
+	set(SHADERC_DEBUG_LIB  "${SHADERC_PARENT_DIR}/shaderc_combinedd.lib")
+	set(SHADERC_RELEASE_LIB "${SHADERC_PARENT_DIR}/shaderc_combined.lib")
+	
 	# Set Physx Library Dir Location
 	set(PHYSX_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vendor/PhysX/physx/bin/win.x86_64.vc143.md/debug")
+	set(PHYSX_RELEASE_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vendor/PhysX/physx/bin/win.x86_64.vc143.mt/release")
 
 	# Get all the Physx Libraries I need
 	set(PHYSX_LIBS ${PHYSX_LIB_DIR}/PhysX_64.lib ${PHYSX_LIB_DIR}/PhysXCommon_64.lib ${PHYSX_LIB_DIR}/PhysXCooking_64.lib ${PHYSX_LIB_DIR}/PhysXFoundation_64.lib ${PHYSX_LIB_DIR}/PhysXExtensions_static_64.lib)
 
+	# Get Physx Release Libs
+	set(PHYSX_RELEASE_LIBS ${PHYSX_RELEASE_LIB_DIR}/PhysX_64.lib ${PHYSX_RELEASE_LIB_DIR}/PhysXCommon_64.lib 
+		${PHYSX_RELEASE_LIB_DIR}/PhysXCooking_64.lib ${PHYSX_RELEASE_LIB_DIR}/PhysXFoundation_64.lib ${PHYSX_RELEASE_LIB_DIR}/PhysXExtensions_static_64.lib)
+	
 	# Set Libraries
-	set(LIBS glfw imgui ${Vulkan_LIBRARIES} "${SHADERC_PARENT_DIR}/shaderc_combinedd.lib" assimp SPIRV-REFLECT glad ${OPENGL_LIBRARIES} spirv-cross-glsl)
+	set(LIBS glfw imgui ${Vulkan_LIBRARIES} assimp SPIRV-REFLECT glad ${OPENGL_LIBRARIES} spirv-cross-glsl)
 	
 	# set(LIBS glfw imgui ${Vulkan_LIBRARIES} "C:/VulkanSDK/1.3.216.0/Lib/shaderc_combinedd.lib" assimp SPIRV-REFLECT glad ${OPENGL_LIBRARIES} spirv-cross-glsl)
 
@@ -101,7 +108,9 @@ target_include_directories(
 )
 
 # Link Libraries
-target_link_libraries(${PROJECT_NAME} ${LIBS} ${PHYSX_LIBS} ${LUA_LIBRARIES})
+target_link_libraries(
+	${PROJECT_NAME} ${LIBS} ${SHADERC_DEBUG_LIB} ${PHYSX_LIBS} ${LUA_LIBRARIES} 
+)
 
 # Set Folder
 set_target_properties(Arcane PROPERTIES FOLDER "Core")

@@ -303,6 +303,17 @@ namespace Arcane {
 
     void VulkanSwapChain::RecreateSwapchain()
     {
+        int width = 0, height = 0;
+
+        Application& app = Application::Get();
+        GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
+        
+        glfwGetFramebufferSize(window, &width, &height);
+        while (width == 0 || height == 0) {
+            glfwGetFramebufferSize(window, &width, &height);
+            glfwWaitEvents();
+        }
+        
         vkDeviceWaitIdle(m_VulkanDevice->GetLogicalDevice());
 
         // Destroy Framebuffers
