@@ -32,6 +32,8 @@ namespace Arcane
 
 		ViewData& GetViewData() { return m_ViewData; }
 		void SetViewData(ViewData& data);
+
+		virtual void OnResize(uint32_t width, uint32_t height) {};
 	protected:
 		glm::mat4 m_View;
 		glm::mat4 m_Projection;
@@ -45,6 +47,7 @@ namespace Arcane
 	public:
 		OrthoCamera(uint32_t width, uint32_t height);
 
+		virtual void OnResize(uint32_t width, uint32_t height);
 	private:
 
 	};
@@ -54,7 +57,7 @@ namespace Arcane
 	public:
 		PerspectiveCamera(uint32_t width, uint32_t height, float angle);
 
-		void OnResize(uint32_t width, uint32_t height);
+		virtual void OnResize(uint32_t width, uint32_t height);
 		float GetAngle() { return m_Angle; }
 		void SetAngle(float angle) { m_Angle = angle; }
 	private:

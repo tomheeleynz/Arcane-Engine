@@ -59,13 +59,3 @@ void PerspectiveController::OnUpdate()
 	newData.CameraUpDir = m_Camera->GetViewData().CameraUpDir;
 	m_Camera->SetViewData(newData);
 }
-
-void PerspectiveController::SetCamera(Arcane::Camera* camera)
-{
-	m_Camera = camera;
-}
-
-Arcane::Camera* PerspectiveController::GetCamera()
-{
-	return m_Camera;
-}

@@ -24,6 +24,7 @@ namespace Arcane
 		Project(ProjectSpecs& specs);
 
 		std::filesystem::path GetWorkingPath() { return m_Specs.workingDir; }
+		DimensionType GetDimensionType() { return m_Specs.dimensionType; }
 	private:
 		ProjectSpecs m_Specs;
 	};

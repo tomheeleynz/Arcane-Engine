@@ -9,19 +9,6 @@
 #include "EditorLayer.h"
 #include "Panels/PanelStructs.h"
 
-struct TestVertex
-{
-	glm::vec3 position;
-	glm::vec3 color;
-	glm::vec2 texCoord;
-};
-
-struct UniformBufferObject
-{
-	glm::mat4 proj;
-	glm::mat4 view;
-};
-
 EditorLayer::EditorLayer()
 {
 
@@ -46,11 +33,22 @@ void EditorLayer::OnAttach()
 	m_MaterialViewerPanel = new MaterialViewerPanel();
 
 	// Setup Camera
-	m_EditorCamera = new Arcane::PerspectiveCamera(512, 512, 45.0f);
+	Arcane::DimensionType dimensionType = Arcane::Application::Get().GetProject()->GetDimensionType();
+
+	if (dimensionType == Arcane::DimensionType::TwoD)
+		m_EditorCamera = new Arcane::OrthoCamera(512, 512);
+	else
+		m_EditorCamera = new Arcane::PerspectiveCamera(512, 512, 45.0f);
+	
+	
 	m_ActiveScene->SetSceneCamera(m_EditorCamera);
 	
 	// Setup Camera Controller
-	m_EditorCameraController = new PerspectiveController();
+	if (dimensionType == Arcane::DimensionType::TwoD)
+		m_EditorCameraController = new OrthographicController();
+	else 
+		m_EditorCameraController = new PerspectiveController();
+	
 	m_EditorCameraController->SetCamera(m_EditorCamera);
 }
 

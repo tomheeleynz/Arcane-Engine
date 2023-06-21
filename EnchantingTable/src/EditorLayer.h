@@ -10,6 +10,7 @@
 #include "Panels/FileBrowser.h"
 #include "Panels/MaterialViewerPanel.h"
 #include "Controllers/PerspectiveController.h"
+#include "Controllers/OrthographicController.h"
 
 class EditorLayer : public Arcane::Layer
 {
@@ -47,8 +48,8 @@ private:
 	MaterialViewerPanel* m_MaterialViewerPanel;
 
 	// Editor Camera
-	Arcane::PerspectiveCamera* m_EditorCamera;
-	PerspectiveController* m_EditorCameraController;
+	Arcane::Camera* m_EditorCamera;
+	CameraController* m_EditorCameraController;
 
 	// Scene State
 	SceneState m_State = SceneState::EDIT;
