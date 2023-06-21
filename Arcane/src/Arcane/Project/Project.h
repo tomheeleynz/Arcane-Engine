@@ -5,10 +5,17 @@
 
 namespace Arcane
 {
+	enum class DimensionType 
+	{
+		TwoD,
+		ThreeD
+	};
+
 	struct ProjectSpecs 
 	{
 		std::filesystem::path workingDir;
 		std::string name;
+		DimensionType dimensionType;
 	};
 
 	class Project

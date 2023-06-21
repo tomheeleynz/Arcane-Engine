@@ -26,6 +26,15 @@ namespace Arcane
 		std::string workingDirPath = jsonObject["workingdir"];
 		newSpecs.workingDir = std::filesystem::path(workingDirPath);
 
+		// -- Whether to start up the project in 2D or 3D mode
+		std::string dimensionType = jsonObject["dimensiontype"];
+
+		if (dimensionType == "2D")
+			newSpecs.dimensionType = DimensionType::TwoD;
+		else
+			newSpecs.dimensionType = DimensionType::ThreeD;
+
+
 		Project* newProject = new Project(newSpecs);
 		return newProject;
 	}
