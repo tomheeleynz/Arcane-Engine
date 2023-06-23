@@ -8,6 +8,13 @@
 #include "Arcane/Renderer/Framebuffer.h"
 
 namespace Arcane {
+	struct VulkanColorAttachment 
+	{
+		VkDescriptorImageInfo imageInfo;
+		VkSampler imageSampler;
+	};
+
+
 	class VulkanFramebuffer : public Framebuffer
 	{
 	public:
@@ -23,6 +30,8 @@ namespace Arcane {
 
 		void Resize(uint32_t width, uint32_t height) override;
 
+
+		void* GetColorAttachment(uint32_t index = 0) override;
 	private:
 		void Create();
 
@@ -48,6 +57,8 @@ namespace Arcane {
 
 		VkRenderPass m_RenderPass;
 		VkFramebuffer m_Framebuffer;
+
+		std::vector<VulkanColorAttachment> m_ColorAttachments;
 		VkDescriptorImageInfo m_ImageDescriptor;
 		VkSampler m_ImageSampler;
 	};

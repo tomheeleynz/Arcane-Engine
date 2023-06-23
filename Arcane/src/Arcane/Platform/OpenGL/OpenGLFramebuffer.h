@@ -16,6 +16,8 @@ namespace Arcane
 		void UnBind();
 
 		uint32_t GetFramebufferID() { return m_FramebufferTexture; }
+
+		void* GetColorAttachment(uint32_t index = 0) { return nullptr; }
 	private:
 		uint32_t m_FBO;
 		uint32_t m_FramebufferTexture;

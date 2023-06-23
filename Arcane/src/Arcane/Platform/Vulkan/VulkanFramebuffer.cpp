@@ -119,7 +119,8 @@ namespace Arcane {
 					samplerInfo.maxLod = 1.0f;
 					samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 
-					if (vkCreateSampler(context->GetDevice().GetLogicalDevice(), &samplerInfo, nullptr, &m_ImageSampler) != VK_SUCCESS)
+					VkSampler imageSampler;
+					if (vkCreateSampler(context->GetDevice().GetLogicalDevice(), &samplerInfo, nullptr, &imageSampler) != VK_SUCCESS)
 					{
 						printf("Color Sampler Not Created in framebuffer\n");
 					}
@@ -151,10 +152,17 @@ namespace Arcane {
 
 					attachmentCount++;
 
-					m_ImageDescriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-					m_ImageDescriptor.imageView = attachment.ImageView;
-					m_ImageDescriptor.sampler = m_ImageSampler;
-				
+					VulkanColorAttachment newColorAttachment;
+
+					VkDescriptorImageInfo imageInfo;
+					imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+					imageInfo.imageView = attachment.ImageView;
+					imageInfo.sampler = imageSampler;
+
+					newColorAttachment.imageInfo = imageInfo;
+					newColorAttachment.imageSampler = imageSampler;
+
+					m_ColorAttachments.push_back(newColorAttachment);
 					break;
 				}
 				case FramebufferAttachmentType::R32_INT:
@@ -231,7 +239,8 @@ namespace Arcane {
 					samplerInfo.maxLod = 1.0f;
 					samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 
-					if (vkCreateSampler(context->GetDevice().GetLogicalDevice(), &samplerInfo, nullptr, &m_ImageSampler) != VK_SUCCESS)
+					VkSampler imageSampler;
+					if (vkCreateSampler(context->GetDevice().GetLogicalDevice(), &samplerInfo, nullptr, &imageSampler) != VK_SUCCESS)
 					{
 						printf("Color Sampler Not Created in framebuffer\n");
 					}
@@ -263,10 +272,17 @@ namespace Arcane {
 
 					attachmentCount++;
 
-					m_ImageDescriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-					m_ImageDescriptor.imageView = attachment.ImageView;
-					m_ImageDescriptor.sampler = m_ImageSampler;
+					VulkanColorAttachment newColorAttachment;
 
+					VkDescriptorImageInfo imageDescriptor;
+					imageDescriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+					imageDescriptor.imageView = attachment.ImageView;
+					imageDescriptor.sampler = imageSampler;
+
+					newColorAttachment.imageInfo = imageDescriptor;
+					newColorAttachment.imageSampler = imageSampler;
+
+					m_ColorAttachments.push_back(newColorAttachment);
 					break;
 				}
 				case FramebufferAttachmentType::DEPTH: 
@@ -436,7 +452,7 @@ namespace Arcane {
 		// Set Specs
 		m_Specs.Height = height;
 		m_Specs.Width = width;
-		m_Specs.AttachmentSpecs.m_Attachments = {FramebufferAttachmentType::COLOR, FramebufferAttachmentType::DEPTH};
+		// m_Specs.AttachmentSpecs.m_Attachments = {FramebufferAttachmentType::COLOR, FramebufferAttachmentType::DEPTH};
 
 		// Clear Things
 		m_Attachments.clear();
@@ -452,5 +468,10 @@ namespace Arcane {
 		
 		// Create new framebuffer
 		Create();
+	}
+
+	void* VulkanFramebuffer::GetColorAttachment(uint32_t index) 
+	{
+		return &m_ColorAttachments[index];
 	}
 }
