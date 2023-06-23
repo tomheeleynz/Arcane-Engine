@@ -19,7 +19,7 @@ namespace Arcane {
 
 		VkDescriptorImageInfo GetDescriptor() { return m_ImageDescriptor; }
 
-		FramebufferSpecifications GetSpecs() override { return m_Specs; }
+		FramebufferSpecifications& GetSpecs() override { return m_Specs; }
 
 		void Resize(uint32_t width, uint32_t height) override;
 

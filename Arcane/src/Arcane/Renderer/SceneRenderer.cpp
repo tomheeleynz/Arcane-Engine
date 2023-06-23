@@ -111,6 +111,7 @@ namespace Arcane
 		FramebufferSpecifications geometryFramebufferSpecs;
 		geometryFramebufferSpecs.AttachmentSpecs = {
 			FramebufferAttachmentType::COLOR,
+			FramebufferAttachmentType::R32_INT,
 			FramebufferAttachmentType::DEPTH
 		};
 

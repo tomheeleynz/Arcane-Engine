@@ -3,12 +3,14 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include <initializer_list>
+#include <vector>
 
 namespace Arcane {
 
 	enum class FramebufferAttachmentType
 	{
 		COLOR, 
+		R32_INT,
 		DEPTH
 	};
 
@@ -18,7 +20,7 @@ namespace Arcane {
 		FrameBufferAttachmentSpecs(std::initializer_list<FramebufferAttachmentType> attachments)
 			: m_Attachments(attachments) {}
 
-		std::initializer_list<FramebufferAttachmentType> m_Attachments;
+		std::vector<FramebufferAttachmentType> m_Attachments;
 	};
 
 	struct FramebufferSpecifications
@@ -32,7 +34,7 @@ namespace Arcane {
 	class Framebuffer
 	{
 	public:
-		virtual FramebufferSpecifications GetSpecs() = 0;
+		virtual FramebufferSpecifications& GetSpecs() = 0;
 		virtual void Resize(uint32_t width, uint32_t height) = 0;
 		static Framebuffer* Create(FramebufferSpecifications& specs);
 	private:

@@ -9,7 +9,7 @@ namespace Arcane
 	public:
 		OpenGLFramebuffer(FramebufferSpecifications& specs);
 
-		FramebufferSpecifications GetSpecs() override;
+		FramebufferSpecifications& GetSpecs() override;
 		void Resize(uint32_t width, uint32_t height) override;
 
 		void Bind();

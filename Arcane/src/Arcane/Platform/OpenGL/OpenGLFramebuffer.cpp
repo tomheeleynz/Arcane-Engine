@@ -30,7 +30,7 @@ namespace Arcane
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	FramebufferSpecifications OpenGLFramebuffer::GetSpecs()
+	FramebufferSpecifications& OpenGLFramebuffer::GetSpecs()
 	{
 		return m_Specs;
 	}
