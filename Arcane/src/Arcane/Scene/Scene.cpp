@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Scene.h"
 #include "Arcane/ECS/Entity.h"
+#include "Arcane/Core/Application.h"
 
 namespace Arcane
 {
@@ -74,38 +75,44 @@ namespace Arcane
 
 	void Scene::OnUpdate(float deltaTime)
 	{
-		// Add Lights to scene
+		if (Application::Get().GetProject()->GetDimensionType() == DimensionType::TwoD)
 		{
-			auto view = m_Registry.view<TransformComponent, LightComponent>();
-
-			for (auto& entity : view) 
+			m_SceneRenderer2D->RenderScene();
+		}
+		else {
+			// Add Lights to scene
 			{
-				auto& light = view.get<LightComponent>(entity);
-				auto& transform = view.get<TransformComponent>(entity);
-				
-				if (light.type == LightType::DIRECTIONAL) 
+				auto view = m_Registry.view<TransformComponent, LightComponent>();
+
+				for (auto& entity : view)
 				{
-					m_SceneRenderer->SetDirectionalLight(light, transform);
+					auto& light = view.get<LightComponent>(entity);
+					auto& transform = view.get<TransformComponent>(entity);
+
+					if (light.type == LightType::DIRECTIONAL)
+					{
+						m_SceneRenderer->SetDirectionalLight(light, transform);
+					}
 				}
 			}
-		}
 
-		// Render Mesh
-		{
-			auto view = m_Registry.view<MeshComponent, TransformComponent, MeshRendererComponent>();
-			for (auto& entity : view) 
+			// Render Mesh
 			{
-				auto& mesh = view.get<MeshComponent>(entity);
-				auto& transform = view.get<TransformComponent>(entity);
-				auto& meshRenderer = view.get<MeshRendererComponent>(entity);
+				auto view = m_Registry.view<MeshComponent, TransformComponent, MeshRendererComponent>();
+				for (auto& entity : view) 
+				{
+					auto& mesh = view.get<MeshComponent>(entity);
+					auto& transform = view.get<TransformComponent>(entity);
+					auto& meshRenderer = view.get<MeshRendererComponent>(entity);
 
-				if (mesh.mesh != nullptr && meshRenderer.material != nullptr && meshRenderer.material->GetShader() != nullptr)
-					m_SceneRenderer->SubmitMesh(mesh.mesh, transform, meshRenderer.material);
+					if (mesh.mesh != nullptr && meshRenderer.material != nullptr && meshRenderer.material->GetShader() != nullptr)
+						m_SceneRenderer->SubmitMesh(mesh.mesh, transform, meshRenderer.material);
+				}
 			}
-		}
 
-		m_SceneRenderer->RenderGrid(true);
-		m_SceneRenderer->RenderScene();
+			m_SceneRenderer->RenderGrid(true);
+			m_SceneRenderer->RenderScene();
+		}
 	}
 
 	void Scene::OnRuntimeUpdate(float deltaTime)
@@ -207,5 +214,12 @@ namespace Arcane
 
 		m_SceneRenderer->RenderGrid(false);
 		m_SceneRenderer->RenderScene();
+	}
+	void Scene::SetSceneCamera(Camera* sceneCamera)
+	{
+		if (Application::Get().GetProject()->GetDimensionType() == DimensionType::TwoD)
+			m_SceneRenderer2D->SetCamera(sceneCamera);
+		else 
+			m_SceneRenderer->SetCamera(sceneCamera);
 	}
 }

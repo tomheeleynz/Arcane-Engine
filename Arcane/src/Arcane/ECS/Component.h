@@ -11,6 +11,7 @@
 #include "Arcane/Physics/RigidBody.h"
 #include "Arcane/Physics/BoxCollider.h"
 #include "Arcane/Renderer/Camera.h"
+#include "Arcane/Renderer/Quad.h"
 
 namespace Arcane
 {
@@ -81,5 +82,13 @@ namespace Arcane
 	struct BoxColliderComponent
 	{
 		BoxCollider* boxCollider;
+	};
+
+	struct SpriteRenderer
+	{
+		Texture* sprite;
+		glm::vec3 color;
+		Material* material;
+		Quad* quad;
 	};
 }

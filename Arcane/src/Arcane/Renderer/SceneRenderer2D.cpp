@@ -1,7 +1,16 @@
-#include "SceneRenderer.h"
+#include "SceneRenderer2D.h"
+#include "Renderer.h"
 
 namespace Arcane
 {
+	struct RenderQuad
+	{
+		Quad* quad;
+		glm::vec3 color;
+		Material* material;
+		TransformComponent transform;
+	};
+
 	struct ScreenVertex
 	{
 		glm::vec3 position;
@@ -17,20 +26,14 @@ namespace Arcane
 	struct Model {
 		glm::mat4 transform;
 	};
-
-	struct DirectionaLight
+	
+	struct SceneRenderer2DData
 	{
-		alignas(16) glm::vec3 direction;
-		alignas(16) glm::vec3 color;
-	};
-
-	struct SceneRendererData
-	{
-		// Global Render Data
+		// Global uniforms
 		DescriptorSet* GlobalDescriptorSet;
 		UniformBuffer* GlobalUniformBuffer;
 
-		// Composite Render Pass
+		// Composite Renderpass
 		DescriptorSet* CompositeDescriptorSet;
 		Framebuffer* CompositeFramebuffer;
 		RenderPass* CompositeRenderPass;
@@ -47,43 +50,24 @@ namespace Arcane
 		DescriptorSet* GeometryPassDescriptorSet;
 		DescriptorSet* ObjectDescriptorSet;
 		UniformBuffer* ObjectUniformBuffer;
-		
-		// Test for new rendering
+
 		std::vector<DescriptorSet*> ObjectSets;
 		std::vector<UniformBuffer*> ObjectUniformBuffers;
-		
+
 		UniformBuffer* GeometryPassUniformBuffer;
 		Shader* GeometryShader;
 		VertexDescriptor* GeometryVertexDescriptor;
 
-		// -- Grid (rendered in geometry pipeline)
-		Pipeline* GridPipleine;
-		Shader* GridShader;
-		VertexDescriptor* GridVertexDescriptor;
-		VertexBuffer* GridVertexBuffer;
-		IndexBuffer* GridIndexBuffer;
-		
-		// Meshes to be rendererd
-		std::vector<Mesh*> Meshes;
-
-		// Transform for meshes
-		std::vector<TransformComponent> MeshTransforms;
-
-		// Materials for meshses
-		std::vector<Material*> materials;
+		std::vector<RenderQuad> Quads;
 
 		// Camera to render with
 		Camera* SceneCamera;
-
-		// Scene Lighting Stuff
-		LightComponent directionaLight;
-		TransformComponent directionalLightTransform;
 	};
 
-	static SceneRendererData s_Data;
+	static SceneRenderer2DData s_Data;
 
-	SceneRenderer::SceneRenderer()
-	{
+	SceneRenderer2D::SceneRenderer2D()
+	{		
 		///////////////////////////////////////////////////////////////
 		//// Global Render Data
 		///////////////////////////////////////////////////////////////
@@ -103,7 +87,6 @@ namespace Arcane
 			s_Data.GlobalUniformBuffer, 0, 0
 		);
 
-
 		///////////////////////////////////////////////////////////////
 		//// Geometry Renderpass
 		///////////////////////////////////////////////////////////////
@@ -114,7 +97,7 @@ namespace Arcane
 			FramebufferAttachmentType::DEPTH
 		};
 
-		geometryFramebufferSpecs.ClearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
+		geometryFramebufferSpecs.ClearColor = { 0.149f, 0.301f, 0.556f, 1.0f };
 		geometryFramebufferSpecs.Width = 512;
 		geometryFramebufferSpecs.Height = 512;
 		s_Data.GeometryFramebuffer = Framebuffer::Create(geometryFramebufferSpecs);
@@ -124,48 +107,11 @@ namespace Arcane
 		geometryRenderpassSpecs.TargetFramebuffer = s_Data.GeometryFramebuffer;
 		s_Data.GeometryRenderPass = RenderPass::Create(geometryRenderpassSpecs);
 
-		DescriptorSetSpecs geometryPassDescriptorSetSpecs;
-		geometryPassDescriptorSetSpecs.SetNumber = 1;
-		s_Data.GeometryPassDescriptorSet = DescriptorSet::Create(
-			geometryPassDescriptorSetSpecs, {
-				{0, 1, DescriptorType::UNIFORM_BUFFER, "Lights", DescriptorLocation::FRAGMENT}
-			}
-		);
-
-		s_Data.GeometryPassUniformBuffer = UniformBuffer::Create(sizeof(DirectionaLight));
-		s_Data.GeometryPassDescriptorSet->AddUniformBuffer(s_Data.GeometryPassUniformBuffer, 1, 0);
-
-		///////////////////////////////////////////////////////////////
-		//// Grid (Part of Geo Pass)
-		///////////////////////////////////////////////////////////////
-		s_Data.GridShader = ShaderLibrary::GetShader("Grid");
-
-		s_Data.GridVertexDescriptor = VertexDescriptor::Create({
-			VertexType::float3	
-		});
-
-		std::vector<glm::vec3> gridVertices = {
-			{-1.0f,-1.0f ,0.0f}, // Top Left
-			{ 1.0f,-1.0f, 0.0f}, // Top Right 
-			{ 1.0f, 1.0f, 0.0f}, // Bottom Right
-			{-1.0f, 1.0f, 0.0f} // Bottom Left
-		};
-
-		std::vector<uint32_t> gridIndices = {
-			0, 3, 1,
-			1, 3, 2
-		};
-
-		s_Data.GridVertexBuffer = VertexBuffer::Create(gridVertices.data(), sizeof(glm::vec3) * gridVertices.size());
-		s_Data.GridIndexBuffer = IndexBuffer::Create(gridIndices.data(), gridIndices.size());
-		s_Data.GridVertexBuffer->AddIndexBuffer(s_Data.GridIndexBuffer);
-
-		// Create Descriptor Sets
 		DescriptorSetSpecs objectSetSpecs;
 		objectSetSpecs.SetNumber = 3;
 		s_Data.ObjectDescriptorSet = DescriptorSet::Create(objectSetSpecs, {
-			{0, 1, DescriptorType::UNIFORM_BUFFER, "Transform Data", DescriptorLocation::VERTEX}
-		});
+			{0, 1, DescriptorType::UNIFORM_BUFFER, "Transform Data", DescriptorLocation::VERTEX} });
+		
 		s_Data.ObjectUniformBuffer = UniformBuffer::Create(sizeof(Model));
 		s_Data.ObjectDescriptorSet->AddUniformBuffer(s_Data.ObjectUniformBuffer, 3, 0);
 
@@ -178,20 +124,11 @@ namespace Arcane
 
 			s_Data.ObjectSets[i] = DescriptorSet::Create(newObjectSetSpecs, {
 				{0, 1, DescriptorType::UNIFORM_BUFFER, "Transform Data", DescriptorLocation::VERTEX}
-			});
+				});
 
 			s_Data.ObjectUniformBuffers[i] = UniformBuffer::Create(sizeof(Model));
 			s_Data.ObjectSets[i]->AddUniformBuffer(s_Data.ObjectUniformBuffers[i], 3, 0);
 		}
-
-
-		PipelineSpecification gridSpecs;
-		gridSpecs.renderPass = s_Data.GeometryRenderPass;
-		gridSpecs.descriptor = s_Data.GridVertexDescriptor;
-		gridSpecs.shader = s_Data.GridShader;
-		gridSpecs.DescriptorSets = {s_Data.GlobalDescriptorSet};
-		s_Data.GridPipleine = Pipeline::Create(gridSpecs);
-
 
 		///////////////////////////////////////////////////////////////
 		//// Composite Renderpass
@@ -234,14 +171,14 @@ namespace Arcane
 		s_Data.CompositeVertexDescriptor = VertexDescriptor::Create({
 			VertexType::float3,
 			VertexType::float2
-		});
+			});
 
 		// Create per pass Descriptor
 		DescriptorSetSpecs compositeSetSpecs;
 		compositeSetSpecs.SetNumber = 1;
 		s_Data.CompositeDescriptorSet = DescriptorSet::Create(compositeSetSpecs, {
 			{0, 1, DescriptorType::SAMPLER, "Geo Framebuffer Texture", DescriptorLocation::FRAGMENT}
-		});
+			});
 
 		s_Data.CompositeDescriptorSet->AddImageSampler(s_Data.GeometryFramebuffer, 1, 0);
 
@@ -253,71 +190,12 @@ namespace Arcane
 		s_Data.CompositeRenderPipeline = Pipeline::Create(compositePipelineSpecs);
 	}
 
-	Framebuffer* SceneRenderer::GetFinalRenderFramebuffer()
-	{
-		return s_Data.CompositeFramebuffer;
-	}
-
-	void SceneRenderer::CompositeRenderPass()
-	{
-		Renderer::BeginRenderPass(s_Data.CompositeRenderPass);
-		{
-			Renderer::RenderQuad(s_Data.CompositeVertexBuffer, s_Data.CompositeRenderPipeline, {s_Data.CompositeDescriptorSet});
-		}
-		Renderer::EndRenderPass(s_Data.CompositeRenderPass);
-	}
-
-	void SceneRenderer::GeometryPass()
-	{
-		DirectionaLight currentDirLight;
-		currentDirLight.direction = s_Data.directionalLightTransform.pos;
-		currentDirLight.color = s_Data.directionaLight.color;
-		s_Data.GeometryPassUniformBuffer->WriteData((void*)&currentDirLight, sizeof(DirectionaLight));
-
-		// Update any per pass resources
-		Renderer::BeginRenderPass(s_Data.GeometryRenderPass);
-		// 3D Geometry Pass
-		{
-			for (int i = 0; i < s_Data.Meshes.size(); i++)
-			{
-				Mesh* currentMesh = s_Data.Meshes[i];
-				Material* material = s_Data.materials[i];
-
-				// Create Transform Component
-				TransformComponent& currentMeshComponent = s_Data.MeshTransforms[i];
-
-				// Create Model Matrix
-				Model currentTransform;
-				currentTransform.transform = glm::translate(glm::mat4(1), currentMeshComponent.pos) *
-					glm::mat4(glm::quat(currentMeshComponent.rotation)) *
-					glm::scale(glm::mat4(1), currentMeshComponent.scale);
-
-				// Write to uniform buffer
-				s_Data.ObjectUniformBuffers[i]->WriteData((void*)&currentTransform, sizeof(Model));
-
-				for (int j = 0; j < currentMesh->GetSubMeshes().size(); j++) {
-					SubMesh* currentSubMesh = currentMesh->GetSubMeshes()[j];
-					Renderer::RenderMesh(currentSubMesh->GetVertexBuffer(), material->GetPipeline(), {
-						s_Data.GlobalDescriptorSet,
-						s_Data.GeometryPassDescriptorSet,
-						material->GetDescriptorSet(),
-						s_Data.ObjectSets[i]
-					});
-				}
-			}
-
-			if (m_RenderGrid)
-				Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, { s_Data.GlobalDescriptorSet });
-		}
-		Renderer::EndRenderPass(s_Data.GeometryRenderPass);
-	}
-
-	void SceneRenderer::RenderScene()
+	void SceneRenderer2D::RenderScene()
 	{
 		// Write to uniform buffer
 		CameraData currentFrameCameraData;
 		currentFrameCameraData.proj = s_Data.SceneCamera->GetProject();
-		
+
 		// Need to to this for vulkan coord system
 		currentFrameCameraData.proj[1][1] *= -1;
 		currentFrameCameraData.view = s_Data.SceneCamera->GetView();
@@ -327,31 +205,16 @@ namespace Arcane
 		GeometryPass();
 		CompositeRenderPass();
 
-		s_Data.Meshes.clear();
-		s_Data.MeshTransforms.clear();
-		s_Data.materials.clear();
+		s_Data.Quads.clear();
 	}
 
-	void SceneRenderer::SubmitMesh(Mesh* mesh, TransformComponent& transform, Material* material) 
-	{
-		s_Data.Meshes.push_back(mesh);
-		s_Data.MeshTransforms.push_back(transform);
-
-		// Set Renderpass to material
-		material->SetRenderPass(s_Data.GeometryRenderPass);
-		material->SetGlobalData(s_Data.GlobalDescriptorSet);
-		material->SetFrameData(s_Data.GeometryPassDescriptorSet);
-		material->SetDrawData(s_Data.ObjectDescriptorSet);
-		
-		s_Data.materials.push_back(material);
-	}
-
-	void SceneRenderer::SetCamera(Camera* camera)
+	void SceneRenderer2D::SetCamera(Camera* camera)
 	{
 		s_Data.SceneCamera = camera;
 	}
 
-	void SceneRenderer::ResizeScene(uint32_t width, uint32_t height) {
+	void SceneRenderer2D::ResizeScene(uint32_t width, uint32_t height)
+	{
 		m_SceneSize = { width, height };
 
 		// Update Geo Framebuffer
@@ -360,9 +223,46 @@ namespace Arcane
 		s_Data.CompositeFramebuffer->Resize(width, height);
 	}
 
-	void SceneRenderer::SetDirectionalLight(LightComponent& light, TransformComponent& transform)
+	void SceneRenderer2D::SubmitQuad(Quad* quad, TransformComponent& component, glm::vec3 color, Material* material)
 	{
-		s_Data.directionaLight = light;
-		s_Data.directionalLightTransform = transform;
+		RenderQuad newRenderQuad;
+		newRenderQuad.color = color;
+		newRenderQuad.material = material;
+		newRenderQuad.transform = component;
+		newRenderQuad.quad = quad;
+
+		s_Data.Quads.push_back(newRenderQuad);
+	}
+
+	Framebuffer* SceneRenderer2D::GetFinalRenderFramebuffer()
+	{
+		return s_Data.CompositeFramebuffer;
+	}
+
+	void SceneRenderer2D::CompositeRenderPass()
+	{
+		Renderer::BeginRenderPass(s_Data.CompositeRenderPass);
+		{
+			Renderer::RenderQuad(s_Data.CompositeVertexBuffer, s_Data.CompositeRenderPipeline, { s_Data.CompositeDescriptorSet });
+		}
+		Renderer::EndRenderPass(s_Data.CompositeRenderPass);
+	}
+
+	void SceneRenderer2D::GeometryPass()
+	{
+		Renderer::BeginRenderPass(s_Data.GeometryRenderPass);
+		{
+			/*	for (int i = 0; i < s_Data.Quads.size(); i++)  {
+				RenderQuad renderQuad = s_Data.Quads[i];
+
+				Model currentTransform;
+				currentTransform.transform = glm::translate(glm::mat4(1), renderQuad.transform.pos) *
+					glm::mat4(glm::quat(renderQuad.transform.rotation)) *
+					glm::scale(glm::mat4(1), renderQuad.transform.scale);
+
+				s_Data.ObjectUniformBuffers[i]->WriteData((void*)&currentTransform, sizeof(Model));
+			}*/
+		}
+		Renderer::EndRenderPass(s_Data.GeometryRenderPass);
 	}
 }

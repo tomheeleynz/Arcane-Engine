@@ -5,6 +5,7 @@
 
 #include "Arcane/ECS/Component.h"
 #include "Arcane/Renderer/SceneRenderer.h"
+#include "Arcane/Renderer/SceneRenderer2D.h"
 #include "Arcane/Assets/Asset.h"
 #include "Arcane/Physics/PhysicsEngine.h"
 
@@ -33,12 +34,14 @@ namespace Arcane
 		entt::registry m_Registry;
 
 		void SetSceneRenderer(SceneRenderer* sceneRenderer) { m_SceneRenderer = sceneRenderer; }
-		void SetSceneCamera(Camera* sceneCamera) { m_SceneRenderer->SetCamera(sceneCamera); }
+		void SetSceneRenderer2D(SceneRenderer2D* sceneRenderer) { m_SceneRenderer2D = sceneRenderer; }
+		void SetSceneCamera(Camera* sceneCamera);
 
 		void AddToPhyicsScene(physx::PxActor* actor) { m_PhysicsScene->addActor(*actor); }
 	private:
 		std::string m_Name;
 		SceneRenderer* m_SceneRenderer;
+		SceneRenderer2D* m_SceneRenderer2D;
 		physx::PxScene* m_PhysicsScene;
 		friend class Entity;
 	};

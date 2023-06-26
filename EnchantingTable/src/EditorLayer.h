@@ -40,6 +40,7 @@ private:
 	// Scene
 	Arcane::Scene* m_ActiveScene;
 	Arcane::SceneRenderer* m_SceneRenderer;
+	Arcane::SceneRenderer2D* m_SceneRenderer2D;
 
 	// Panels
 	ScenePanel* m_ScenePanel;
