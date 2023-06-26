@@ -46,8 +46,8 @@ namespace Arcane {
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Enable Docking for ImGui
 
 		float fontSize = 18.0f;
-		io.Fonts->AddFontFromFileTTF("src/EditorAssets/Fonts/opensans/OpenSans-Bold.ttf", fontSize);
-		io.FontDefault = io.Fonts->AddFontFromFileTTF("src/EditorAssets/Fonts/opensans/OpenSans-Regular.ttf", fontSize);
+		io.Fonts->AddFontFromFileTTF(".\\src\\EditorAssets\\Fonts\\opensans\\OpenSans-Bold.ttf", fontSize);
+		io.FontDefault = io.Fonts->AddFontFromFileTTF(".\\src\\EditorAssets\\Fonts\\opensans\\OpenSans-Regular.ttf", fontSize);
 
 		Application& app = Application::Get();
 		GLFWwindow* windowHandle = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());

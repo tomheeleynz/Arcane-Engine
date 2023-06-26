@@ -239,8 +239,8 @@ namespace Arcane
 		newRenderQuad.quad = quad;
 
 		material->SetRenderPass(s_Data.GeometryRenderPass);
-		material->SetFrameData(s_Data.GeometryPassDescriptorSet);
 		material->SetGlobalData(s_Data.GlobalDescriptorSet);
+		material->SetFrameData(s_Data.GeometryPassDescriptorSet);
 		material->SetDrawData(s_Data.ObjectDescriptorSet);
 
 		s_Data.Quads.push_back(newRenderQuad);
@@ -274,7 +274,12 @@ namespace Arcane
 
 				s_Data.ObjectUniformBuffers[i]->WriteData((void*)&currentTransform, sizeof(Model));
 
-				Renderer::RenderQuadWithMaterial(renderQuad.quad->GetVertexBuffer(), renderQuad.material->GetPipeline(), renderQuad.material);
+				Renderer::RenderQuad(renderQuad.quad->GetVertexBuffer(), renderQuad.material->GetPipeline(), {
+					s_Data.GlobalDescriptorSet,
+					s_Data.GeometryPassDescriptorSet,
+					renderQuad.material->GetDescriptorSet(),
+					s_Data.ObjectSets[i]
+				});
 			}
 		}
 		Renderer::EndRenderPass(s_Data.GeometryRenderPass);

@@ -9,11 +9,6 @@
 
 namespace Arcane
 {
-	// Struct to define each one of the descriptors a material holds
-	// This will reflect all of them, but stuff like global data or per object data wont be
-	// able to be accessed, and only the set 2 will be exposed
-	// as that is the set
-
 	class Material : public Asset
 	{
 	public:
