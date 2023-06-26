@@ -107,6 +107,13 @@ namespace Arcane
 		geometryRenderpassSpecs.TargetFramebuffer = s_Data.GeometryFramebuffer;
 		s_Data.GeometryRenderPass = RenderPass::Create(geometryRenderpassSpecs);
 
+
+		DescriptorSetSpecs geometryPassDescriptorSetSpecs;
+		geometryPassDescriptorSetSpecs.SetNumber = 1;
+		s_Data.GeometryPassDescriptorSet = DescriptorSet::Create(
+			geometryPassDescriptorSetSpecs, {}
+		);
+
 		DescriptorSetSpecs objectSetSpecs;
 		objectSetSpecs.SetNumber = 3;
 		s_Data.ObjectDescriptorSet = DescriptorSet::Create(objectSetSpecs, {
@@ -231,6 +238,11 @@ namespace Arcane
 		newRenderQuad.transform = component;
 		newRenderQuad.quad = quad;
 
+		material->SetRenderPass(s_Data.GeometryRenderPass);
+		material->SetFrameData(s_Data.GeometryPassDescriptorSet);
+		material->SetGlobalData(s_Data.GlobalDescriptorSet);
+		material->SetDrawData(s_Data.ObjectDescriptorSet);
+
 		s_Data.Quads.push_back(newRenderQuad);
 	}
 
@@ -252,7 +264,7 @@ namespace Arcane
 	{
 		Renderer::BeginRenderPass(s_Data.GeometryRenderPass);
 		{
-			/*	for (int i = 0; i < s_Data.Quads.size(); i++)  {
+			for (int i = 0; i < s_Data.Quads.size(); i++)  {
 				RenderQuad renderQuad = s_Data.Quads[i];
 
 				Model currentTransform;
@@ -261,7 +273,9 @@ namespace Arcane
 					glm::scale(glm::mat4(1), renderQuad.transform.scale);
 
 				s_Data.ObjectUniformBuffers[i]->WriteData((void*)&currentTransform, sizeof(Model));
-			}*/
+
+				Renderer::RenderQuadWithMaterial(renderQuad.quad->GetVertexBuffer(), renderQuad.material->GetPipeline(), renderQuad.material);
+			}
 		}
 		Renderer::EndRenderPass(s_Data.GeometryRenderPass);
 	}

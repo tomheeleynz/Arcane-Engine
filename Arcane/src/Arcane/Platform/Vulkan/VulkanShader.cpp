@@ -133,6 +133,13 @@ namespace Arcane {
 			ReflectModule(fragmentBytes, m_FragShaderModule);
 		}
 
+		std::sort(m_ShaderSets.begin(), m_ShaderSets.end(), [](ShaderSet& a, ShaderSet& b)->bool {
+			return a.SetNumber < b.SetNumber;
+		});
+
+		// Fill in missing sets if need be
+		FillMissingSets();
+
 		// Create Descriptor Sets
 		GenerateDescriptorSets();
 	}
@@ -302,6 +309,29 @@ namespace Arcane {
 			VulkanSet* vB = static_cast<VulkanSet*>(b);
 			return vA->GetSetNumber() < vB->GetSetNumber();
 		});
+	}
+
+	void VulkanShader::FillMissingSets()
+	{
+		for (int i = 1; i < m_ShaderSets.size() - 1; i++) {
+			int current = m_ShaderSets[i].SetNumber;
+			int previous = m_ShaderSets[i - 1].SetNumber;
+
+			 if (current != previous + 1) {
+				 int missing = previous + 1;
+
+				 ShaderSet newSet;
+				 newSet.SetNumber = missing;
+				 m_ShaderSets.push_back(newSet);
+
+			}
+		}
+
+		std::sort(m_ShaderSets.begin(), m_ShaderSets.end(), [](ShaderSet& a, ShaderSet& b)->bool {
+			return a.SetNumber < b.SetNumber;
+		});
+
+
 	}
 
 	std::vector<uint32_t> VulkanShader::CompileShader(const std::string& source_name, shaderc_shader_kind kind, const std::string& source, bool optimize)

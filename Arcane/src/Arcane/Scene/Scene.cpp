@@ -77,6 +77,15 @@ namespace Arcane
 	{
 		if (Application::Get().GetProject()->GetDimensionType() == DimensionType::TwoD)
 		{
+			auto view = m_Registry.view<TransformComponent, SpriteRenderer>();
+			for (auto& entity : view)
+			{
+				auto& spriteRenderer = view.get<SpriteRenderer>(entity);
+				auto& transform = view.get<TransformComponent>(entity);
+
+				if (spriteRenderer.material != nullptr && spriteRenderer.material->GetShader() != nullptr)
+					m_SceneRenderer2D->SubmitQuad(spriteRenderer.quad, transform, {1.0f, 1.0f, 1.0f}, spriteRenderer.material);
+			}
 			m_SceneRenderer2D->RenderScene();
 		}
 		else {

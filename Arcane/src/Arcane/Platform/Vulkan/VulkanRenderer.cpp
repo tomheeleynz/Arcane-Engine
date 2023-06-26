@@ -322,4 +322,47 @@ namespace Arcane {
 			vkCmdDrawIndexed(swapChainBuffers[i], indiceCount, 1, 0, 0, 0);
 		}
 	}
+	void VulkanRenderer::RenderQuadWithMaterial(VertexBuffer* buffer, Pipeline* pipeline, Material* material)
+	{
+		Application& app = Application::Get();
+
+		VulkanContext* _context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
+		VulkanSwapChain& swapChain = _context->GetSwapChain();
+
+		// Bind Pipeline for triangle to use
+		VulkanPipeline* vulkanPipeline = static_cast<VulkanPipeline*>(pipeline);
+		VkBuffer vulkanVertexBuffer = static_cast<VulkanVertexBuffer*>(buffer)->GetVertexBuffer();
+
+		// Get Index Buffer and count from vertex buffer
+		IndexBuffer* indexBuffer = buffer->GetIndexBuffer();
+		uint32_t indiceCount = indexBuffer->GetCount();
+		VkBuffer vulkanIndexBuffer = static_cast<VulkanIndexBuffer*>(indexBuffer)->GetIndexBuffer();
+
+		std::vector<VkCommandBuffer> swapChainBuffers = swapChain.GetCommandBuffers();
+
+		for (size_t i = 0; i < swapChainBuffers.size(); i++) {
+			// Bind Pipeline
+			vkCmdBindPipeline(swapChainBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline->GetPipeline());
+
+			// Bind Vertex Buffer
+			VkBuffer vertexBuffers[] = { vulkanVertexBuffer };
+			VkDeviceSize offsets[] = { 0 };
+			vkCmdBindVertexBuffers(swapChainBuffers[i], 0, 1, vertexBuffers, offsets);
+
+			// Iterate through all descriptor sets for this render, then bind them :)
+
+			for (int j = 0; j < material->GetDescriptorSets().size(); j++) {
+				VulkanSet* vulkanSet = static_cast<VulkanSet*>(material->GetDescriptorSets()[j]);
+
+				// Bind Descriptor Sets
+				vkCmdBindDescriptorSets(swapChainBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline->GetLayout(), 0, 1, &vulkanSet->GetDescriptorSets()[i], 0, nullptr);
+			}
+
+			// Bind Index Buffer
+			vkCmdBindIndexBuffer(swapChainBuffers[i], vulkanIndexBuffer, 0, VK_INDEX_TYPE_UINT32);
+
+			// Draw Vertices
+			vkCmdDrawIndexed(swapChainBuffers[i], indiceCount, 1, 0, 0, 0);
+		}
+	}
 }

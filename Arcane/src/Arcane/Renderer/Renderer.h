@@ -26,6 +26,7 @@ namespace Arcane {
 		static void RenderTriangle(VertexBuffer* buffer, Pipeline* pipeline);
 		static void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline);
 		static void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets);
+		static void RenderQuadWithMaterial(VertexBuffer* buffer, Pipeline* pipeline, Material* material);
 
 		// Render Mesh
 		static void RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets);

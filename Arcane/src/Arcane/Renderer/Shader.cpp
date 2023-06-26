@@ -86,6 +86,8 @@ namespace Arcane
 			".\\src\\EditorAssets\\Shaders\\ScreenFrag.spv"
 		);
 
+		m_Shaders["Sprite-Default"] = Shader::Create(".\\src\\EditorAssets\\Shaders\\Sprite.arcaneshader");
+
 		// m_Shaders["TestSingle"] = Shader::Create(".\\src\\EditorAssets\\Shaders\\Mesh.arcaneshader");
 	}
 

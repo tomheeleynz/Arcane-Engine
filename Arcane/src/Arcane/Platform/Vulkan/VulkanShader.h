@@ -33,6 +33,8 @@ namespace Arcane
 		bool CheckIfSetExists(uint32_t setNumber);
 		ShaderSet& GetExistingSet(uint32_t setNumber);
 		void GenerateDescriptorSets();
+
+		void FillMissingSets();
 	private:
 		VkShaderModule m_VertexShaderModule;
 		VkShaderModule m_FragShaderModule;

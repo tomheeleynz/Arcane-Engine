@@ -20,6 +20,7 @@ namespace Arcane
 
 		void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline) override;
 		void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets) override;
+		void RenderQuadWithMaterial(VertexBuffer* buffer, Pipeline* pipeline, Material* material) override;
 
 		void RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets) override;
 		void RenderMeshWithMaterial(VertexBuffer* buffer, Pipeline* pipeline, Material* materal) override;

@@ -179,6 +179,9 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		}
 	});
 
+	DrawComponent<SpriteRenderer>("Sprite Renderer", entity, [this](auto& component) {
+	});
+
 	DrawComponent<RigidBodyComponent>("Rigid Body", entity, [](auto& component) {
 		float currentMass = component.rigidBody->GetMass();
 		ImGui::InputFloat("Mass", &currentMass);
@@ -199,6 +202,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		DisplayAddComponentEntry<ScriptComponent>("Script");
 		DisplayAddComponentEntry<BoxColliderComponent>("Box Collider");
 		DisplayAddComponentEntry<CameraComponent>("Camera");
+		DisplayAddComponentEntry<SpriteRenderer>("Sprite Renderer");
 		ImGui::EndPopup();
 	}
 
@@ -289,4 +293,19 @@ template <>
 void EntityPanel::InitComponent<Arcane::CameraComponent>()
 {	
 	m_Context.AddComponent<Arcane::CameraComponent>();
+}
+
+
+template <>
+void EntityPanel::InitComponent<Arcane::SpriteRenderer>()
+{
+	// Generate Quad
+	Arcane::SpriteRenderer spriteRenderer;
+	spriteRenderer.color = {1.0f, 1.0f, 1.0f};
+	spriteRenderer.quad = new Arcane::Quad();
+
+	// Get default shader
+	spriteRenderer.material = Arcane::Material::Create(Arcane::ShaderLibrary::GetShader("Sprite-Default"));
+
+	m_Context.AddComponent<Arcane::SpriteRenderer>(spriteRenderer);
 }

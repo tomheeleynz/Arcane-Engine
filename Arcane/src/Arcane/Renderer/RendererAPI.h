@@ -35,6 +35,7 @@ namespace Arcane {
 		// -- Without Uniform Buffer
 		virtual void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline) = 0;
 		virtual void RenderQuad(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets) = 0;
+		virtual void RenderQuadWithMaterial(VertexBuffer* buffer, Pipeline* pipeline, Material* material) = 0;
 
 		// Mesh
 		virtual void RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets) = 0;

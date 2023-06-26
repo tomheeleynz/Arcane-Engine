@@ -163,6 +163,10 @@ namespace Arcane
 		indexBuffer->UnBind();
 	}
 
+	void OpenGLRenderer::RenderQuadWithMaterial(VertexBuffer* buffer, Pipeline* pipeline, Material* material)
+	{
+	}
+
 	void OpenGLRenderer::RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets)
 	{
 	}

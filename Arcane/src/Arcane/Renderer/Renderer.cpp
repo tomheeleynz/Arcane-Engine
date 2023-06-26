@@ -68,6 +68,11 @@ namespace Arcane {
 		s_RendererAPI->RenderQuad(buffer, pipeline, descriptorSets);
 	}
 
+	void Renderer::RenderQuadWithMaterial(VertexBuffer* buffer, Pipeline* pipeline, Material* material)
+	{
+		s_RendererAPI->RenderQuadWithMaterial(buffer, pipeline, material);
+	}
+
 	void Renderer::RenderMesh(VertexBuffer* buffer, Pipeline* pipeline, std::vector<DescriptorSet*> descriptorSets)
 	{
 		s_RendererAPI->RenderMesh(buffer, pipeline, descriptorSets);
