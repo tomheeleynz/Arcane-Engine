@@ -13,7 +13,12 @@ void ScenePanel::SetContext(Arcane::Scene* context)
 
 void ScenePanel::Update()
 {
-	ImGui::Begin("Scene");
+	std::string sceneName = "Default Scene";
+
+	if (m_Context->GetName() != "")
+		sceneName = m_Context->GetName();
+
+	ImGui::Begin(sceneName.c_str());
 	{
 		m_Context->m_Registry.each([this](auto entity) {
 			Arcane::Entity Entity(entity, this->m_Context);

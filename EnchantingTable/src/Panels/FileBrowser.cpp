@@ -94,6 +94,7 @@ void FileBrowserPanel::OnUpdate()
 	bool bCreateFolder = false;
 	bool bCreateMaterial = false;
 	bool bCreateScript = false;
+	bool bCreateScene = false;
 
 	// Create Menu for creating objects
 	if (ImGui::BeginPopupContextWindow(0, 1, false))
@@ -112,6 +113,10 @@ void FileBrowserPanel::OnUpdate()
 				bCreateScript = true;
 			}
 
+			if (ImGui::MenuItem("Scene")) {
+				bCreateScene = true;
+			}
+
 			ImGui::EndMenu();
 		}
 		ImGui::EndPopup();
@@ -128,6 +133,9 @@ void FileBrowserPanel::OnUpdate()
 
 	if (bCreateScript)
 		ImGui::OpenPopup("ScriptModal");
+
+	if (bCreateScene)
+		ImGui::OpenPopup("SceneModal");
 
 	if (ImGui::BeginPopupModal("CreateFolderModal", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
@@ -159,6 +167,17 @@ void FileBrowserPanel::OnUpdate()
 
 		if (ImGui::Button("Create Script")) {
 			CreateScript(std::string(buf1));
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+
+	if (ImGui::BeginPopupModal("SceneModal", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		static char buf1[64] = "";
+		ImGui::InputText("Scene Name", buf1, 64);
+
+		if (ImGui::Button("Create Scene")) {
+			CreateScene(std::string(buf1));
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
@@ -228,4 +247,17 @@ void FileBrowserPanel::CreateFolder(std::string name)
 {
 	std::filesystem::path newFolderPath = m_Watcher->GetDirectory() / name;
 	std::filesystem::create_directory(newFolderPath);
+}
+
+void FileBrowserPanel::CreateScene(std::string name)
+{
+	// Create File
+	std::filesystem::path newFilePath = m_Watcher->GetDirectory() / name;
+	newFilePath.replace_extension("arcanescene");
+	Arcane::SceneSerializer serializer(nullptr);
+	serializer.Serialize(newFilePath.string());
+	
+	// Add to database
+	Arcane::AssetDatabase& database = Arcane::Application::Get().GetAssetDatabase();
+	database.GenerateAsset(newFilePath, false);
 }

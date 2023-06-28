@@ -16,6 +16,7 @@ private:
 	void CreateMaterial(std::string name);
 	void CreateScript(std::string name);
 	void CreateFolder(std::string name);
+	void CreateScene(std::string name);
 private:
 	Arcane::FileWatcher* m_Watcher;
 	std::map<std::string, ImTextureID> m_Icons;

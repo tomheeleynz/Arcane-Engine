@@ -101,8 +101,9 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	});
 
 	DrawComponent<MeshComponent>("Mesh", entity, [](auto& component) {
-		// Create something i can add to 
-		ImGui::Text("Mesh");
+		static char buf1[64] = "";
+		ImGui::InputText("Mesh", buf1, 64);
+
 		if (ImGui::BeginDragDropTarget())
 		{
 			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
@@ -115,6 +116,8 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 				if (meshAsset != nullptr && meshAsset->GetAssetType() == AssetType::MESH) {
 					Mesh* mesh = static_cast<Mesh*>(meshAsset);
 					component.mesh = mesh;
+					memset(buf1, 0, sizeof(buf1));
+					std::strncpy(buf1, meshAsset->GetName().c_str(), sizeof(buf1));
 				}
 			}
 			ImGui::EndDragDropTarget();
@@ -124,7 +127,8 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 
 
 	DrawComponent<MeshRendererComponent>("Mesh Renderer", entity, [this](auto& component) {
-		ImGui::Text("Material");
+		static char buf1[64] = "";
+		ImGui::InputText("Material", buf1, 64);
 
 		if (ImGui::BeginDragDropTarget())
 		{
@@ -138,6 +142,8 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 				if (materialAsset != nullptr && materialAsset->GetAssetType() == AssetType::MATERIAL) {
 					Material* material = static_cast<Material*>(materialAsset);
 					component.material = material;
+					memset(buf1, 0, sizeof(buf1));
+					std::strncpy(buf1, materialAsset->GetName().c_str(), sizeof(buf1));
 				}
 			}
 			ImGui::EndDragDropTarget();

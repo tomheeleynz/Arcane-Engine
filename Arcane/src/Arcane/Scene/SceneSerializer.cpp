@@ -17,15 +17,20 @@ namespace Arcane
 		std::filesystem::path savePath(filepath);
 		nlohmann::json jsonObject;
 		
-		// Set Name of scene
-		jsonObject["name"] = m_Scene->GetName();
-		
-		nlohmann::json entityArray = nlohmann::json::array();
-		nlohmann::json entityObject = nlohmann::json::object();
 
-		//// Iterate through all entities and save them
-		m_Scene->m_Registry.each([&](auto entity) {
-			Entity sceneEntity(entity, m_Scene);
+		if (m_Scene == nullptr) {
+			jsonObject["name"] = savePath.stem().string();
+		}
+		else {
+			// Set Name of scene
+			jsonObject["name"] = m_Scene->GetName();
+
+			nlohmann::json entityArray = nlohmann::json::array();
+			nlohmann::json entityObject = nlohmann::json::object();
+
+			//// Iterate through all entities and save them
+			m_Scene->m_Registry.each([&](auto entity) {
+				Entity sceneEntity(entity, m_Scene);
 
 			if (sceneEntity.HasComponent<TagComponent>())
 			{
@@ -45,7 +50,7 @@ namespace Arcane
 				nlohmann::json position = { component.pos.x, component.pos.y, component.pos.z };
 				nlohmann::json rotation = { component.rotation.x, component.rotation.y, component.rotation.z };
 				nlohmann::json scale = { component.scale.x, component.scale.y, component.scale.z };
-				
+
 				transformObject["position"] = position;
 				transformObject["rotation"] = rotation;
 				transformObject["scale"] = scale;
@@ -57,10 +62,10 @@ namespace Arcane
 			{
 				MeshComponent component = sceneEntity.GetComponent<MeshComponent>();
 				nlohmann::json meshObject = nlohmann::json::object();
-				
+
 				meshObject["name"] = "Mesh";
 				meshObject["AssetID"] = component.mesh->GetID();
-				
+
 				componentArray.push_back(meshObject);
 			}
 
@@ -100,9 +105,11 @@ namespace Arcane
 
 			entityObject["Components"] = componentArray;
 			entityArray.push_back(entityObject);
-		});
+				});
 
-		jsonObject["Entities"] = entityArray;
+			jsonObject["Entities"] = entityArray;
+		}
+		
 
 		// Save json objet to file
 		std::ofstream o(savePath.string());
