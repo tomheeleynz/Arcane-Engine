@@ -40,6 +40,8 @@ void EditorLayer::OnAttach()
 	m_FileBrowserPanel = new FileBrowserPanel();
 	m_MaterialViewerPanel = new MaterialViewerPanel();
 
+	m_FileBrowserPanel->SetMaterialViewPanel(m_MaterialViewerPanel);
+
 	// Setup Camera
 	if (dimensionType == Arcane::DimensionType::TwoD)
 		m_EditorCamera = new Arcane::OrthoCamera(512, 512);

@@ -3,12 +3,16 @@
 #include <imgui.h>
 #include <string>
 
+#include "MaterialViewerPanel.h"
+
 class FileBrowserPanel
 {
 public:
 	FileBrowserPanel();
 
 	void OnUpdate();
+
+	void SetMaterialViewPanel(MaterialViewerPanel* panel) { m_MaterialViewPanel = panel; };
 private:
 	std::string GetIconType(std::string extension);
 
@@ -20,9 +24,13 @@ private:
 
 	// Import Asset Function
 	void ImportAsset(std::string fileLocation);
+
+
 private:
 	Arcane::FileWatcher* m_Watcher;
 	std::map<std::string, ImTextureID> m_Icons;
 
 	std::filesystem::path m_AssetPath;
+
+	MaterialViewerPanel* m_MaterialViewPanel = nullptr;
 };

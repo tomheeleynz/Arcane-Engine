@@ -67,7 +67,9 @@ void FileBrowserPanel::OnUpdate()
 					Arcane::AssetType type = Arcane::Application::Get().GetAssetDatabase().GetAsset(path.second.assetID)->GetAssetType();
 					
 					if (type == Arcane::AssetType::MATERIAL) {
-						std::cout << "Is Material" << std::endl;
+						Arcane::Material* material = static_cast<Arcane::Material*>(Arcane::Application::Get().GetAssetDatabase().GetAsset(path.second.assetID));
+						if (m_MaterialViewPanel != nullptr)
+							m_MaterialViewPanel->SetMaterial(material);
 					}
 				}
 				
