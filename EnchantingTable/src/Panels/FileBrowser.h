@@ -12,6 +12,10 @@ public:
 private:
 	std::string GetIconType(std::string extension);
 
+	// Creation Functions
+	void CreateMaterial(std::string name);
+	void CreateScript(std::string name);
+	void CreateFolder(std::string name);
 private:
 	Arcane::FileWatcher* m_Watcher;
 	std::map<std::string, ImTextureID> m_Icons;

@@ -2,8 +2,6 @@
 #include "Arcane.h"
 #include "PanelStructs.h"
 
-
-
 FileBrowserPanel::FileBrowserPanel()
 {
 	m_Watcher = new Arcane::FileWatcher(Arcane::Application::Get().GetProject()->GetWorkingPath().string(), std::chrono::milliseconds(5000));
@@ -37,7 +35,6 @@ FileBrowserPanel::FileBrowserPanel()
 void FileBrowserPanel::OnUpdate()
 {
 	m_Watcher->Update();
-	
 	ImGui::Begin("File Browser");
 	{
 		if (ImGui::Button("Back")) {
@@ -94,27 +91,79 @@ void FileBrowserPanel::OnUpdate()
 	}
 	ImGui::Columns(1);
 
-	// Popup to create new files 
-	if (ImGui::Button("Create Asset"))
-		ImGui::OpenPopup("CreateAsset");
+	bool bCreateFolder = false;
+	bool bCreateMaterial = false;
+	bool bCreateScript = false;
 
-	if (ImGui::BeginPopup("CreateAsset"))
+	// Create Menu for creating objects
+	if (ImGui::BeginPopupContextWindow(0, 1, false))
 	{
-		if (ImGui::MenuItem("New Material"))
-		{
-			std::string filename = Arcane::FileDialog::SaveFile();
+		if (ImGui::MenuItem("Create Folder")) {
+			bCreateFolder = true;
+		}
 
-			if (!filename.empty()) {
-				Arcane::MaterialSerializer serializer(nullptr);
-				serializer.Serialize(filename);
-				// Save asset to database
-				Arcane::Application::Get().GetAssetDatabase().GenerateAsset(std::filesystem::path(filename), true);
+		if (ImGui::BeginMenu("Create"))
+		{
+			if (ImGui::MenuItem("Material")) {
+				bCreateMaterial = true;
 			}
 
+			if (ImGui::MenuItem("Script")) {
+				bCreateScript = true;
+			}
+
+			ImGui::EndMenu();
+		}
+		ImGui::EndPopup();
+	}
+	
+	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+	if (bCreateFolder)
+		ImGui::OpenPopup("CreateFolderModal");
+	
+	if (bCreateMaterial)
+		ImGui::OpenPopup("MaterialModal");
+
+	if (bCreateScript)
+		ImGui::OpenPopup("ScriptModal");
+
+	if (ImGui::BeginPopupModal("CreateFolderModal", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		static char buf1[64] = ""; 
+		ImGui::InputText("Folder Name", buf1, 64);
+
+		if (ImGui::Button("CreateFolder")) {
+			CreateFolder(std::string(buf1));
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
+
+	if (ImGui::BeginPopupModal("MaterialModal", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		static char buf1[64] = "";
+		ImGui::InputText("Material Name", buf1, 64);
+
+		if (ImGui::Button("Create Material")) {
+			CreateMaterial(std::string(buf1));
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
 	}
+
+	if (ImGui::BeginPopupModal("ScriptModal", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		static char buf1[64] = "";
+		ImGui::InputText("Script Name", buf1, 64);
+
+		if (ImGui::Button("Create Script")) {
+			CreateScript(std::string(buf1));
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+
 	ImGui::End();
 }
 
@@ -145,4 +194,38 @@ std::string FileBrowserPanel::GetIconType(std::string extension)
 	}
 
 	return std::string();
+}
+
+void FileBrowserPanel::CreateMaterial(std::string name)
+{
+	// Create File
+	Arcane::MaterialSerializer serializer(nullptr);
+	std::filesystem::path newFilePath = m_Watcher->GetDirectory() / name;
+	newFilePath.replace_extension("arcanemat");
+
+	serializer.Serialize(newFilePath.string());
+
+	// Generate Asset
+	Arcane::AssetDatabase& database = Arcane::Application::Get().GetAssetDatabase();
+	database.GenerateAsset(newFilePath, false);
+}
+
+void FileBrowserPanel::CreateScript(std::string name)
+{
+	// Create File
+	std::filesystem::path newFilePath = m_Watcher->GetDirectory() / name;
+	newFilePath.replace_extension("lua");
+	
+	std::ofstream outfile(newFilePath);
+	outfile.close();
+
+	// Add Asset to asset database
+	Arcane::AssetDatabase& database = Arcane::Application::Get().GetAssetDatabase();
+	database.GenerateAsset(newFilePath, false);
+}
+
+void FileBrowserPanel::CreateFolder(std::string name)
+{
+	std::filesystem::path newFolderPath = m_Watcher->GetDirectory() / name;
+	std::filesystem::create_directory(newFolderPath);
 }

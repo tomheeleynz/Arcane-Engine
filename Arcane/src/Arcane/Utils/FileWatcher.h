@@ -34,6 +34,8 @@ namespace Arcane
 		void Update();
 		void GoToParentDirectory();
 
+		std::filesystem::path GetDirectory() { return std::filesystem::path(m_Directory); }
+
 		std::unordered_map<std::string, FileInfo> GetPaths() { return m_Paths; }
 	private:
 		uint64_t GetAssetID(std::filesystem::path metaPath);
