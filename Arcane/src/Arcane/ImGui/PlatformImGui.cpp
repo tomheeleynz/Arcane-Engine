@@ -28,8 +28,10 @@ namespace Arcane::UI
 
 	bool ImageButton(Texture* texture, ImVec2 size)
 	{
-		ImTextureID id = AddTexture(texture);
-		return ImGui::ImageButton(id, size);
+		VulkanTexture* vulkanTexture = static_cast<VulkanTexture*>(texture);
+		VkDescriptorImageInfo textureInfo = vulkanTexture->GetImageDescriptorInfo();
+
+		return ImGui::ImageButton((ImTextureID)ImGui_ImplVulkan_AddTexture(textureInfo.sampler, textureInfo.imageView, textureInfo.imageLayout), size);
 	}
 
 	ImTextureID AddTexture(Texture* texture)

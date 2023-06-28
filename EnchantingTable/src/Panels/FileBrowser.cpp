@@ -58,7 +58,18 @@ void FileBrowserPanel::OnUpdate()
 			if (!path.second.isDirectory) {
 				std::string iconType = GetIconType(path.second.relativePath.extension().string());
 
-				Arcane::UI::Image(m_Icons[iconType], {thumbnailSize, thumbnailSize});
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 1.0f, 1.0f, 0.3f));
+
+				ImGui::PushID(id);
+
+				if (Arcane::UI::ImageButton(m_Icons[iconType], { thumbnailSize, thumbnailSize })) {	
+					Arcane::AssetType type = Arcane::Application::Get().GetAssetDatabase().GetAsset(path.second.assetID)->GetAssetType();
+					
+					if (type == Arcane::AssetType::MATERIAL) {
+						std::cout << "Is Material" << std::endl;
+					}
+				}
 				
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
 					// Create Asset Info
@@ -69,6 +80,9 @@ void FileBrowserPanel::OnUpdate()
 					ImGui::EndDragDropSource();
 				}
 
+				ImGui::PopID();
+				id++;
+				ImGui::PopStyleColor(2);
 				ImGui::Text(path.second.relativePath.stem().string().c_str());
 			}
 			else {
@@ -91,16 +105,25 @@ void FileBrowserPanel::OnUpdate()
 	}
 	ImGui::Columns(1);
 
+	// Create Booleans
 	bool bCreateFolder = false;
 	bool bCreateMaterial = false;
 	bool bCreateScript = false;
 	bool bCreateScene = false;
+
+	// Import boolean
+	bool bImport = false;
+
 
 	// Create Menu for creating objects
 	if (ImGui::BeginPopupContextWindow(0, 1, false))
 	{
 		if (ImGui::MenuItem("Create Folder")) {
 			bCreateFolder = true;
+		}
+
+		if (ImGui::MenuItem("Import Asset")) {
+			bImport = true;
 		}
 
 		if (ImGui::BeginMenu("Create"))
@@ -136,6 +159,9 @@ void FileBrowserPanel::OnUpdate()
 
 	if (bCreateScene)
 		ImGui::OpenPopup("SceneModal");
+
+	if (bImport)
+		ImGui::OpenPopup("Import");
 
 	if (ImGui::BeginPopupModal("CreateFolderModal", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
@@ -178,6 +204,26 @@ void FileBrowserPanel::OnUpdate()
 
 		if (ImGui::Button("Create Scene")) {
 			CreateScene(std::string(buf1));
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+
+	if (ImGui::BeginPopupModal("Import", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		static char buf1[64] = "";
+		ImGui::InputText("File Location", buf1, 64);
+		
+		if (ImGui::Button("Open File")) {
+			std::string filename = Arcane::FileDialog::OpenFile();
+
+			if (!filename.empty()) {
+				memset(buf1, 0, sizeof(buf1));
+				std::strncpy(buf1, filename.c_str(), sizeof(buf1));
+			}
+		}
+
+		if (ImGui::Button("Import File")) {
+			ImportAsset(std::string(buf1));
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
@@ -260,4 +306,16 @@ void FileBrowserPanel::CreateScene(std::string name)
 	// Add to database
 	Arcane::AssetDatabase& database = Arcane::Application::Get().GetAssetDatabase();
 	database.GenerateAsset(newFilePath, false);
+}
+
+void FileBrowserPanel::ImportAsset(std::string fileLocation)
+{
+	std::filesystem::path from(fileLocation);
+	std::filesystem::path to = m_Watcher->GetDirectory() / from.stem().string();
+	to.replace_extension(from.extension());
+
+	std::filesystem::copy_file(from, to);
+
+	Arcane::AssetDatabase& database = Arcane::Application::Get().GetAssetDatabase();
+	database.GenerateAsset(to, false);
 }

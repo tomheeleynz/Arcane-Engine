@@ -11,7 +11,6 @@
 
 EditorLayer::EditorLayer()
 {
-
 }
 
 void EditorLayer::OnAttach()
