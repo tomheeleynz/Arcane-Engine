@@ -142,8 +142,17 @@ void FileBrowserPanel::OnUpdate()
 				bCreateScene = true;
 			}
 
+			if (ImGui::BeginMenu("Shader"))
+			{
+				if (ImGui::MenuItem("New Unlit Shader")) {
+				}
+
+				ImGui::EndMenu();
+			}
+
 			ImGui::EndMenu();
 		}
+
 		ImGui::EndPopup();
 	}
 	
