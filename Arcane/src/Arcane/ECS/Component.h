@@ -3,6 +3,8 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <Kinetics/Structures/PhysicsBody.h>
+
 #include "PxPhysicsAPI.h"
 
 #include "Arcane/Core/UUID.h"
@@ -90,5 +92,13 @@ namespace Arcane
 		glm::vec3 color;
 		Material* material;
 		Quad* quad;
+	};
+
+	struct RigidBody2DComponent 
+	{
+		Kinetics::Shape* m_Shape;
+		Kinetics::PhysicsBody* body;
+		glm::vec2 velocity;
+		float gravityScale;
 	};
 }

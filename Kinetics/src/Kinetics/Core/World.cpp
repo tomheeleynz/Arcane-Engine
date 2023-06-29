@@ -1,5 +1,5 @@
 #include "Kinetics/Core/World.h"
-
+#include <iostream>
 namespace Kinetics
 {
 	World::World()

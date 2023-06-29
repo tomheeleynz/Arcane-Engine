@@ -1,5 +1,5 @@
-#ifndef _CLOCK_H_
-#define _CLOCK_H_
+#ifndef _PHYSICSCLOCK_H_
+#define _PHYSICSCLOCK_H_
 
 // Library Includes
 #include <chrono>

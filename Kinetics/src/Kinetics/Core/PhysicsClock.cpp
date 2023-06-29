@@ -1,4 +1,4 @@
-#include "Kinetics/Core/Clock.h"
+#include "Kinetics/Core/PhysicsClock.h"
 
 namespace Kinetics
 {
@@ -8,7 +8,7 @@ namespace Kinetics
 // Local Includes
 
 // This Includes
-#include "Kinetics/Core/Clock.h"
+#include "Kinetics/Core/PhysicsClock.h"
 
 
 // Implementation
