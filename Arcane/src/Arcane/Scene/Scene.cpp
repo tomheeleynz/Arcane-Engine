@@ -25,7 +25,10 @@ namespace Arcane
 		sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
 		sceneDesc.cpuDispatcher = PhysicsEngine::GetDispatcher();
 		sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
+
 		m_PhysicsScene = PhysicsEngine::GetInstance()->GetPhysics()->createScene(sceneDesc);
+
+		m_SceneWorld = new Kinetics::World();
 	}
 
 	Entity* Scene::CreateEntity(std::string name)
@@ -104,6 +107,9 @@ namespace Arcane
 					}
 				}
 			}
+
+			// Sim Physics
+			m_SceneWorld->TimeStep(1.0f/60.0f);
 
 			// Render Mesh
 			{

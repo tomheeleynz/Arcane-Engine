@@ -21,6 +21,7 @@ private:
 	void CreateScript(std::string name);
 	void CreateFolder(std::string name);
 	void CreateScene(std::string name);
+	void CreateUnlitShader(std::string name);
 
 	// Import Asset Function
 	void ImportAsset(std::string fileLocation);

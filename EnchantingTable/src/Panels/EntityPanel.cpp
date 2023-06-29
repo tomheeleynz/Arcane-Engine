@@ -166,7 +166,9 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	});
 
 	DrawComponent<ScriptComponent>("Script", entity, [this](auto& component) {
-		ImGui::Text("Load Script");
+		static char buf1[64] = "";
+		ImGui::InputText("Script", buf1, 64);
+
 		if (ImGui::BeginDragDropTarget())
 		{
 			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
@@ -179,6 +181,8 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 				if (scriptAsset != nullptr && scriptAsset->GetAssetType() == AssetType::SCRIPT) {
 					Script* script = static_cast<Script*>(scriptAsset);
 					component.script = script;
+					memset(buf1, 0, sizeof(buf1));
+					std::strncpy(buf1, scriptAsset->GetName().c_str(), sizeof(buf1));
 				}
 			}
 			ImGui::EndDragDropTarget();

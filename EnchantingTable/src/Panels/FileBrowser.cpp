@@ -112,10 +112,10 @@ void FileBrowserPanel::OnUpdate()
 	bool bCreateMaterial = false;
 	bool bCreateScript = false;
 	bool bCreateScene = false;
+	bool bCreateUnlitShader = false;
 
 	// Import boolean
 	bool bImport = false;
-
 
 	// Create Menu for creating objects
 	if (ImGui::BeginPopupContextWindow(0, 1, false))
@@ -145,6 +145,7 @@ void FileBrowserPanel::OnUpdate()
 			if (ImGui::BeginMenu("Shader"))
 			{
 				if (ImGui::MenuItem("New Unlit Shader")) {
+					bCreateUnlitShader = true;
 				}
 
 				ImGui::EndMenu();
@@ -173,6 +174,9 @@ void FileBrowserPanel::OnUpdate()
 
 	if (bImport)
 		ImGui::OpenPopup("Import");
+	
+	if (bCreateUnlitShader)
+		ImGui::OpenPopup("Create Unlit Shader");
 
 	if (ImGui::BeginPopupModal("CreateFolderModal", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
@@ -235,6 +239,17 @@ void FileBrowserPanel::OnUpdate()
 
 		if (ImGui::Button("Import File")) {
 			ImportAsset(std::string(buf1));
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+
+	if (ImGui::BeginPopupModal("Create Unlit Shader", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		static char buf1[64] = "";
+		ImGui::InputText("Shader Name", buf1, 64);
+		
+		if (ImGui::Button("Create")) {
+			CreateUnlitShader(std::string(buf1));
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
@@ -315,6 +330,30 @@ void FileBrowserPanel::CreateScene(std::string name)
 	serializer.Serialize(newFilePath.string());
 	
 	// Add to database
+	Arcane::AssetDatabase& database = Arcane::Application::Get().GetAssetDatabase();
+	database.GenerateAsset(newFilePath, false);
+}
+
+void FileBrowserPanel::CreateUnlitShader(std::string name)
+{
+	// Create filepath
+	std::filesystem::path newFilePath = m_Watcher->GetDirectory() / name;
+	newFilePath.replace_extension("arcaneshader");
+
+	// Write Template to file 
+	std::fstream in(".\\src\\EditorAssets\\Templates\\ShaderTemplates\\UnlitShaderTemplate.txt", std::ios::in);
+	std::fstream out(newFilePath, std::ios::out);
+
+	std::string ch;
+	while(!in.eof()) {
+		std::getline(in, ch);
+		out << ch << std::endl;
+	}
+
+	in.close();
+	out.close();
+
+	// Add to asset database
 	Arcane::AssetDatabase& database = Arcane::Application::Get().GetAssetDatabase();
 	database.GenerateAsset(newFilePath, false);
 }

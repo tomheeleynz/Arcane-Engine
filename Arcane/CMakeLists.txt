@@ -108,9 +108,7 @@ target_include_directories(
 )
 
 # Link Libraries
-target_link_libraries(
-	${PROJECT_NAME} ${LIBS} ${SHADERC_DEBUG_LIB} ${PHYSX_LIBS} ${LUA_LIBRARIES} 
-)
+target_link_libraries(${PROJECT_NAME} ${LIBS} ${SHADERC_DEBUG_LIB} ${PHYSX_LIBS} ${LUA_LIBRARIES} Kinetics)
 
 # Set Folder
 set_target_properties(Arcane PROPERTIES FOLDER "Core")

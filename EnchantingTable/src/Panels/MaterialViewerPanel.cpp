@@ -80,8 +80,13 @@ void MaterialViewerPanel::DisplayMaterialVariable(Arcane::ShaderMember& member, 
 		if (type == Arcane::ShaderBindingType::SAMPLER) {
 			Arcane::Texture* texture = m_Material->GetTexture(binding);
 
-			if (texture == nullptr) 
+			if (texture == nullptr) {
+				texture = Arcane::Texture::Create(1.0f, 0.0f, 0.0f, 1.0f);
+				m_Material->WriteTexture(binding, texture);
+				
+				// Create a white texture
 				ImGui::Text(member.Name.c_str());
+			}
 			else
 				Arcane::UI::Image(texture);
 

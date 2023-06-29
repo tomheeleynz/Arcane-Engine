@@ -144,10 +144,10 @@ namespace Arcane
 		int i = 0;
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				colors[i] = 0;
-				colors[i + 1] = 1;
-				colors[i + 2] = 1;
-				colors[i + 3] = 1;
+				colors[i] = 255;
+				colors[i + 1] = 0;
+				colors[i + 2] = 0;
+				colors[i + 3] = 0;
 				i += 4;
 			}
 		}
@@ -242,7 +242,6 @@ namespace Arcane
 		m_ImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		m_ImageInfo.imageView = m_TextureImageView;
 		m_ImageInfo.sampler = m_TextureSampler;
-
 	}
 
 	void VulkanTexture::UpdateTexture(float r, float g, float b, float a)
@@ -253,17 +252,17 @@ namespace Arcane
 		int width = 256;
 		int height = 256;
 
-		float* colors = new float[(width * height) * 4];
+		uint8_t* colors = new uint8_t[(width * height) * 4];
 		VkBuffer stagingBuffer;
 		VkDeviceMemory stagingBufferMemory;
 
 		int i = 0;
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < height; x++) {
-				colors[i] = r;
-				colors[i + 1] = g;
-				colors[i + 2] = b;
-				colors[i + 3] = a;
+				colors[i] = 255;
+				colors[i + 1] = 0;
+				colors[i + 2] = 0;
+				colors[i + 3] = 255;
 				i += 4;
 			}
 		}
