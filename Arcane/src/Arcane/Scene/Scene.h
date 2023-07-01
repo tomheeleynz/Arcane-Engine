@@ -2,7 +2,6 @@
 
 #include <string>
 #include <entt/entt.hpp>
-#include <Kinetics/Core/World.h>
 
 #include "Arcane/ECS/Component.h"
 #include "Arcane/Renderer/SceneRenderer.h"

@@ -232,8 +232,8 @@ namespace Arcane
 	
 		VkDescriptorImageInfo imageInfo{};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = static_cast<VulkanColorAttachment*>(vulkanFamebuffer->GetColorAttachment(0))->imageInfo.imageView;
-		imageInfo.sampler = static_cast<VulkanColorAttachment*>(vulkanFamebuffer->GetColorAttachment(0))->imageSampler;
+		imageInfo.imageView = vulkanFamebuffer->GetDescriptor().imageView;
+		imageInfo.sampler = vulkanFamebuffer->GetDescriptor().sampler;
 
 		for (int i = 0; i < imageCount; i++) {
 			// Create a descriptor write, then update descriptor set

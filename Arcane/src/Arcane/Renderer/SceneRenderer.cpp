@@ -356,7 +356,7 @@ namespace Arcane
 
 		// Update Geo Framebuffer
 		s_Data.GeometryFramebuffer->Resize(width, height);
-		s_Data.CompositeDescriptorSet->AddImageSampler(s_Data.GeometryFramebuffer, 1, 0);
+		s_Data.CompositeDescriptorSet->AddImageSampler(s_Data.GeometryFramebuffer, 1,  0);
 		s_Data.CompositeFramebuffer->Resize(width, height);
 	}
 

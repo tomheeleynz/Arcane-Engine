@@ -119,8 +119,7 @@ namespace Arcane {
 					samplerInfo.maxLod = 1.0f;
 					samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 
-					VkSampler imageSampler;
-					if (vkCreateSampler(context->GetDevice().GetLogicalDevice(), &samplerInfo, nullptr, &imageSampler) != VK_SUCCESS)
+					if (vkCreateSampler(context->GetDevice().GetLogicalDevice(), &samplerInfo, nullptr, &m_ImageSampler) != VK_SUCCESS)
 					{
 						printf("Color Sampler Not Created in framebuffer\n");
 					}
@@ -145,24 +144,16 @@ namespace Arcane {
 					colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 					m_AttachmentsMap.insert({ FramebufferAttachmentType::COLOR, attachment });
-					m_AttachmentDescriptionMap.insert({FramebufferAttachmentType::COLOR, colorAttachment});
-					m_AttachmentReferenceMap.insert({FramebufferAttachmentType::COLOR, colorAttachmentRef});
-					
+					m_AttachmentDescriptionMap.insert({ FramebufferAttachmentType::COLOR, colorAttachment });
+					m_AttachmentReferenceMap.insert({ FramebufferAttachmentType::COLOR, colorAttachmentRef });
+
 					attachments[attachmentCount] = attachment.ImageView;
 
 					attachmentCount++;
 
-					VulkanColorAttachment newColorAttachment;
-
-					VkDescriptorImageInfo imageInfo;
-					imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-					imageInfo.imageView = attachment.ImageView;
-					imageInfo.sampler = imageSampler;
-
-					newColorAttachment.imageInfo = imageInfo;
-					newColorAttachment.imageSampler = imageSampler;
-
-					m_ColorAttachments.push_back(newColorAttachment);
+					m_ImageDescriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+					m_ImageDescriptor.imageView = attachment.ImageView;
+					m_ImageDescriptor.sampler = m_ImageSampler;
 					break;
 				}
 				case FramebufferAttachmentType::R32_INT:
@@ -345,27 +336,26 @@ namespace Arcane {
 					VkAttachmentDescription depthAttachment = {};
 					depthAttachment.format = VK_FORMAT_D32_SFLOAT;
 					depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-					depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;                         
-					depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;                     
-					depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;                
-					depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;              
-					depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;                      
+					depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+					depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+					depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+					depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+					depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 					depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
 					// Create Attachment Reference
 					VkAttachmentReference depthReference;
-					depthReference.attachment = attachmentCount;                                            
+					depthReference.attachment = attachmentCount;
 					depthReference.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
 
-					m_AttachmentsMap.insert({FramebufferAttachmentType::DEPTH, attachment});
+					m_AttachmentsMap.insert({ FramebufferAttachmentType::DEPTH, attachment });
 					m_AttachmentDescriptionMap.insert({ FramebufferAttachmentType::DEPTH, depthAttachment });
 					m_AttachmentReferenceMap.insert({ FramebufferAttachmentType::DEPTH, depthReference });
 
 					attachments[attachmentCount] = attachment.ImageView;
 
 					attachmentCount++;
-
 					break;
 				}
 			}	

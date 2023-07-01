@@ -98,9 +98,6 @@ namespace Arcane
 				}
 			}
 
-			// Sim Physics
-			m_SceneWorld->TimeStep(1.0f/60.0f);
-
 			// Render Mesh
 			{
 				auto view = m_Registry.view<MeshComponent, TransformComponent, MeshRendererComponent>();

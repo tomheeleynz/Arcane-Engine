@@ -127,32 +127,49 @@ namespace Arcane {
 			FramebufferSpecifications& framebufferSpecs = frameBuffer->GetSpecs();
 			int attachmentSize = framebufferSpecs.AttachmentSpecs.m_Attachments.size();
 	
-			std::vector<VkClearValue> clearValues;
-			clearValues.resize(attachmentSize);
+			//std::vector<VkClearValue> clearValues;
+			//clearValues.resize(attachmentSize);
 
-			for (int attachment = 0; attachment < attachmentSize; attachment++) {
-				FramebufferAttachmentType type = framebufferSpecs.AttachmentSpecs.m_Attachments[attachment];
+			//for (int attachment = 0; attachment < attachmentSize; attachment++) {
+			//	FramebufferAttachmentType type = framebufferSpecs.AttachmentSpecs.m_Attachments[attachment];
 
-				if (type == FramebufferAttachmentType::COLOR) {
-					if (renderToSwapchain) {
-						clearValues[attachment].color = { { 0.2f, 0.3f, 0.3f, 1.0f } };
-					}
-					else {
-						clearValues[attachment].color = { {
-							frameBuffer->GetSpecs().ClearColor.r,
-							frameBuffer->GetSpecs().ClearColor.g,
-							frameBuffer->GetSpecs().ClearColor.b,
-							frameBuffer->GetSpecs().ClearColor.a
-						} };
-					}
-				}
-				else if (type == FramebufferAttachmentType::R32_INT) {
-					clearValues[attachment].color = {-1, -1, -1, -1};
-				}
-				else if (type == FramebufferAttachmentType::DEPTH) {
-					clearValues[attachment].depthStencil = { 1.0f, 0 };
-				}
+			//	if (type == FramebufferAttachmentType::COLOR) {
+			//		if (renderToSwapchain) {
+			//			clearValues[attachment].color = { { 0.2f, 0.3f, 0.3f, 1.0f } };
+			//		}
+			//		else {
+			//			clearValues[attachment].color = { {
+			//				frameBuffer->GetSpecs().ClearColor.r,
+			//				frameBuffer->GetSpecs().ClearColor.g,
+			//				frameBuffer->GetSpecs().ClearColor.b,
+			//				frameBuffer->GetSpecs().ClearColor.a
+			//			} };
+			//		}
+			//	}
+			//	else if (type == FramebufferAttachmentType::R32_INT) {
+			//		clearValues[attachment].color = {-1, -1, -1, -1};
+			//	}
+			//	else if (type == FramebufferAttachmentType::DEPTH) {
+			//		clearValues[attachment].depthStencil = { 1.0f, 0 };
+			//	}
+			//}
+
+
+			std::array<VkClearValue, 2> clearValues;
+
+			if (renderToSwapchain) {
+				clearValues[0].color = { { 0.2f, 0.3f, 0.3f, 1.0f } };
 			}
+			else {
+				clearValues[0].color = { {
+					frameBuffer->GetSpecs().ClearColor.r,
+					frameBuffer->GetSpecs().ClearColor.g,
+					frameBuffer->GetSpecs().ClearColor.b,
+					frameBuffer->GetSpecs().ClearColor.a
+				} };
+			}
+
+			clearValues[1].depthStencil = { 1.0f, 0 };
 
 			renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 			renderPassInfo.pClearValues = clearValues.data();

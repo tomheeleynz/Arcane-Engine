@@ -70,4 +70,11 @@ namespace Arcane
 	{
 		Script* script;
 	};
+
+	struct SpriteRenderer
+	{
+		Quad* quad;
+		Material* material;
+		glm::vec3 color;
+	};
 }

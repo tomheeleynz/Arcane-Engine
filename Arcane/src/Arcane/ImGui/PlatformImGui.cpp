@@ -44,7 +44,7 @@ namespace Arcane::UI
 	ImTextureID AddTexture(Framebuffer* frameBuffer)
 	{
 		VulkanFramebuffer* vulkanFramebuffer = static_cast<VulkanFramebuffer*>(frameBuffer);
-		VkDescriptorImageInfo imageDescriptor = static_cast<VulkanColorAttachment*>(frameBuffer->GetColorAttachment(0))->imageInfo;
+		VkDescriptorImageInfo imageDescriptor = vulkanFramebuffer->GetDescriptor();
 		return ImGui_ImplVulkan_AddTexture(imageDescriptor.sampler, imageDescriptor.imageView, imageDescriptor.imageLayout);
 	}
 }
