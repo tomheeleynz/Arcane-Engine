@@ -452,7 +452,7 @@ namespace Arcane {
 		// Set Specs
 		m_Specs.Height = height;
 		m_Specs.Width = width;
-		// m_Specs.AttachmentSpecs.m_Attachments = {FramebufferAttachmentType::COLOR, FramebufferAttachmentType::DEPTH};
+		m_Specs.AttachmentSpecs.m_Attachments = {FramebufferAttachmentType::COLOR, FramebufferAttachmentType::DEPTH};
 
 		// Clear Things
 		m_Attachments.clear();

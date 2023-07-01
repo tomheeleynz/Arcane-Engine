@@ -6,7 +6,6 @@
 #include "Arcane/ECS/Component.h"
 #include "Arcane/Renderer/SceneRenderer.h"
 #include "Arcane/Assets/Asset.h"
-#include "Arcane/Physics/PhysicsEngine.h"
 
 namespace Arcane
 {
@@ -35,11 +34,9 @@ namespace Arcane
 		void SetSceneRenderer(SceneRenderer* sceneRenderer) { m_SceneRenderer = sceneRenderer; }
 		void SetSceneCamera(Camera* sceneCamera) { m_SceneRenderer->SetCamera(sceneCamera); }
 
-		void AddToPhyicsScene(physx::PxActor* actor) { m_PhysicsScene->addActor(*actor); }
 	private:
 		std::string m_Name;
 		SceneRenderer* m_SceneRenderer;
-		physx::PxScene* m_PhysicsScene;
 		friend class Entity;
 	};
 }

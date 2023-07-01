@@ -3,13 +3,10 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include "PxPhysicsAPI.h"
 
 #include "Arcane/Core/UUID.h"
 #include "Arcane/Renderer/Mesh.h"
 #include "Arcane/Scripting/Script.h"
-#include "Arcane/Physics/RigidBody.h"
-#include "Arcane/Physics/BoxCollider.h"
 #include "Arcane/Renderer/Camera.h"
 
 namespace Arcane
@@ -71,15 +68,5 @@ namespace Arcane
 	struct ScriptComponent
 	{
 		Script* script;
-	};
-
-	struct RigidBodyComponent
-	{
-		RigidBody* rigidBody;
-	};
-
-	struct BoxColliderComponent
-	{
-		BoxCollider* boxCollider;
 	};
 }

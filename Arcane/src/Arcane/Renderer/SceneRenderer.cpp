@@ -111,7 +111,6 @@ namespace Arcane
 		FramebufferSpecifications geometryFramebufferSpecs;
 		geometryFramebufferSpecs.AttachmentSpecs = {
 			FramebufferAttachmentType::COLOR,
-			FramebufferAttachmentType::R32_INT,
 			FramebufferAttachmentType::DEPTH
 		};
 
@@ -339,7 +338,6 @@ namespace Arcane
 
 		// Set Renderpass to material
 		material->SetRenderPass(s_Data.GeometryRenderPass);
-		
 		material->SetGlobalData(s_Data.GlobalDescriptorSet);
 		material->SetFrameData(s_Data.GeometryPassDescriptorSet);
 		material->SetDrawData(s_Data.ObjectDescriptorSet);
