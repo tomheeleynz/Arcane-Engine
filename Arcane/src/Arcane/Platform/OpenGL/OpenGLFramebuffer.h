@@ -9,13 +9,15 @@ namespace Arcane
 	public:
 		OpenGLFramebuffer(FramebufferSpecifications& specs);
 
-		FramebufferSpecifications GetSpecs() override;
+		FramebufferSpecifications& GetSpecs() override;
 		void Resize(uint32_t width, uint32_t height) override;
 
 		void Bind();
 		void UnBind();
 
 		uint32_t GetFramebufferID() { return m_FramebufferTexture; }
+
+		void* GetColorAttachment(uint32_t index = 0) { return nullptr; }
 	private:
 		uint32_t m_FBO;
 		uint32_t m_FramebufferTexture;

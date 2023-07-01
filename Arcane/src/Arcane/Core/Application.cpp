@@ -40,9 +40,6 @@ namespace Arcane {
 		// Init Scripting Engine
 		ScriptingEngine::Init();
 
-		// Init Physics Engine
-		PhysicsEngine::Init();
-
 		// Generate Asset Database on application startup
 		m_AssetDatabase = new AssetDatabase(m_Project->GetWorkingPath().string());
 		bool assetDatabaseGenerated = m_AssetDatabase->GenerateDatabase();

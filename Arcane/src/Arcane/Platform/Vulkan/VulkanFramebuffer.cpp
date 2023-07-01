@@ -119,7 +119,8 @@ namespace Arcane {
 					samplerInfo.maxLod = 1.0f;
 					samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 
-					if (vkCreateSampler(context->GetDevice().GetLogicalDevice(), &samplerInfo, nullptr, &m_ImageSampler) != VK_SUCCESS)
+					VkSampler imageSampler;
+					if (vkCreateSampler(context->GetDevice().GetLogicalDevice(), &samplerInfo, nullptr, &imageSampler) != VK_SUCCESS)
 					{
 						printf("Color Sampler Not Created in framebuffer\n");
 					}
@@ -151,10 +152,137 @@ namespace Arcane {
 
 					attachmentCount++;
 
-					m_ImageDescriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-					m_ImageDescriptor.imageView = attachment.ImageView;
-					m_ImageDescriptor.sampler = m_ImageSampler;
-				
+					VulkanColorAttachment newColorAttachment;
+
+					VkDescriptorImageInfo imageInfo;
+					imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+					imageInfo.imageView = attachment.ImageView;
+					imageInfo.sampler = imageSampler;
+
+					newColorAttachment.imageInfo = imageInfo;
+					newColorAttachment.imageSampler = imageSampler;
+
+					m_ColorAttachments.push_back(newColorAttachment);
+					break;
+				}
+				case FramebufferAttachmentType::R32_INT:
+				{
+					FrameBufferAttachment attachment = {};
+
+					// Image Create Info
+					VkImageCreateInfo imageCreateInfo = {};
+					imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+					imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
+					imageCreateInfo.format = VK_FORMAT_R32_SINT;
+					imageCreateInfo.extent.width = m_Specs.Width;
+					imageCreateInfo.extent.height = m_Specs.Height;
+					imageCreateInfo.extent.depth = 1;
+					imageCreateInfo.mipLevels = 1;
+					imageCreateInfo.arrayLayers = 1;
+					imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+					imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+					imageCreateInfo.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+
+					// Create Image color attachment
+					if (vkCreateImage(context->GetDevice().GetLogicalDevice(), &imageCreateInfo, nullptr, &attachment.Image) != VK_SUCCESS) {
+						printf("Framebuffer Color not created\n");
+					}
+
+					// Get Image Memory Requirmentes
+					VkMemoryRequirements memRequirements;
+					vkGetImageMemoryRequirements(context->GetDevice().GetLogicalDevice(), attachment.Image, &memRequirements);
+
+					VkMemoryAllocateInfo allocInfo{};
+					allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+					allocInfo.allocationSize = memRequirements.size;
+					allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+					if (vkAllocateMemory(context->GetDevice().GetLogicalDevice(), &allocInfo, nullptr, &attachment.ImageMemory) != VK_SUCCESS) {
+						printf("Framebuffer Color Image Memory Not Allocated\n");
+					}
+
+
+					if (vkBindImageMemory(context->GetDevice().GetLogicalDevice(), attachment.Image, attachment.ImageMemory, 0) != VK_SUCCESS) {
+						printf("Framebuffer Color Image Memory Not Bound\n");
+					}
+
+					// Create Image View
+					VkImageViewCreateInfo colorImageInfo = {};
+					colorImageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+					colorImageInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+					colorImageInfo.format = VK_FORMAT_R32_SINT;
+					colorImageInfo.subresourceRange = {};
+					colorImageInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+					colorImageInfo.subresourceRange.baseMipLevel = 0;
+					colorImageInfo.subresourceRange.levelCount = 1;
+					colorImageInfo.subresourceRange.baseArrayLayer = 0;
+					colorImageInfo.subresourceRange.layerCount = 1;
+					colorImageInfo.image = attachment.Image;
+
+					if (vkCreateImageView(context->GetDevice().GetLogicalDevice(), &colorImageInfo, nullptr, &attachment.ImageView) != VK_SUCCESS)
+					{
+						printf("Framebuffer Color Image View Not Created\n");
+					}
+
+					// Create Image 
+					VkSamplerCreateInfo samplerInfo{};
+					samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+					samplerInfo.magFilter = VK_FILTER_LINEAR;
+					samplerInfo.minFilter = VK_FILTER_LINEAR;
+					samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+					samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+					samplerInfo.addressModeV = samplerInfo.addressModeU;
+					samplerInfo.addressModeW = samplerInfo.addressModeU;
+					samplerInfo.mipLodBias = 0.0f;
+					samplerInfo.maxAnisotropy = 1.0f;
+					samplerInfo.minLod = 0.0f;
+					samplerInfo.maxLod = 1.0f;
+					samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+
+					VkSampler imageSampler;
+					if (vkCreateSampler(context->GetDevice().GetLogicalDevice(), &samplerInfo, nullptr, &imageSampler) != VK_SUCCESS)
+					{
+						printf("Color Sampler Not Created in framebuffer\n");
+					}
+
+					// Create Framebuffer Attachment
+					m_Attachments.push_back(attachment);
+
+					// Create Attachment Description
+					VkAttachmentDescription colorAttachment{};
+					colorAttachment.format = VK_FORMAT_R32_SINT;
+					colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+					colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+					colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+					colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+					colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+					colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+					colorAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+					// Create Attachment Reference
+					VkAttachmentReference colorAttachmentRef{};
+					colorAttachmentRef.attachment = attachmentCount;
+					colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+					m_AttachmentsMap.insert({ FramebufferAttachmentType::R32_INT, attachment });
+					m_AttachmentDescriptionMap.insert({ FramebufferAttachmentType::R32_INT, colorAttachment });
+					m_AttachmentReferenceMap.insert({ FramebufferAttachmentType::R32_INT, colorAttachmentRef });
+
+					attachments[attachmentCount] = attachment.ImageView;
+
+					attachmentCount++;
+
+					VulkanColorAttachment newColorAttachment;
+
+					VkDescriptorImageInfo imageDescriptor;
+					imageDescriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+					imageDescriptor.imageView = attachment.ImageView;
+					imageDescriptor.sampler = imageSampler;
+
+					newColorAttachment.imageInfo = imageDescriptor;
+					newColorAttachment.imageSampler = imageSampler;
+
+					m_ColorAttachments.push_back(newColorAttachment);
 					break;
 				}
 				case FramebufferAttachmentType::DEPTH: 
@@ -340,5 +468,10 @@ namespace Arcane {
 		
 		// Create new framebuffer
 		Create();
+	}
+
+	void* VulkanFramebuffer::GetColorAttachment(uint32_t index) 
+	{
+		return &m_ColorAttachments[index];
 	}
 }

@@ -19,16 +19,6 @@ namespace Arcane
 			newEntity->AddComponent<TransformComponent>();
 			newEntity->AddComponent<LightComponent>(LightType::DIRECTIONAL, glm::vec3(5.0f, 2.0f, 0.0f));
 		}
-
-		// Create Physics Scene to go along with scene
-		physx::PxSceneDesc sceneDesc(PhysicsEngine::GetPhysics()->getTolerancesScale());
-		sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
-		sceneDesc.cpuDispatcher = PhysicsEngine::GetDispatcher();
-		sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
-
-		m_PhysicsScene = PhysicsEngine::GetInstance()->GetPhysics()->createScene(sceneDesc);
-
-		m_SceneWorld = new Kinetics::World();
 	}
 
 	Entity* Scene::CreateEntity(std::string name)
@@ -184,10 +174,6 @@ namespace Arcane
 			}
 		}
 
-		// Do Physics Update Here
-		m_PhysicsScene->simulate(1.0f / 60.0f);
-		m_PhysicsScene->fetchResults(true);
-
 		// Run Update Scripts
 		{
 			auto view = m_Registry.view<ScriptComponent>();
@@ -198,17 +184,6 @@ namespace Arcane
 					Script* script = scriptComponent.script;
 					script->OnUpdate(deltaTime);
 				}
-			}
-		}
-
-		// Update position with physics
-		{
-			auto view = m_Registry.view<RigidBodyComponent, TransformComponent>();
-			for (auto& entity : view) {
-				auto& rigidBodyComponent = view.get<RigidBodyComponent>(entity);
-				auto& transformComponent = view.get<TransformComponent>(entity);
-
-				transformComponent.pos = rigidBodyComponent.rigidBody->GetPosition();
 			}
 		}
 
