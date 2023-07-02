@@ -144,10 +144,10 @@ namespace Arcane
 		int i = 0;
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				colors[i] = 255;
+				colors[i] = 255.0f;
 				colors[i + 1] = 0;
 				colors[i + 2] = 0;
-				colors[i + 3] = 0;
+				colors[i + 3] = 225.0f;
 				i += 4;
 			}
 		}

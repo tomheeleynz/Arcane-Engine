@@ -5,7 +5,6 @@
 
 MaterialViewerPanel::MaterialViewerPanel()
 {
-
 }
 
 void MaterialViewerPanel::OnUpdate()
@@ -15,7 +14,8 @@ void MaterialViewerPanel::OnUpdate()
 	
 	ImGui::Begin("Material Viewer");
 
-	ImGui::Text("Shader");
+	static char buf1[64] = "";
+	ImGui::InputText("Shader", buf1, 64);
 
 	if (ImGui::BeginDragDropTarget())
 	{
@@ -29,6 +29,8 @@ void MaterialViewerPanel::OnUpdate()
 			{
 				Shader* shader = static_cast<Shader*>(asset);
 				m_Material->SetShader(shader);
+				memset(buf1, 0, sizeof(buf1));
+				std::strncpy(buf1, asset->GetName().c_str(), sizeof(buf1));
 			}
 		}
 		ImGui::EndDragDropTarget();
