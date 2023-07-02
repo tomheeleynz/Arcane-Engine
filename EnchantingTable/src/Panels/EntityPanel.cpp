@@ -289,6 +289,14 @@ void EntityPanel::InitComponent<Arcane::RigidBody>()
 
 	Kinetics::DynamicBody* newBody = m_Context.GetScene()->AddDynamicBodyToPhysicsWorld(shapeDef, bodyDef);
 	
+	if (m_Context.HasComponent<Arcane::TransformComponent>()) {
+		newBody->SetPosition({
+			m_Context.GetComponent<Arcane::TransformComponent>().pos.x,
+			m_Context.GetComponent<Arcane::TransformComponent>().pos.y,
+			m_Context.GetComponent<Arcane::TransformComponent>().pos.z
+		});
+	}
+
 	rigidBody.body = newBody;
 	rigidBody.gravityScale = 1;
 	rigidBody.mass = bodyDef.mass;

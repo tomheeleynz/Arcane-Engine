@@ -198,6 +198,16 @@ namespace Arcane
 				auto& transform = view.get<TransformComponent>(entity);
 				auto& meshRenderer = view.get<MeshRendererComponent>(entity);
 
+				Entity entityHandle = Entity(entity, this);
+
+				if (entityHandle.HasComponent<RigidBody>()) {
+					transform.pos = {
+						entityHandle.GetComponent<RigidBody>().body->GetPosition().x,
+						entityHandle.GetComponent<RigidBody>().body->GetPosition().y,
+						entityHandle.GetComponent<RigidBody>().body->GetPosition().z,
+					};
+				}
+
 				if (mesh.mesh != nullptr && meshRenderer.material != nullptr && meshRenderer.material->GetShader() != nullptr)
 					m_SceneRenderer->SubmitMesh(mesh.mesh, transform, meshRenderer.material);
 			}
