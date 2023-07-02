@@ -2,6 +2,7 @@
 
 #include <string>
 #include <entt/entt.hpp>
+#include <Kinetics/Core/World.h>
 
 #include "Arcane/ECS/Component.h"
 #include "Arcane/Renderer/SceneRenderer.h"
@@ -36,10 +37,13 @@ namespace Arcane
 		void SetSceneRenderer2D(SceneRenderer2D* sceneRenderer) { m_SceneRenderer2D = sceneRenderer; }
 		void SetSceneCamera(Camera* sceneCamera);
 
+		Kinetics::DynamicBody* AddDynamicBodyToPhysicsWorld(Kinetics::ShapeDef shapeDef, Kinetics::BodyDef bodyDef);
+
 	private:
 		std::string m_Name;
 		SceneRenderer* m_SceneRenderer;
 		SceneRenderer2D* m_SceneRenderer2D;
+		Kinetics::World* m_PhysicsWorld;
 		friend class Entity;
 	};
 }

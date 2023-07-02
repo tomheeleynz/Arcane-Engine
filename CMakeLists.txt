@@ -4,9 +4,6 @@ project(ArcaneEngine)
 # Arcane Engine Library
 add_subdirectory(Arcane)
 
-# Kinetics Physicss Library
-add_subdirectory(Kinetics)
-
 # EnchantingTable Editor
 add_subdirectory(EnchantingTable)
 

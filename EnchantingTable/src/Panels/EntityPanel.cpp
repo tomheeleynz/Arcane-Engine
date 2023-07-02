@@ -192,6 +192,11 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	DrawComponent<SpriteRenderer>("Sprite Renderer", entity, [this](auto& component) {
 	});
 
+	DrawComponent<RigidBody>("Rigid Body", entity, [this](auto& component) {
+		ImGui::InputFloat("Gravity", &component.gravityScale);
+		ImGui::InputFloat("Mass", &component.mass);
+	});
+
 
 	ImGui::SameLine();
 	ImGui::PushItemWidth(-1);
@@ -206,6 +211,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		DisplayAddComponentEntry<ScriptComponent>("Script");
 		DisplayAddComponentEntry<CameraComponent>("Camera");
 		DisplayAddComponentEntry<SpriteRenderer>("Sprite Renderer");
+		DisplayAddComponentEntry<RigidBody>("Rigid Body");
 		ImGui::EndPopup();
 	}
 
@@ -266,4 +272,26 @@ void EntityPanel::InitComponent<Arcane::SpriteRenderer>()
 	spriteRenderer.material = Arcane::Material::Create(Arcane::ShaderLibrary::GetShader("Sprite-Default"));
 
 	m_Context.AddComponent<Arcane::SpriteRenderer>(spriteRenderer);
+}
+
+template <>
+void EntityPanel::InitComponent<Arcane::RigidBody>()
+{
+	Arcane::RigidBody rigidBody;
+	
+	// Shape Def
+	Kinetics::ShapeDef shapeDef;
+	shapeDef.type = Kinetics::ShapeType::BOX;
+
+	// Body Def 
+	Kinetics::BodyDef bodyDef;
+	bodyDef.mass = 1;
+
+	Kinetics::DynamicBody* newBody = m_Context.GetScene()->AddDynamicBodyToPhysicsWorld(shapeDef, bodyDef);
+	
+	rigidBody.body = newBody;
+	rigidBody.gravityScale = 1;
+	rigidBody.mass = bodyDef.mass;
+
+	m_Context.AddComponent<Arcane::RigidBody>(rigidBody);
 }

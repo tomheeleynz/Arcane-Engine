@@ -19,6 +19,8 @@ namespace Arcane
 			newEntity->AddComponent<TransformComponent>();
 			newEntity->AddComponent<LightComponent>(LightType::DIRECTIONAL, glm::vec3(5.0f, 2.0f, 0.0f));
 		}
+
+		m_PhysicsWorld = new Kinetics::World(-9.8f);
 	}
 
 	Entity* Scene::CreateEntity(std::string name)
@@ -184,6 +186,8 @@ namespace Arcane
 			}
 		}
 
+		// Update Physics Engine
+		m_PhysicsWorld->Step(1.0f / 60.0f);
 
 		// Render Mesh
 		{
@@ -208,5 +212,11 @@ namespace Arcane
 			m_SceneRenderer2D->SetCamera(sceneCamera);
 		else 
 			m_SceneRenderer->SetCamera(sceneCamera);
+	}
+
+	Kinetics::DynamicBody* Scene::AddDynamicBodyToPhysicsWorld(Kinetics::ShapeDef shapeDef, Kinetics::BodyDef bodyDef)
+	{
+		Kinetics::DynamicBody* newBody = m_PhysicsWorld->CreateDynamicBody(shapeDef, bodyDef);
+		return newBody;
 	}
 }

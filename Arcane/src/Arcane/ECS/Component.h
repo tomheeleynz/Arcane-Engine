@@ -3,6 +3,7 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <Kinetics/Core/DynamicBody.h>
 
 #include "Arcane/Core/UUID.h"
 #include "Arcane/Renderer/Mesh.h"
@@ -76,5 +77,12 @@ namespace Arcane
 		Quad* quad;
 		Material* material;
 		glm::vec3 color;
+	};
+
+	struct RigidBody
+	{
+		Kinetics::DynamicBody* body;
+		float mass;
+		float gravityScale;
 	};
 }

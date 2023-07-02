@@ -31,3 +31,6 @@
 [submodule "Arcane/vendor/PhysX"]
 	path = Arcane/vendor/PhysX
 	url = https://github.com/NVIDIA-Omniverse/PhysX.git
+[submodule "Arcane/vendor/Kinetics"]
+	path = Arcane/vendor/Kinetics
+	url = https://github.com/tomheeleynz/Kinetics.git
