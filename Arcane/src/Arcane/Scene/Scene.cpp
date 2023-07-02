@@ -186,6 +186,16 @@ namespace Arcane
 			}
 		}
 
+		// Set the mass and gravity scale of the rigid bodies
+		{
+			auto view = m_Registry.view<RigidBody>();
+
+			for (auto& entity : view) {
+				auto& rigidBodyComponent = view.get<RigidBody>(entity);
+				rigidBodyComponent.body->SetGravityScale(rigidBodyComponent.gravityScale);
+			}
+		}
+
 		// Update Physics Engine
 		m_PhysicsWorld->Step(1.0f / 60.0f);
 

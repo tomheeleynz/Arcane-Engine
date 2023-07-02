@@ -194,7 +194,10 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 
 	DrawComponent<RigidBody>("Rigid Body", entity, [this](auto& component) {
 		ImGui::InputFloat("Gravity", &component.gravityScale);
+		// Set dynamic body gravity scale
+
 		ImGui::InputFloat("Mass", &component.mass);
+		// set mass of component
 	});
 
 	DrawComponent<BoxCollider>("Box Collider", entity, [this](auto& component) {

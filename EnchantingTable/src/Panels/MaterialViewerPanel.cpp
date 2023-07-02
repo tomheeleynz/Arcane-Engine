@@ -49,12 +49,8 @@ void MaterialViewerPanel::OnUpdate()
 	
 	if (ImGui::Button("Save Material"))
 	{
-		std::string filename = Arcane::FileDialog::SaveFile();
-
-		if (!filename.empty()) {
-			Arcane::MaterialSerializer serializer(m_Material);
-			serializer.Serialize(filename);
-		}
+		Arcane::MaterialSerializer serializer(m_Material);
+		serializer.Serialize(m_Material->GetPath().string());
 	}
 
 	ImGui::End();
