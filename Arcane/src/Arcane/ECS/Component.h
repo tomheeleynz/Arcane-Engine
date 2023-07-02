@@ -85,4 +85,10 @@ namespace Arcane
 		float mass;
 		float gravityScale;
 	};
+
+	struct BoxCollider 
+	{
+		Kinetics::Shape* shape;
+		glm::vec3 center;
+	};
 }

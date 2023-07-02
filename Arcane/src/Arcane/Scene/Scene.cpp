@@ -224,9 +224,9 @@ namespace Arcane
 			m_SceneRenderer->SetCamera(sceneCamera);
 	}
 
-	Kinetics::DynamicBody* Scene::AddDynamicBodyToPhysicsWorld(Kinetics::ShapeDef shapeDef, Kinetics::BodyDef bodyDef)
+	Kinetics::DynamicBody* Scene::AddDynamicBodyToPhysicsWorld(Kinetics::BodyDef bodyDef)
 	{
-		Kinetics::DynamicBody* newBody = m_PhysicsWorld->CreateDynamicBody(shapeDef, bodyDef);
+		Kinetics::DynamicBody* newBody = m_PhysicsWorld->CreateDynamicBody(bodyDef);
 		return newBody;
 	}
 }

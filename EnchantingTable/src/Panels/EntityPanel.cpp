@@ -197,6 +197,9 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		ImGui::InputFloat("Mass", &component.mass);
 	});
 
+	DrawComponent<BoxCollider>("Box Collider", entity, [this](auto& component) {
+	});
+
 
 	ImGui::SameLine();
 	ImGui::PushItemWidth(-1);
@@ -212,12 +215,11 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		DisplayAddComponentEntry<CameraComponent>("Camera");
 		DisplayAddComponentEntry<SpriteRenderer>("Sprite Renderer");
 		DisplayAddComponentEntry<RigidBody>("Rigid Body");
+		DisplayAddComponentEntry<BoxCollider>("Box Collider");
 		ImGui::EndPopup();
 	}
 
 	ImGui::PopItemWidth();
-
-	
 }
 
 template<typename T>
@@ -278,16 +280,12 @@ template <>
 void EntityPanel::InitComponent<Arcane::RigidBody>()
 {
 	Arcane::RigidBody rigidBody;
-	
-	// Shape Def
-	Kinetics::ShapeDef shapeDef;
-	shapeDef.type = Kinetics::ShapeType::BOX;
 
 	// Body Def 
 	Kinetics::BodyDef bodyDef;
 	bodyDef.mass = 1;
 
-	Kinetics::DynamicBody* newBody = m_Context.GetScene()->AddDynamicBodyToPhysicsWorld(shapeDef, bodyDef);
+	Kinetics::DynamicBody* newBody = m_Context.GetScene()->AddDynamicBodyToPhysicsWorld(bodyDef);
 	
 	if (m_Context.HasComponent<Arcane::TransformComponent>()) {
 		newBody->SetPosition({
@@ -297,9 +295,37 @@ void EntityPanel::InitComponent<Arcane::RigidBody>()
 		});
 	}
 
+	if (m_Context.HasComponent<Arcane::BoxCollider>()) {
+		newBody->SetShape(m_Context.GetComponent<Arcane::BoxCollider>().shape);
+	}
+
 	rigidBody.body = newBody;
 	rigidBody.gravityScale = 1;
 	rigidBody.mass = bodyDef.mass;
 
 	m_Context.AddComponent<Arcane::RigidBody>(rigidBody);
+}
+
+template<>
+void EntityPanel::InitComponent<Arcane::BoxCollider>()
+{
+	Arcane::BoxCollider collider;
+
+	collider.shape = new Kinetics::Shape({ Kinetics::ShapeType::BOX });
+
+	// Need to set bouding box when creating a box collider 
+	if (m_Context.HasComponent<Arcane::MeshComponent>()) {
+		Arcane::BoundingBox& generatedBox = m_Context.GetComponent<Arcane::MeshComponent>().mesh->GetBoundingBox();
+		
+		Kinetics::Vec3 min = { generatedBox.bbMin.x, generatedBox.bbMin.y, generatedBox.bbMin.z };
+		Kinetics::Vec3 max = { generatedBox.bbMax.x, generatedBox.bbMax.y, generatedBox.bbMax.z };
+
+		collider.shape->SetBoundingBoxDimensions(min, max);
+	}
+
+
+	if (m_Context.HasComponent<Arcane::RigidBody>())
+		m_Context.GetComponent<Arcane::RigidBody>().body->SetShape(collider.shape);
+
+	m_Context.AddComponent<Arcane::BoxCollider>(collider);
 }

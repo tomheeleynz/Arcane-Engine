@@ -54,6 +54,9 @@ if (APPLE)
 	message(STATUS "Compiling for apple")
 endif()
 
+# Add kinetics library
+add_subdirectory("vendor/Kinetics")
+
 # Try Find Lua
 list(APPEND CMAKE_PREFIX_PATH "vendor/lua")
 find_package(Lua REQUIRED)
@@ -92,9 +95,7 @@ target_include_directories(
 )
 
 # Link Libraries
-target_link_libraries(
-	${PROJECT_NAME} ${LIBS} ${SHADERC_DEBUG_LIB} ${LUA_LIBRARIES} 
-)
+target_link_libraries( ${PROJECT_NAME} ${LIBS} ${SHADERC_DEBUG_LIB} ${LUA_LIBRARIES} Kinetics )
 
 # Set Folder
 set_target_properties(Arcane PROPERTIES FOLDER "Core")
