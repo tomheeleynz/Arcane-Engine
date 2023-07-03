@@ -10,26 +10,28 @@ FileBrowserPanel::FileBrowserPanel()
 	//// Icons
 	///////////////////////////////////////////
 	
+	std::string dir = std::string(Arcane::Application::Get().GetEditorAssetPath());
+
 	// -- Folder Icon
-	m_Icons["Folder"] = Arcane::UI::AddTexture(Arcane::Texture::Create("./src/EditorAssets/Icons/folder_icon.png"));
+	m_Icons["Folder"] = Arcane::UI::AddTexture(Arcane::Texture::Create(dir + "/src/EditorAssets/Icons/folder_icon.png"));
 
 	// -- Image Icon
-	m_Icons["Image"] = Arcane::UI::AddTexture(Arcane::Texture::Create("./src/EditorAssets/Icons/image_icon.png"));
+	m_Icons["Image"] = Arcane::UI::AddTexture(Arcane::Texture::Create(dir + "/src/EditorAssets/Icons/image_icon.png"));
 
 	// -- Mesh Icon
-	m_Icons["Mesh"] = Arcane::UI::AddTexture(Arcane::Texture::Create("./src/EditorAssets/Icons/mesh_icon.png"));
+	m_Icons["Mesh"] = Arcane::UI::AddTexture(Arcane::Texture::Create(dir + "/src/EditorAssets/Icons/mesh_icon.png"));
 
 	// -- Script Icon
-	m_Icons["Script"] = Arcane::UI::AddTexture(Arcane::Texture::Create("./src/EditorAssets/Icons/script_icon.png"));
+	m_Icons["Script"] = Arcane::UI::AddTexture(Arcane::Texture::Create(dir + "/src/EditorAssets/Icons/script_icon.png"));
 
 	// -- Shader Icon
-	m_Icons["Shader"] = Arcane::UI::AddTexture(Arcane::Texture::Create("./src/EditorAssets/Icons/shader_icon.png"));
+	m_Icons["Shader"] = Arcane::UI::AddTexture(Arcane::Texture::Create(dir + "/src/EditorAssets/Icons/shader_icon.png"));
 
 	// -- Material Icon
-	m_Icons["Material"] = Arcane::UI::AddTexture(Arcane::Texture::Create("./src/EditorAssets/Icons/material_icon.png"));
+	m_Icons["Material"] = Arcane::UI::AddTexture(Arcane::Texture::Create(dir + "/src/EditorAssets/Icons/material_icon.png"));
 
 	// -- Scene Icon
-	m_Icons["Scene"] = Arcane::UI::AddTexture(Arcane::Texture::Create("./src/EditorAssets/Icons/scene_icon.png"));
+	m_Icons["Scene"] = Arcane::UI::AddTexture(Arcane::Texture::Create(dir + "/src/EditorAssets/Icons/scene_icon.png"));
 }
 
 void FileBrowserPanel::OnUpdate()
@@ -357,12 +359,14 @@ void FileBrowserPanel::CreateScene(std::string name)
 
 void FileBrowserPanel::CreateUnlitShader(std::string name)
 {
+	std::string dir = std::string(Arcane::Application::Get().GetEditorAssetPath());
+
 	// Create filepath
 	std::filesystem::path newFilePath = m_Watcher->GetDirectory() / name;
 	newFilePath.replace_extension("arcaneshader");
 
 	// Write Template to file 
-	std::fstream in(".\\src\\EditorAssets\\Templates\\ShaderTemplates\\UnlitShaderTemplate.txt", std::ios::in);
+	std::fstream in(dir + "\\src\\EditorAssets\\Templates\\ShaderTemplates\\UnlitShaderTemplate.txt", std::ios::in);
 	std::fstream out(newFilePath, std::ios::out);
 
 	std::string ch;
@@ -381,12 +385,14 @@ void FileBrowserPanel::CreateUnlitShader(std::string name)
 
 void FileBrowserPanel::CreateStandardShader(std::string name)
 {
+	std::string dir = std::string(Arcane::Application::Get().GetEditorAssetPath());
+
 	// Create filepath
 	std::filesystem::path newFilePath = m_Watcher->GetDirectory() / name;
 	newFilePath.replace_extension("arcaneshader");
 
 	// Write Template to file 
-	std::fstream in(".\\src\\EditorAssets\\Templates\\ShaderTemplates\\StandardShaderTemplate.txt", std::ios::in);
+	std::fstream in(dir + "\\src\\EditorAssets\\Templates\\ShaderTemplates\\StandardShaderTemplate.txt", std::ios::in);
 	std::fstream out(newFilePath, std::ios::out);
 
 	std::string ch;
