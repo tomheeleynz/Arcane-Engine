@@ -23,6 +23,39 @@ namespace Arcane
 		m_PhysicsWorld = new Kinetics::World(-9.8f);
 	}
 
+	template<typename Component>
+	static void CopyComponent(entt::registry& dst, entt::registry& src, std::unordered_map<Core::UUID, entt::entity> enttMap)
+	{
+		auto view = src.view<Component>();
+		for (auto& e : view) {
+			Core::UUID uuid = view.get<IDComponent>(e).uuid;
+			entt::entity dstEnttID = enttMap.at(uuid);
+			auto& component = view.get<Component>(e);
+			dst.emplace_or_replace<Component>(e, component);
+		}
+	}
+
+	Scene* Scene::Copy(Scene* other)
+	{
+		Scene* newScene = new Scene(false);
+		
+		auto& srcSceneRegistery = other->m_Registry;
+		auto& dstSceneRegistery = newScene->m_Registry;
+		auto& idView = srcSceneRegistery.view<IDComponent>();
+
+		std::unordered_map<Core::UUID, entt::entity> enttMap;
+
+		for (auto& e : idView) 
+		{
+			Core::UUID uuid = srcSceneRegistery.get<IDComponent>(e).uuid;
+			std::string name = srcSceneRegistery.get<TagComponent>(e).tag;
+			Entity& entity = *newScene->CreateEntityWithUUID(name, (uint64_t)uuid);
+			enttMap[uuid] = (entt::entity)entity;
+		}
+
+		return nullptr;
+	}
+
 	Entity* Scene::CreateEntity(std::string name)
 	{
 		entt::entity newHandle = m_Registry.create();
@@ -46,6 +79,8 @@ namespace Arcane
 
 		return newEntity;
 	}
+
+
 
 	void Scene::DeleteEntity(Entity& entity)
 	{
@@ -226,6 +261,20 @@ namespace Arcane
 		m_SceneRenderer->RenderGrid(false);
 		m_SceneRenderer->RenderScene();
 	}
+
+	void Scene::OnRuntimeStart()
+	{
+		{
+			// Run start scripts
+			auto view = m_Registry.view<ScriptComponent>();
+
+			for (auto& e : view) {
+				auto& scriptComponent = view.get<ScriptComponent>(e);
+				scriptComponent.script->OnStart();
+			}
+		}
+	}
+
 	void Scene::SetSceneCamera(Camera* sceneCamera)
 	{
 		if (Application::Get().GetProject()->GetDimensionType() == DimensionType::TwoD)

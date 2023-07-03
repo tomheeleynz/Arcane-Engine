@@ -33,12 +33,18 @@ public:
 	void OpenScene();
 	void SaveScene();
 private:
+	void OnScenePlay();
+	void OnSceneStop();
+
+private:
 	// Viewport Window
 	ImTextureID m_Viewport;
 	glm::vec2 m_ViewportSize;
 
 	// Scene
 	Arcane::Scene* m_ActiveScene;
+	Arcane::Scene* m_EditorScene;
+	Arcane::Scene* m_RuntimeScene;
 	Arcane::SceneRenderer* m_SceneRenderer;
 	Arcane::SceneRenderer2D* m_SceneRenderer2D;
 

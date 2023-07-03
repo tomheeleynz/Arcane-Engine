@@ -15,13 +15,13 @@ EditorLayer::EditorLayer()
 
 void EditorLayer::OnAttach()
 {
-	m_ActiveScene = new Arcane::Scene(true);
+	m_EditorScene = new Arcane::Scene(true);
 
 	m_SceneRenderer = new Arcane::SceneRenderer();
 	m_SceneRenderer2D = new Arcane::SceneRenderer2D();
 	
-	m_ActiveScene->SetSceneRenderer(m_SceneRenderer);
-	m_ActiveScene->SetSceneRenderer2D(m_SceneRenderer2D);
+	m_EditorScene->SetSceneRenderer(m_SceneRenderer);
+	m_EditorScene->SetSceneRenderer2D(m_SceneRenderer2D);
 
 	Arcane::DimensionType dimensionType = Arcane::Application::Get().GetProject()->GetDimensionType();
 	
@@ -34,7 +34,7 @@ void EditorLayer::OnAttach()
 
 	// Create Panels
 	m_ScenePanel = new ScenePanel();
-	m_ScenePanel->SetContext(m_ActiveScene);
+	m_ScenePanel->SetContext(m_EditorScene);
 
 	m_EntityPanel = new EntityPanel();
 	m_FileBrowserPanel = new FileBrowserPanel();
@@ -49,7 +49,7 @@ void EditorLayer::OnAttach()
 		m_EditorCamera = new Arcane::PerspectiveCamera(512, 512, 45.0f);
 	
 	
-	m_ActiveScene->SetSceneCamera(m_EditorCamera);
+	m_EditorScene->SetSceneCamera(m_EditorCamera);
 	
 	// Setup Camera Controller
 	if (dimensionType == Arcane::DimensionType::TwoD)
@@ -58,6 +58,8 @@ void EditorLayer::OnAttach()
 		m_EditorCameraController = new PerspectiveController();
 	
 	m_EditorCameraController->SetCamera(m_EditorCamera);
+
+	m_ActiveScene = m_EditorScene;
 }
 
 void EditorLayer::OnDetach()
@@ -190,11 +192,10 @@ void EditorLayer::OnImGuiRender()
 
 			if (Arcane::InputManager::GetKeyReleased(32)) {
 				if (m_State == SceneState::EDIT) {
-					m_State = SceneState::PLAY;
+					OnScenePlay();
 				}
 				else if (m_State == SceneState::PLAY) {
-					m_State = SceneState::EDIT;
-					m_ActiveScene->SetSceneCamera(m_EditorCamera);
+					OnSceneStop();
 				}
 			}
 		}
@@ -240,9 +241,10 @@ void EditorLayer::OpenScene()
 
 	if (!filename.empty()) {
 		Arcane::SceneDeserializer deserializer(filename);
-		m_ActiveScene = deserializer.Deserialize();
-		m_ActiveScene->SetSceneRenderer(m_SceneRenderer);
-		m_ScenePanel->SetContext(m_ActiveScene);
+		m_EditorScene = deserializer.Deserialize();
+		m_EditorScene->SetSceneRenderer(m_SceneRenderer);
+		m_ScenePanel->SetContext(m_EditorScene);
+		m_ActiveScene = m_EditorScene;
 	}
 }
 
@@ -255,4 +257,21 @@ void EditorLayer::SaveScene()
 		serializer.Serialize(filename);
 		Arcane::Application::Get().GetAssetDatabase().GenerateAsset(filename, false);
 	}
+}
+
+void EditorLayer::OnScenePlay()
+{
+	m_State = SceneState::PLAY;
+
+	m_ActiveScene = Arcane::Scene::Copy(m_EditorScene);
+	m_ActiveScene->OnRuntimeStart();
+	m_ScenePanel->SetContext(m_ActiveScene);
+}
+
+void EditorLayer::OnSceneStop()
+{
+	m_State = SceneState::EDIT;
+
+	m_ActiveScene = m_EditorScene;
+	m_ScenePanel->SetContext(m_ActiveScene);
 }

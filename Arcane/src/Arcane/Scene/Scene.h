@@ -3,6 +3,7 @@
 #include <string>
 #include <entt/entt.hpp>
 #include <Kinetics/Core/World.h>
+#include <map>
 
 #include "Arcane/ECS/Component.h"
 #include "Arcane/Renderer/SceneRenderer.h"
@@ -21,11 +22,15 @@ namespace Arcane
 		Entity* CreateEntity(std::string name);
 		Entity* CreateEntityWithUUID(std::string name, uint64_t uuid);
 
+		static Scene* Copy(Scene* other);
+
 		void DeleteEntity(Entity& entity);
 
 		void OnStart();
 		void OnUpdate(float deltaTime);
 		void OnRuntimeUpdate(float deltaTime);
+
+		void OnRuntimeStart();
 
 		void SetSceneName(std::string name) { m_Name = name; }
 		std::string GetSceneName() { return m_Name;  }
