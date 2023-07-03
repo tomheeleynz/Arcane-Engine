@@ -1,5 +1,6 @@
 #include "Shader.h"
 #include "Arcane/Renderer/Renderer.h"
+#include "Arcane/Core/Application.h"
 
 // -- Vulkan Shader
 #include "Arcane/Platform/Vulkan/VulkanShader.h"
@@ -70,23 +71,25 @@ namespace Arcane
 
 	ShaderLibrary::ShaderLibrary()
 	{
+		std::string dir = std::string(Application::Get().GetEditorAssetPath());
+
 		// Load Shaders
 		m_Shaders["Mesh"] = Shader::Create(
-			".\\src\\EditorAssets\\Shaders\\MeshVert.spv",
-			".\\src\\EditorAssets\\Shaders\\MeshTextured.spv"
+			dir + "\\src\\EditorAssets\\Shaders\\MeshVert.spv",
+			dir + "\\src\\EditorAssets\\Shaders\\MeshTextured.spv"
 		);
 		
 		m_Shaders["Grid"] = Shader::Create(
-			".\\src\\EditorAssets\\Shaders\\GridVert.spv",
-			".\\src\\EditorAssets\\Shaders\\GridFrag.spv"
+			dir + "\\src\\EditorAssets\\Shaders\\GridVert.spv",
+			dir + "\\src\\EditorAssets\\Shaders\\GridFrag.spv"
 		);
 		
 		m_Shaders["Screen"] = Shader::Create(
-			".\\src\\EditorAssets\\Shaders\\ScreenVert.spv",
-			".\\src\\EditorAssets\\Shaders\\ScreenFrag.spv"
+			dir + "\\src\\EditorAssets\\Shaders\\ScreenVert.spv",
+			dir + "\\src\\EditorAssets\\Shaders\\ScreenFrag.spv"
 		);
 
-		m_Shaders["Sprite-Default"] = Shader::Create(".\\src\\EditorAssets\\Shaders\\Sprite.arcaneshader");
+		m_Shaders["Sprite-Default"] = Shader::Create(dir + "\\src\\EditorAssets\\Shaders\\Sprite.arcaneshader");
 	}
 
 	ShaderLibrary* ShaderLibrary::GetInstance()

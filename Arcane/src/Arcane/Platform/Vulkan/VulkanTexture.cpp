@@ -126,6 +126,8 @@ namespace Arcane
 			m_ImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 			m_ImageInfo.imageView = m_TextureImageView;
 			m_ImageInfo.sampler = m_TextureSampler;
+
+			m_TextureDataType = TextureImageDataType::SAMPLER;
 		}
 	}
 
@@ -144,10 +146,10 @@ namespace Arcane
 		int i = 0;
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				colors[i] = 255.0f;
-				colors[i + 1] = 0;
-				colors[i + 2] = 0;
-				colors[i + 3] = 225.0f;
+				colors[i] = r;
+				colors[i + 1] = g;
+				colors[i + 2] = b;
+				colors[i + 3] = a;
 				i += 4;
 			}
 		}
@@ -242,6 +244,8 @@ namespace Arcane
 		m_ImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		m_ImageInfo.imageView = m_TextureImageView;
 		m_ImageInfo.sampler = m_TextureSampler;
+
+		m_TextureDataType = TextureImageDataType::RGBA;
 	}
 
 	void VulkanTexture::UpdateTexture(float r, float g, float b, float a)
@@ -365,6 +369,26 @@ namespace Arcane
 
 	void VulkanTexture::UpdateTexture(Texture* texture)
 	{
+	}
+
+	TextureImageDataType VulkanTexture::GetTextureDataType()
+	{
+		return m_TextureDataType;
+	}
+
+	void VulkanTexture::SetTextureDataType(TextureImageDataType type)
+	{
+		m_TextureDataType = type;
+	}
+
+	glm::vec4 VulkanTexture::GetRGBAValue()
+	{
+		return m_RGBAValue;
+	}
+
+	void VulkanTexture::SetRGBAValue(glm::vec4 value)
+	{
+		m_RGBAValue = value;
 	}
 
 	VkCommandBuffer VulkanTexture::BeginSingleTimeCommands()

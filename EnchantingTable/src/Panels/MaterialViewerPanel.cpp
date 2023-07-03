@@ -79,7 +79,7 @@ void MaterialViewerPanel::DisplayMaterialVariable(Arcane::ShaderMember& member, 
 			Arcane::Texture* texture = m_Material->GetTexture(binding);
 
 			if (texture == nullptr) {
-				texture = Arcane::Texture::Create(1.0f, 0.0f, 0.0f, 1.0f);
+				texture = Arcane::Texture::Create(255.0f, 255.0f, 255.0f, 255.0f);
 				m_Material->WriteTexture(binding, texture);
 				
 				// Create a white texture

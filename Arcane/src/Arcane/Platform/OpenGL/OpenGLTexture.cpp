@@ -43,4 +43,24 @@ namespace Arcane
 	{
 
 	}
+
+	TextureImageDataType OpenGLTexture::GetTextureDataType()
+	{
+		return m_TextureDataType;
+	}
+	
+	void OpenGLTexture::SetTextureDataType(TextureImageDataType type)
+	{
+		m_TextureDataType = type;
+	}
+
+	glm::vec4 OpenGLTexture::GetRGBAValue()
+	{
+		return m_RGBAValue;
+	}
+	
+	void OpenGLTexture::SetRGBAValue(glm::vec4 value)
+	{
+		m_RGBAValue = value;
+	}
 }

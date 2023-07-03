@@ -12,6 +12,8 @@ namespace Arcane {
 
 	Application::Application(ApplicationSpecifications& specifications)
 	{
+		m_Specs = specifications;
+
 		WindowSpecifications windowSpecifications;
 		windowSpecifications.Height = specifications.WindowHeight;
 		windowSpecifications.Width = specifications.WindowWidth;

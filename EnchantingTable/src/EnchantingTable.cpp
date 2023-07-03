@@ -22,6 +22,10 @@ int main(int argc, char* argv[])
 	const char* projectFilePath = argv[1];
 	std::cout << projectFilePath << std::endl;
 
+	// Engine Asset Dir
+	const char* editorAssetDir = argv[2];
+	std::cout << editorAssetDir << std::endl;
+
 	// -- Set API to Vulkan
 	Arcane::RendererAPI::SetAPI(Arcane::RendererAPIType::Vulkan);
 
@@ -32,6 +36,7 @@ int main(int argc, char* argv[])
 	specs.WindowHeight = 800;
 	specs.PushImguiLayer = true;
 	specs.ProjectFilePath = projectFilePath;
+	specs.EditorAssetPath = editorAssetDir;
 
 	// Create Vulkan Application
 	EnchantingTableApplication* app = new EnchantingTableApplication(specs);

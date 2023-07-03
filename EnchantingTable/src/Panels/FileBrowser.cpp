@@ -113,6 +113,7 @@ void FileBrowserPanel::OnUpdate()
 	bool bCreateScript = false;
 	bool bCreateScene = false;
 	bool bCreateUnlitShader = false;
+	bool bCreateStandardShader = false;
 
 	// Import boolean
 	bool bImport = false;
@@ -148,6 +149,10 @@ void FileBrowserPanel::OnUpdate()
 					bCreateUnlitShader = true;
 				}
 
+				if (ImGui::MenuItem("New Standard Shader")) {
+					bCreateStandardShader = true;
+				}
+
 				ImGui::EndMenu();
 			}
 
@@ -177,6 +182,9 @@ void FileBrowserPanel::OnUpdate()
 	
 	if (bCreateUnlitShader)
 		ImGui::OpenPopup("Create Unlit Shader");
+
+	if (bCreateStandardShader)
+		ImGui::OpenPopup("Create Standard Shader");
 
 	if (ImGui::BeginPopupModal("CreateFolderModal", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
@@ -254,6 +262,19 @@ void FileBrowserPanel::OnUpdate()
 		}
 		ImGui::EndPopup();
 	}
+
+	if (ImGui::BeginPopupModal("Create Standard Shader", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		static char buf1[64] = "";
+		ImGui::InputText("Shader Name", buf1, 64);
+
+		if (ImGui::Button("Create")) {
+			CreateStandardShader(std::string(buf1));
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+
+	
 
 	ImGui::End();
 }
@@ -346,6 +367,30 @@ void FileBrowserPanel::CreateUnlitShader(std::string name)
 
 	std::string ch;
 	while(!in.eof()) {
+		std::getline(in, ch);
+		out << ch << std::endl;
+	}
+
+	in.close();
+	out.close();
+
+	// Add to asset database
+	Arcane::AssetDatabase& database = Arcane::Application::Get().GetAssetDatabase();
+	database.GenerateAsset(newFilePath, false);
+}
+
+void FileBrowserPanel::CreateStandardShader(std::string name)
+{
+	// Create filepath
+	std::filesystem::path newFilePath = m_Watcher->GetDirectory() / name;
+	newFilePath.replace_extension("arcaneshader");
+
+	// Write Template to file 
+	std::fstream in(".\\src\\EditorAssets\\Templates\\ShaderTemplates\\StandardShaderTemplate.txt", std::ios::in);
+	std::fstream out(newFilePath, std::ios::out);
+
+	std::string ch;
+	while (!in.eof()) {
 		std::getline(in, ch);
 		out << ch << std::endl;
 	}

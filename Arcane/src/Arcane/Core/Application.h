@@ -20,6 +20,7 @@ namespace Arcane
 		uint32_t WindowHeight;
 		bool PushImguiLayer = false;
 		const char* ProjectFilePath;
+		const char* EditorAssetPath;
 	};
 
 	class Application
@@ -45,6 +46,8 @@ namespace Arcane
 		AssetDatabase& GetAssetDatabase() { return *m_AssetDatabase; }
 
 		Project* GetProject() { return m_Project; }
+
+		const char* GetEditorAssetPath() { return m_Specs.EditorAssetPath; }
 	private:
 		Window* m_Window;
 		static Application* s_Instance;
@@ -57,5 +60,7 @@ namespace Arcane
 
 		AssetDatabase* m_AssetDatabase;
 		Project* m_Project;
+
+		ApplicationSpecifications m_Specs;
 	};
 }

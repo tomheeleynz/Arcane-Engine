@@ -16,6 +16,11 @@ namespace Arcane
 		virtual void UpdateTexture(std::string filename) override;
 		virtual void UpdateTexture(Texture* texture) override;
 
+		TextureImageDataType GetTextureDataType() override;
+		void SetTextureDataType(TextureImageDataType type) override;
+
+		glm::vec4 GetRGBAValue() override;
+		void SetRGBAValue(glm::vec4 value) override;
 
 		VkDescriptorImageInfo GetImageDescriptorInfo() { return m_ImageInfo; }
 	private:
@@ -36,5 +41,8 @@ namespace Arcane
 		VkImageView m_TextureImageView;
 		VkSampler m_TextureSampler;
 		VkDescriptorImageInfo m_ImageInfo;
+		TextureImageDataType m_TextureDataType;
+		glm::vec4 m_RGBAValue;
+
 	};
 }
