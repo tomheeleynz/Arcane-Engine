@@ -43,7 +43,7 @@ namespace Arcane
 		void SetSceneCamera(Camera* sceneCamera);
 
 		Kinetics::DynamicBody* AddDynamicBodyToPhysicsWorld(Kinetics::BodyDef bodyDef);
-
+		void CopyDynamicBodyToPhysicsWorld(Kinetics::DynamicBody* body);
 	private:
 		std::string m_Name;
 		SceneRenderer* m_SceneRenderer;

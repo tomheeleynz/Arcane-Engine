@@ -264,14 +264,16 @@ void EditorLayer::OnScenePlay()
 	m_State = SceneState::PLAY;
 
 	m_ActiveScene = Arcane::Scene::Copy(m_EditorScene);
+	m_ActiveScene->SetSceneRenderer(m_SceneRenderer);
+
 	m_ActiveScene->OnRuntimeStart();
+	
 	m_ScenePanel->SetContext(m_ActiveScene);
 }
 
 void EditorLayer::OnSceneStop()
 {
 	m_State = SceneState::EDIT;
-
 	m_ActiveScene = m_EditorScene;
 	m_ScenePanel->SetContext(m_ActiveScene);
 }

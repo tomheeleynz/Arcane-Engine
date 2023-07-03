@@ -27,11 +27,21 @@ namespace Arcane
 	static void CopyComponent(entt::registry& dst, entt::registry& src, std::unordered_map<Core::UUID, entt::entity> enttMap)
 	{
 		auto view = src.view<Component>();
+		for (auto srcEntity : view)
+		{
+			entt::entity dstEntity = enttMap.at(src.get<IDComponent>(srcEntity).uuid);
+
+			auto& srcComponent = src.get<Component>(srcEntity);
+			dst.emplace_or_replace<Component>(dstEntity, srcComponent);
+		}
+	}
+
+	static void AddPhysicsObjectsToScene(entt::registry& src, Scene* scene) {
+		auto view = src.view<RigidBody>();
+
 		for (auto& e : view) {
-			Core::UUID uuid = view.get<IDComponent>(e).uuid;
-			entt::entity dstEnttID = enttMap.at(uuid);
-			auto& component = view.get<Component>(e);
-			dst.emplace_or_replace<Component>(e, component);
+			auto& rigidBody = view.get<RigidBody>(e);
+			scene->CopyDynamicBodyToPhysicsWorld(rigidBody.body);
 		}
 	}
 
@@ -53,7 +63,18 @@ namespace Arcane
 			enttMap[uuid] = (entt::entity)entity;
 		}
 
-		return nullptr;
+		CopyComponent<TransformComponent>(dstSceneRegistery, srcSceneRegistery, enttMap);
+		CopyComponent<CameraComponent>(dstSceneRegistery, srcSceneRegistery, enttMap);
+		CopyComponent<MeshComponent>(dstSceneRegistery, srcSceneRegistery, enttMap);
+		CopyComponent<MeshRendererComponent>(dstSceneRegistery, srcSceneRegistery, enttMap);
+		CopyComponent<LightComponent>(dstSceneRegistery, srcSceneRegistery, enttMap);
+		CopyComponent<SpriteRenderer>(dstSceneRegistery, srcSceneRegistery, enttMap);
+		CopyComponent<BoxCollider>(dstSceneRegistery, srcSceneRegistery, enttMap);
+		CopyComponent<RigidBody>(dstSceneRegistery, srcSceneRegistery, enttMap);
+		CopyComponent<ScriptComponent>(dstSceneRegistery, srcSceneRegistery, enttMap);
+
+		AddPhysicsObjectsToScene(dstSceneRegistery, newScene);
+		return newScene;
 	}
 
 	Entity* Scene::CreateEntity(std::string name)
@@ -287,5 +308,10 @@ namespace Arcane
 	{
 		Kinetics::DynamicBody* newBody = m_PhysicsWorld->CreateDynamicBody(bodyDef);
 		return newBody;
+	}
+
+	void Scene::CopyDynamicBodyToPhysicsWorld(Kinetics::DynamicBody* body)
+	{
+		m_PhysicsWorld->AddDynamicBody(body);
 	}
 }
