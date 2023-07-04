@@ -105,6 +105,14 @@ namespace Arcane
 			newTextureAsset->SetPath(currentAssetPath);
 			m_Assets[assetID] = newTextureAsset;
 		}
+		else if (currentAssetPath.extension() == ".png") {
+			Texture* newTextureAsset = Texture::Create(currentAssetPath.string());
+			newTextureAsset->SetAssetType(AssetType::TEXTURE);
+			newTextureAsset->SetID(Arcane::Core::UUID(assetID));
+			newTextureAsset->SetName(name);
+			newTextureAsset->SetPath(currentAssetPath);
+			m_Assets[assetID] = newTextureAsset;
+		}
 		else if (currentAssetPath.extension() == ".lua") {
 			// Get Name Of File
 			std::string scriptName = currentAssetPath.string();

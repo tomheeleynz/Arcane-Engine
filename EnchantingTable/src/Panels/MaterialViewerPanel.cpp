@@ -15,6 +15,12 @@ void MaterialViewerPanel::OnUpdate()
 	ImGui::Begin("Material Viewer");
 
 	static char buf1[64] = "";
+
+	if (m_Material->GetShader() != nullptr) {
+		memset(buf1, 0, sizeof(buf1));
+		std::strncpy(buf1, m_Material->GetShader()->GetName().c_str(), sizeof(buf1));
+	}
+
 	ImGui::InputText("Shader", buf1, 64);
 
 	if (ImGui::BeginDragDropTarget())

@@ -10,7 +10,7 @@ static void DrawComponent(std::string name, Arcane::Entity entity, UIFunction ui
 	{
 		ImGui::Text(name.c_str());
 		auto& component = entity.GetComponent<T>();
-		uiFunction(component);
+		uiFunction(component, entity);
 		ImGui::Separator();
 	}
 }
@@ -41,7 +41,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 {
 	using namespace Arcane;
 
-	DrawComponent<TagComponent>("Tag", entity, [](auto& component) {
+	DrawComponent<TagComponent>("Tag", entity, [](auto& component, auto& entity) {
 		auto& tag = component.tag;
 
 		char buffer[256];
@@ -54,7 +54,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	});
 
 
-	DrawComponent<TransformComponent>("Transform", entity, [](auto& component) {
+	DrawComponent<TransformComponent>("Transform", entity, [](auto& component, auto& entity) {
 		// Position
 		ImGui::InputFloat3("Position", glm::value_ptr(component.pos));
 
@@ -67,7 +67,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		ImGui::InputFloat3("Scale", glm::value_ptr(component.scale));
 	});
 
-	DrawComponent<CameraComponent>("Camera", entity, [](auto& component) {
+	DrawComponent<CameraComponent>("Camera", entity, [](auto& component, auto& entity) {
 		ImGui::Checkbox("Is Primary:", &component.isPrimary);
 		const char* items[] = { "Orthographic", "Perspective" };
 		int chosenID = 0;
@@ -100,7 +100,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		}
 	});
 
-	DrawComponent<MeshComponent>("Mesh", entity, [](auto& component) {
+	DrawComponent<MeshComponent>("Mesh", entity, [](auto& component, auto& entity) {
 		static char buf1[64] = "";
 		ImGui::InputText("Mesh", buf1, 64);
 
@@ -126,7 +126,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	
 
 
-	DrawComponent<MeshRendererComponent>("Mesh Renderer", entity, [this](auto& component) {
+	DrawComponent<MeshRendererComponent>("Mesh Renderer", entity, [this](auto& component, auto& entity) {
 		static char buf1[64] = "";
 		ImGui::InputText("Material", buf1, 64);
 
@@ -155,7 +155,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	});
 	
 
-	DrawComponent<LightComponent>("Light", entity, [](auto& component) {
+	DrawComponent<LightComponent>("Light", entity, [](auto& component, auto& entity) {
 		if (component.type == LightType::DIRECTIONAL) {
 			ImGui::Text("Directional");
 		}
@@ -165,7 +165,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		component.color = currentValue;
 	});
 
-	DrawComponent<ScriptComponent>("Script", entity, [this](auto& component) {
+	DrawComponent<ScriptComponent>("Script", entity, [this](auto& component, auto& test) {
 		static char buf1[64] = "";
 		ImGui::InputText("Script", buf1, 64);
 
@@ -189,10 +189,10 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		}
 	});
 
-	DrawComponent<SpriteRenderer>("Sprite Renderer", entity, [this](auto& component) {
+	DrawComponent<SpriteRenderer>("Sprite Renderer", entity, [this](auto& component, auto& entity) {
 	});
 
-	DrawComponent<RigidBody>("Rigid Body", entity, [this](auto& component) {
+	DrawComponent<RigidBody>("Rigid Body", entity, [this](auto& component, auto& entity) {
 		ImGui::InputFloat("Gravity", &component.gravityScale);
 		// Set dynamic body gravity scale
 
@@ -200,7 +200,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		// set mass of component
 	});
 
-	DrawComponent<BoxCollider>("Box Collider", entity, [this](auto& component) {
+	DrawComponent<BoxCollider>("Box Collider", entity, [this](auto& component, auto& entity) {
 	});
 
 
