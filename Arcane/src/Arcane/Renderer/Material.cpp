@@ -1,6 +1,8 @@
 #include "Material.h"
 #include "Renderer.h"
+
 #include "Arcane/Platform/Vulkan/VulkanMaterial.h"
+#include "Arcane/Platform/OpenGL/OpenGLMaterial.h"
 
 namespace Arcane
 {
@@ -9,6 +11,7 @@ namespace Arcane
 		switch (RendererAPI::Current())
 		{
 		case RendererAPIType::Vulkan: return new VulkanMaterial(shader);
+		case RendererAPIType::OpenGL: return new OpenGLMaterial(shader);
 		default: return nullptr;
 		}
 	}

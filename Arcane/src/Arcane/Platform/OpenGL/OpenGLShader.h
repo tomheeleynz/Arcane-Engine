@@ -11,6 +11,7 @@ namespace Arcane
 	{
 	public:
 		OpenGLShader(std::string vertexShader, std::string fragmentShader);
+		OpenGLShader(std::string shaderSource);
 
 		DescriptorSet* GetMaterialDescriptor() override;
 		std::vector<ShaderSet> GetShaderSets() override;

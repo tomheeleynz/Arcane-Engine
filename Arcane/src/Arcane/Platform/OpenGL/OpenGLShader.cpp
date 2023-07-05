@@ -135,6 +135,97 @@ namespace Arcane
 
 	}
 
+	OpenGLShader::OpenGLShader(std::string shaderSource)
+	{
+		ShaderProgramSource sources = ParseShader(shaderSource);
+		
+		GLuint vertexProgram = 0;
+		{
+			GLuint vertexShaderProgram = glCreateShader(GL_VERTEX_SHADER);
+			const GLchar* vertexShaderSource = (const GLchar*)sources.vertexShader.c_str();
+			
+			glShaderSource(vertexShaderProgram, 1, &vertexShaderSource, 0);
+			glCompileShader(vertexShaderProgram);
+
+			GLint isCompiled = 0;
+			glGetShaderiv(vertexShaderProgram, GL_COMPILE_STATUS, &isCompiled);
+			if (isCompiled == GL_FALSE)
+			{
+				GLint maxLength = 0;
+				glGetShaderiv(vertexShaderProgram, GL_INFO_LOG_LENGTH, &maxLength);
+
+				// The maxLength includes the NULL character
+				std::vector<GLchar> infoLog(maxLength);
+				glGetShaderInfoLog(vertexShaderProgram, maxLength, &maxLength, &infoLog[0]);
+
+				// We don't need the shader anymore.
+				glDeleteShader(vertexShaderProgram);
+			}
+			else {
+				vertexProgram = vertexShaderProgram;
+			}
+		}
+
+		GLuint fragmentProgram = 0;
+		// Setup Fragment Source 
+		{
+			GLuint fragmentShaderProgram = glCreateShader(GL_FRAGMENT_SHADER);
+			const GLchar* shaderSource = (const GLchar*)sources.fragmentShader.c_str();
+
+			glShaderSource(fragmentShaderProgram, 1, &shaderSource, 0);
+			glCompileShader(fragmentShaderProgram);
+
+			GLint isCompiled = 0;
+			glGetShaderiv(fragmentShaderProgram, GL_COMPILE_STATUS, &isCompiled);
+			if (isCompiled == GL_FALSE)
+			{
+				GLint maxLength = 0;
+				glGetShaderiv(fragmentShaderProgram, GL_INFO_LOG_LENGTH, &maxLength);
+
+				// The maxLength includes the NULL character
+				std::vector<GLchar> infoLog(maxLength);
+				glGetShaderInfoLog(fragmentShaderProgram, maxLength, &maxLength, &infoLog[0]);
+
+				// We don't need the shader anymore.
+				glDeleteShader(fragmentShaderProgram);
+			}
+			else {
+				fragmentProgram = fragmentShaderProgram;
+			}
+		}
+
+		// Link Program
+		m_ShaderProgram = glCreateProgram();
+
+		// Attach our shaders to our program
+		glAttachShader(m_ShaderProgram, vertexProgram);
+		glAttachShader(m_ShaderProgram, fragmentProgram);
+
+		// Link our program
+		glLinkProgram(m_ShaderProgram);
+
+		// Note the different functions here: glGetProgram* instead of glGetShader*.
+		GLint isLinked = 0;
+		glGetProgramiv(m_ShaderProgram, GL_LINK_STATUS, (int*)&isLinked);
+		if (isLinked == GL_FALSE)
+		{
+			GLint maxLength = 0;
+			glGetProgramiv(m_ShaderProgram, GL_INFO_LOG_LENGTH, &maxLength);
+
+			std::vector<GLchar> infoLog(maxLength);
+			glGetProgramInfoLog(m_ShaderProgram, maxLength, &maxLength, &infoLog[0]);
+
+			glDeleteProgram(m_ShaderProgram);
+
+			glDeleteShader(vertexProgram);
+			glDeleteShader(fragmentProgram);
+		}
+
+		// Always detach shaders after a successful link.
+		glDetachShader(m_ShaderProgram, vertexProgram);
+		glDetachShader(m_ShaderProgram, fragmentProgram);
+	}
+
 	DescriptorSet* OpenGLShader::GetMaterialDescriptor()
 	{
 		return nullptr;

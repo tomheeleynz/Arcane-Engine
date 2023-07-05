@@ -59,7 +59,7 @@ namespace Arcane
 		switch (RendererAPI::Current())
 		{
 		case RendererAPIType::Vulkan: return new VulkanShader(shaderFile);
-		case RendererAPIType::OpenGL: return nullptr;
+		case RendererAPIType::OpenGL: return new OpenGLShader(shaderFile);
 		default: return nullptr;
 		}
 	}
