@@ -45,9 +45,16 @@ namespace Arcane
 						material->WriteVec3(bindingNum, offset, value);
 					}
 					else if (type == 0) {
-						uint64_t textureID = member["texture"];
-						Texture* texture = static_cast<Texture*>(Application::Get().GetAssetDatabase().GetAsset(textureID));
-						material->WriteTexture(bindingNum, texture);
+						std::string textureDataType = member["texturetype"];
+						if (textureDataType == "RGBA") {
+							Texture* texture = Texture::Create(member["texture"][0], member["texture"][1], member["texture"][2], member["texture"][3]);
+							material->WriteTexture(bindingNum, texture);
+						}
+						else {
+							uint64_t textureID = member["texture"];
+							Texture* texture = static_cast<Texture*>(Application::Get().GetAssetDatabase().GetAsset(textureID));
+							material->WriteTexture(bindingNum, texture);
+						}
 					}
 				}
 			}

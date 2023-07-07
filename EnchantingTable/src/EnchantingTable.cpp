@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 	std::cout << editorAssetDir << std::endl;
 
 	// -- Set API to Vulkan
-	Arcane::RendererAPI::SetAPI(Arcane::RendererAPIType::OpenGL);
+	Arcane::RendererAPI::SetAPI(Arcane::RendererAPIType::Vulkan);
 
 	// Set Application Specifications
 	Arcane::ApplicationSpecifications specs;

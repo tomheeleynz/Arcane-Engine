@@ -94,6 +94,16 @@ namespace Arcane
 				componentArray.push_back(lightObject);
 			}
 
+			if (sceneEntity.HasComponent<RigidBodyComponent>())
+			{
+				RigidBodyComponent& rigidBodyComponent = sceneEntity.GetComponent<RigidBodyComponent>();
+				nlohmann::json rigidBodyObject = nlohmann::json::object();
+				rigidBodyObject["name"] = "RigidBody";
+				rigidBodyObject["gravityScale"] = rigidBodyComponent.gravityScale;
+				rigidBodyObject["mass"] = rigidBodyComponent.mass;
+				componentArray.push_back(rigidBodyObject);
+			}
+
 			entityObject["Components"] = componentArray;
 			entityArray.push_back(entityObject);
 				});

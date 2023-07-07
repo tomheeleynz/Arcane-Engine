@@ -19,6 +19,12 @@ namespace Arcane
 		POINT
 	};
 
+	enum class CameraType
+	{
+		Orthographic,
+		Perspective
+	};
+
 	struct IDComponent
 	{
 		Core::UUID uuid;
@@ -27,12 +33,6 @@ namespace Arcane
 	struct TagComponent
 	{
 		std::string tag;
-	};
-
-	enum class CameraType
-	{
-		Orthographic,
-		Perspective
 	};
 
 	struct CameraComponent
@@ -72,21 +72,21 @@ namespace Arcane
 		Script* script;
 	};
 
-	struct SpriteRenderer
+	struct SpriteRendererComponent
 	{
 		Quad* quad;
 		Material* material;
 		glm::vec3 color;
 	};
 
-	struct RigidBody
+	struct RigidBodyComponent
 	{
 		Kinetics::DynamicBody* body;
 		float mass;
 		float gravityScale;
 	};
 
-	struct BoxCollider 
+	struct BoxColliderComponent
 	{
 		Kinetics::Shape* shape;
 		glm::vec3 center;

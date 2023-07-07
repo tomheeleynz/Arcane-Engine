@@ -59,7 +59,20 @@ namespace Arcane
 							memberObject["type"] = member.type;
 
 							if (binding.Type == ShaderBindingType::SAMPLER) {
-								memberObject["texture"] = m_Material->GetTexture(binding.Binding)->GetID();
+								Texture* texture = m_Material->GetTexture(binding.Binding);
+
+								if (texture->GetTextureDataType() == TextureImageDataType::RGBA) {
+									memberObject["texturetype"] = "RGBA";
+									nlohmann::json color = { texture->GetRGBAValue().r, texture->GetRGBAValue().b, texture->GetRGBAValue().g, texture->GetRGBAValue().a };
+									memberObject["texture"] = color;
+
+								}
+
+								if (texture->GetTextureDataType() == TextureImageDataType::SAMPLER)
+								{
+									memberObject["texturetype"] = "SAMPLER";
+									memberObject["texture"] = m_Material->GetTexture(binding.Binding)->GetID();
+								}
 							}
 
 							if (member.type == ShaderMemberType::Vec3) {

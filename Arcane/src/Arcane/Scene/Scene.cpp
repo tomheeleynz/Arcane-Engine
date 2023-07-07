@@ -37,10 +37,10 @@ namespace Arcane
 	}
 
 	static void AddPhysicsObjectsToScene(entt::registry& src, Scene* scene) {
-		auto view = src.view<RigidBody>();
+		auto view = src.view<RigidBodyComponent>();
 
 		for (auto& e : view) {
-			auto& rigidBody = view.get<RigidBody>(e);
+			auto& rigidBody = view.get<RigidBodyComponent>(e);
 			scene->CopyDynamicBodyToPhysicsWorld(rigidBody.body);
 		}
 	}
@@ -68,9 +68,9 @@ namespace Arcane
 		CopyComponent<MeshComponent>(dstSceneRegistery, srcSceneRegistery, enttMap);
 		CopyComponent<MeshRendererComponent>(dstSceneRegistery, srcSceneRegistery, enttMap);
 		CopyComponent<LightComponent>(dstSceneRegistery, srcSceneRegistery, enttMap);
-		CopyComponent<SpriteRenderer>(dstSceneRegistery, srcSceneRegistery, enttMap);
-		CopyComponent<BoxCollider>(dstSceneRegistery, srcSceneRegistery, enttMap);
-		CopyComponent<RigidBody>(dstSceneRegistery, srcSceneRegistery, enttMap);
+		CopyComponent<SpriteRendererComponent>(dstSceneRegistery, srcSceneRegistery, enttMap);
+		CopyComponent<BoxColliderComponent>(dstSceneRegistery, srcSceneRegistery, enttMap);
+		CopyComponent<RigidBodyComponent>(dstSceneRegistery, srcSceneRegistery, enttMap);
 		CopyComponent<ScriptComponent>(dstSceneRegistery, srcSceneRegistery, enttMap);
 
 		AddPhysicsObjectsToScene(dstSceneRegistery, newScene);
@@ -128,10 +128,10 @@ namespace Arcane
 	{
 		if (Application::Get().GetProject()->GetDimensionType() == DimensionType::TwoD)
 		{
-			auto view = m_Registry.view<TransformComponent, SpriteRenderer>();
+			auto view = m_Registry.view<TransformComponent, SpriteRendererComponent>();
 			for (auto& entity : view)
 			{
-				auto& spriteRenderer = view.get<SpriteRenderer>(entity);
+				auto& spriteRenderer = view.get<SpriteRendererComponent>(entity);
 				auto& transform = view.get<TransformComponent>(entity);
 
 				if (spriteRenderer.material != nullptr && spriteRenderer.material->GetShader() != nullptr)
@@ -244,10 +244,10 @@ namespace Arcane
 
 		// Set the mass and gravity scale of the rigid bodies
 		{
-			auto view = m_Registry.view<RigidBody>();
+			auto view = m_Registry.view<RigidBodyComponent>();
 
 			for (auto& entity : view) {
-				auto& rigidBodyComponent = view.get<RigidBody>(entity);
+				auto& rigidBodyComponent = view.get<RigidBodyComponent>(entity);
 				rigidBodyComponent.body->SetGravityScale(rigidBodyComponent.gravityScale);
 			}
 		}
@@ -266,11 +266,11 @@ namespace Arcane
 
 				Entity entityHandle = Entity(entity, this);
 
-				if (entityHandle.HasComponent<RigidBody>()) {
+				if (entityHandle.HasComponent<RigidBodyComponent>()) {
 					transform.pos = {
-						entityHandle.GetComponent<RigidBody>().body->GetPosition().x,
-						entityHandle.GetComponent<RigidBody>().body->GetPosition().y,
-						entityHandle.GetComponent<RigidBody>().body->GetPosition().z,
+						entityHandle.GetComponent<RigidBodyComponent>().body->GetPosition().x,
+						entityHandle.GetComponent<RigidBodyComponent>().body->GetPosition().y,
+						entityHandle.GetComponent<RigidBodyComponent>().body->GetPosition().z,
 					};
 				}
 

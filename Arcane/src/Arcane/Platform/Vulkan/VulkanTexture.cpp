@@ -245,6 +245,7 @@ namespace Arcane
 		m_ImageInfo.imageView = m_TextureImageView;
 		m_ImageInfo.sampler = m_TextureSampler;
 
+		m_RGBAValue = glm::vec4(r, g, b, a);
 		m_TextureDataType = TextureImageDataType::RGBA;
 	}
 

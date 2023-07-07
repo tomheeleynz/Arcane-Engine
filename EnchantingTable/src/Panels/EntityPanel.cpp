@@ -189,10 +189,10 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		}
 	});
 
-	DrawComponent<SpriteRenderer>("Sprite Renderer", entity, [this](auto& component, auto& entity) {
+	DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [this](auto& component, auto& entity) {
 	});
 
-	DrawComponent<RigidBody>("Rigid Body", entity, [this](auto& component, auto& entity) {
+	DrawComponent<RigidBodyComponent>("Rigid Body", entity, [this](auto& component, auto& entity) {
 		ImGui::InputFloat("Gravity", &component.gravityScale);
 		// Set dynamic body gravity scale
 
@@ -200,7 +200,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		// set mass of component
 	});
 
-	DrawComponent<BoxCollider>("Box Collider", entity, [this](auto& component, auto& entity) {
+	DrawComponent<BoxColliderComponent>("Box Collider", entity, [this](auto& component, auto& entity) {
 	});
 
 
@@ -216,9 +216,9 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		DisplayAddComponentEntry<MeshRendererComponent>("Mesh Renderer");
 		DisplayAddComponentEntry<ScriptComponent>("Script");
 		DisplayAddComponentEntry<CameraComponent>("Camera");
-		DisplayAddComponentEntry<SpriteRenderer>("Sprite Renderer");
-		DisplayAddComponentEntry<RigidBody>("Rigid Body");
-		DisplayAddComponentEntry<BoxCollider>("Box Collider");
+		DisplayAddComponentEntry<SpriteRendererComponent>("Sprite Renderer");
+		DisplayAddComponentEntry<RigidBodyComponent>("Rigid Body");
+		DisplayAddComponentEntry<BoxColliderComponent>("Box Collider");
 		ImGui::EndPopup();
 	}
 
@@ -266,23 +266,23 @@ void EntityPanel::InitComponent<Arcane::CameraComponent>()
 
 
 template <>
-void EntityPanel::InitComponent<Arcane::SpriteRenderer>()
+void EntityPanel::InitComponent<Arcane::SpriteRendererComponent>()
 {
 	// Generate Quad
-	Arcane::SpriteRenderer spriteRenderer;
+	Arcane::SpriteRendererComponent spriteRenderer;
 	spriteRenderer.color = {1.0f, 1.0f, 1.0f};
 	spriteRenderer.quad = new Arcane::Quad();
 
 	// Get default shader
 	spriteRenderer.material = Arcane::Material::Create(Arcane::ShaderLibrary::GetShader("Sprite-Default"));
 
-	m_Context.AddComponent<Arcane::SpriteRenderer>(spriteRenderer);
+	m_Context.AddComponent<Arcane::SpriteRendererComponent>(spriteRenderer);
 }
 
 template <>
-void EntityPanel::InitComponent<Arcane::RigidBody>()
+void EntityPanel::InitComponent<Arcane::RigidBodyComponent>()
 {
-	Arcane::RigidBody rigidBody;
+	Arcane::RigidBodyComponent rigidBody;
 
 	// Body Def 
 	Kinetics::BodyDef bodyDef;
@@ -298,21 +298,21 @@ void EntityPanel::InitComponent<Arcane::RigidBody>()
 		});
 	}
 
-	if (m_Context.HasComponent<Arcane::BoxCollider>()) {
-		newBody->SetShape(m_Context.GetComponent<Arcane::BoxCollider>().shape);
+	if (m_Context.HasComponent<Arcane::BoxColliderComponent>()) {
+		newBody->SetShape(m_Context.GetComponent<Arcane::BoxColliderComponent>().shape);
 	}
 
 	rigidBody.body = newBody;
 	rigidBody.gravityScale = 1;
 	rigidBody.mass = bodyDef.mass;
 
-	m_Context.AddComponent<Arcane::RigidBody>(rigidBody);
+	m_Context.AddComponent<Arcane::RigidBodyComponent>(rigidBody);
 }
 
 template<>
-void EntityPanel::InitComponent<Arcane::BoxCollider>()
+void EntityPanel::InitComponent<Arcane::BoxColliderComponent>()
 {
-	Arcane::BoxCollider collider;
+	Arcane::BoxColliderComponent collider;
 
 	collider.shape = new Kinetics::Shape({ Kinetics::ShapeType::BOX });
 
@@ -327,8 +327,8 @@ void EntityPanel::InitComponent<Arcane::BoxCollider>()
 	}
 
 
-	if (m_Context.HasComponent<Arcane::RigidBody>())
-		m_Context.GetComponent<Arcane::RigidBody>().body->SetShape(collider.shape);
+	if (m_Context.HasComponent<Arcane::RigidBodyComponent>())
+		m_Context.GetComponent<Arcane::RigidBodyComponent>().body->SetShape(collider.shape);
 
-	m_Context.AddComponent<Arcane::BoxCollider>(collider);
+	m_Context.AddComponent<Arcane::BoxColliderComponent>(collider);
 }

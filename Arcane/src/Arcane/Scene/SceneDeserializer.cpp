@@ -34,15 +34,15 @@ namespace Arcane
 				// Get Component Name
 				std::string name = element["name"];
 
-				if (name == "Transform") 
+				if (name == "Transform")
 				{
 					TransformComponent newComponent;
-					newComponent.pos = {element["position"][0], element["position"][1], element["position"][2] };
+					newComponent.pos = { element["position"][0], element["position"][1], element["position"][2] };
 					newComponent.scale = { element["scale"][0], element["scale"][1], element["scale"][2] };
-				
+
 					newEntity->AddComponent<TransformComponent>(newComponent);
 				}
-				else if (name == "Mesh") 
+				else if (name == "Mesh")
 				{
 					uint64_t assetID = element["AssetID"];
 
@@ -67,8 +67,25 @@ namespace Arcane
 						light.type = LightType::DIRECTIONAL;
 					}
 
-					light.color = { element["color"][0], element["color"][1], element["color"][2]};
+					light.color = { element["color"][0], element["color"][1], element["color"][2] };
 					newEntity->AddComponent<LightComponent>(light);
+				}
+				else if (name == "RigidBody")
+				{
+					Kinetics::BodyDef bodyDef;
+					RigidBodyComponent rigidBodyComponent;
+
+					float gravityScale = element["gravityScale"];
+					float mass = element["mass"];
+
+					rigidBodyComponent.mass = mass;
+					rigidBodyComponent.gravityScale = gravityScale;
+
+					bodyDef.mass = mass;
+
+					rigidBodyComponent.body = newScene->AddDynamicBodyToPhysicsWorld(bodyDef);
+					rigidBodyComponent.body->SetGravityScale(gravityScale);
+					newEntity->AddComponent<RigidBodyComponent>(rigidBodyComponent);
 				}
 			}
 		}
