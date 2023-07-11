@@ -321,7 +321,7 @@ void FileBrowserPanel::CreateMaterial(std::string name)
 
 	// Generate Asset
 	Arcane::AssetDatabase& database = Arcane::Application::Get().GetAssetDatabase();
-	database.GenerateAsset(newFilePath, false);
+	database.GenerateAsset(newFilePath, true);
 }
 
 void FileBrowserPanel::CreateScript(std::string name)
@@ -335,7 +335,7 @@ void FileBrowserPanel::CreateScript(std::string name)
 
 	// Add Asset to asset database
 	Arcane::AssetDatabase& database = Arcane::Application::Get().GetAssetDatabase();
-	database.GenerateAsset(newFilePath, false);
+	database.GenerateAsset(newFilePath, true);
 }
 
 void FileBrowserPanel::CreateFolder(std::string name)
@@ -354,7 +354,7 @@ void FileBrowserPanel::CreateScene(std::string name)
 	
 	// Add to database
 	Arcane::AssetDatabase& database = Arcane::Application::Get().GetAssetDatabase();
-	database.GenerateAsset(newFilePath, false);
+	database.GenerateAsset(newFilePath, true);
 }
 
 void FileBrowserPanel::CreateUnlitShader(std::string name)
@@ -380,7 +380,7 @@ void FileBrowserPanel::CreateUnlitShader(std::string name)
 
 	// Add to asset database
 	Arcane::AssetDatabase& database = Arcane::Application::Get().GetAssetDatabase();
-	database.GenerateAsset(newFilePath, false);
+	database.GenerateAsset(newFilePath, true);
 }
 
 void FileBrowserPanel::CreateStandardShader(std::string name)
@@ -406,7 +406,7 @@ void FileBrowserPanel::CreateStandardShader(std::string name)
 
 	// Add to asset database
 	Arcane::AssetDatabase& database = Arcane::Application::Get().GetAssetDatabase();
-	database.GenerateAsset(newFilePath, false);
+	database.GenerateAsset(newFilePath, true);
 }
 
 void FileBrowserPanel::ImportAsset(std::string fileLocation)
@@ -418,5 +418,5 @@ void FileBrowserPanel::ImportAsset(std::string fileLocation)
 	std::filesystem::copy_file(from, to);
 
 	Arcane::AssetDatabase& database = Arcane::Application::Get().GetAssetDatabase();
-	database.GenerateAsset(to, false);
+	database.GenerateAsset(to, true);
 }

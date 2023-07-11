@@ -104,6 +104,11 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		static char buf1[64] = "";
 		ImGui::InputText("Mesh", buf1, 64);
 
+		if (component.mesh != nullptr) {
+			memset(buf1, 0, sizeof(buf1));
+			std::strncpy(buf1, component.mesh->GetName().c_str(), sizeof(buf1));
+		}
+
 		if (ImGui::BeginDragDropTarget())
 		{
 			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
@@ -129,6 +134,11 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	DrawComponent<MeshRendererComponent>("Mesh Renderer", entity, [this](auto& component, auto& entity) {
 		static char buf1[64] = "";
 		ImGui::InputText("Material", buf1, 64);
+
+		if (component.material != nullptr) {
+			memset(buf1, 0, sizeof(buf1));
+			std::strncpy(buf1, component.material->GetName().c_str(), sizeof(buf1));
+		}
 
 		if (ImGui::BeginDragDropTarget())
 		{
@@ -165,9 +175,44 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		component.color = currentValue;
 	});
 
-	DrawComponent<ScriptComponent>("Script", entity, [this](auto& component, auto& test) {
+	DrawComponent<ScriptComponent>("Script", entity, [this](auto& component, auto& entity) {
 		static char buf1[64] = "";
 		ImGui::InputText("Script", buf1, 64);
+
+		if (component.script) {
+			memset(buf1, 0, sizeof(buf1));
+			std::strncpy(buf1, component.script->GetName().c_str(), sizeof(buf1));
+		}
+
+		if (component.script != nullptr) {
+			ImGui::Text("Properties");
+
+			for (auto const& [key, val] : component.script->GetProperties()) {
+				std::string type = val.type;
+
+				if (type == "string") {
+					std::string value = std::any_cast<std::string>(val.value);
+				}
+
+				if (type == "int") {
+					int change = std::any_cast<int>(val.value);
+					int value = std::any_cast<int>(val.value);
+					ImGui::InputInt(key.c_str(), &change);
+
+					if (change != value)
+						component.script->SetPropertyValue(key, change);
+				}
+
+				if (type == "float") {
+					float change = std::any_cast<float>(val.value);
+					float value = std::any_cast<float>(val.value);
+					ImGui::InputFloat(key.c_str(), &change);
+
+					if (change != value)
+						component.script->SetPropertyValue(key, change);
+				}
+			}
+		}
 
 		if (ImGui::BeginDragDropTarget())
 		{
@@ -180,6 +225,10 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 
 				if (scriptAsset != nullptr && scriptAsset->GetAssetType() == AssetType::SCRIPT) {
 					Script* script = static_cast<Script*>(scriptAsset);
+					
+					// Get Entity ID
+					Arcane::Core::UUID uuid = entity.GetComponent<IDComponent>().uuid;
+					script->SetEntityID((uint64_t)uuid);
 					component.script = script;
 					memset(buf1, 0, sizeof(buf1));
 					std::strncpy(buf1, scriptAsset->GetName().c_str(), sizeof(buf1));

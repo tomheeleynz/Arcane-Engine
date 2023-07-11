@@ -25,6 +25,7 @@
 #include "Arcane/Renderer/DescriptorSet.h"
 #include "Arcane/Renderer/MeshFactory.h"
 #include "Arcane/Renderer/MaterialSerializer.h"
+#include "Arcane/Renderer/SkyBox.h"
 
 /////////////////////////////////////////////////////
 ////////// ImGui

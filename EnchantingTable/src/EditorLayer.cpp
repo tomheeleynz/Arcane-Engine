@@ -39,6 +39,7 @@ void EditorLayer::OnAttach()
 	m_EntityPanel = new EntityPanel();
 	m_FileBrowserPanel = new FileBrowserPanel();
 	m_MaterialViewerPanel = new MaterialViewerPanel();
+	m_EnviromentPanel = new EnvironmentPanel();
 
 	m_FileBrowserPanel->SetMaterialViewPanel(m_MaterialViewerPanel);
 
@@ -166,6 +167,14 @@ void EditorLayer::OnImGuiRender()
 			ImGui::EndMenu();
 		}
 
+		if (ImGui::BeginMenu("Scene"))
+		{
+			if (ImGui::MenuItem("Environment"))
+				m_ShowEnvironmentPanel = true;
+
+			ImGui::EndMenu();
+		}
+
 		ImGui::EndMenuBar();
 	}
 
@@ -180,6 +189,9 @@ void EditorLayer::OnImGuiRender()
 		m_MaterialViewerPanel->SetMaterial(m_EntityPanel->GetSelectedMaterial());
 
 	m_MaterialViewerPanel->OnUpdate();
+
+	if (m_ShowEnvironmentPanel)
+		m_EnviromentPanel->OnImGuiRender();
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	

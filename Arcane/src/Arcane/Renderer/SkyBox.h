@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include "Texture.h"
 
 namespace Arcane
 {
@@ -8,7 +9,7 @@ namespace Arcane
 	{
 	public:
 
-		static SkyBox* Create(uint64_t assetID);
+		static SkyBox* Create(std::vector<Texture*> faces);
 	private:
 	
 	};

@@ -9,6 +9,8 @@
 #include "Panels/EntityPanel.h"
 #include "Panels/FileBrowser.h"
 #include "Panels/MaterialViewerPanel.h"
+#include "Panels/EnvironmentPanel.h"
+
 #include "Controllers/PerspectiveController.h"
 #include "Controllers/OrthographicController.h"
 
@@ -53,6 +55,7 @@ private:
 	EntityPanel* m_EntityPanel;
 	FileBrowserPanel* m_FileBrowserPanel;
 	MaterialViewerPanel* m_MaterialViewerPanel;
+	EnvironmentPanel* m_EnviromentPanel;
 
 	// Editor Camera
 	Arcane::Camera* m_EditorCamera;
@@ -60,4 +63,7 @@ private:
 
 	// Scene State
 	SceneState m_State = SceneState::EDIT;
+
+	// Panel Staes
+	bool m_ShowEnvironmentPanel = false;
 };

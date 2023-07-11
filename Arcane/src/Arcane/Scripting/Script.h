@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <filesystem>
+#include <unordered_map>
+#include <any>
 
 #include "Arcane/Assets/Asset.h"
 #include "ScriptingEngine.h"
@@ -14,6 +16,12 @@ extern "C"
 
 namespace Arcane
 {
+	struct ScriptProperty
+	{
+		std::string type;
+		std::any value;
+	};
+
 	class Script : public Asset
 	{
 	public:
@@ -21,7 +29,14 @@ namespace Arcane
 
 		void OnStart();
 		void OnUpdate(float deltaTime);
+
+		std::unordered_map<std::string, ScriptProperty> GetProperties() { return m_Properties; }
+		void SetPropertyValue(std::string key, std::any newValue) { m_Properties[key].value = newValue; }
+		void SetEntityID(uint64_t entityID);
+	private:
+		void LoadProperties();
 	private:
 		lua_State* m_LuaState;
+		std::unordered_map<std::string, ScriptProperty> m_Properties;
 	};
 }

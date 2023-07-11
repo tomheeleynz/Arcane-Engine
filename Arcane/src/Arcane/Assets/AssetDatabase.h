@@ -23,7 +23,6 @@ namespace Arcane
 		Asset* GetDefaultAsset(std::string assetName);
 		
 		bool GenerateDatabase();
-
 		bool GenerateAsset(std::filesystem::path currentAssetPath, bool dependent);
 		
 		bool CheckMetaInfo(std::filesystem::path currentMetaPath);

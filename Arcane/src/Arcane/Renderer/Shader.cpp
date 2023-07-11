@@ -89,6 +89,11 @@ namespace Arcane
 			dir + "\\src\\EditorAssets\\Shaders\\ScreenFrag.spv"
 		);
 
+		m_Shaders["Skybox"] = Shader::Create(
+			dir + "\\src\\EditorAssets\\Shaders\\SkyboxVert.spv",
+			dir + "\\src\\EditorAssets\\Shaders\\SkyboxFrag.spv"
+		);
+
 		m_Shaders["Sprite-Default"] = Shader::Create(dir + "\\src\\EditorAssets\\Shaders\\Sprite.arcaneshader");
 	}
 
