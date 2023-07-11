@@ -47,17 +47,52 @@ namespace Arcane
 
 		// Load Properies
 		LoadProperties();
+
+		// Store Start Function in lua registery
+		lua_pop(ScriptingEngine::GetLuaState(), 1);
+		
+		// Get start function
+		lua_getfield(ScriptingEngine::GetLuaState(), -1, "OnStart");
+		PrintStack(ScriptingEngine::GetLuaState());
+		m_StartIndex = luaL_ref(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX);
+		
+		// Get Update Function
+		lua_getfield(ScriptingEngine::GetLuaState(), -1, "OnUpdate");
+		PrintStack(ScriptingEngine::GetLuaState());
+		m_UpdateIndex = luaL_ref(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX);
+		PrintStack(ScriptingEngine::GetLuaState());
+
+		// Push an object reference onto the registery table (for later use)
+		lua_pushvalue(ScriptingEngine::GetLuaState(), -1);
+		PrintStack(ScriptingEngine::GetLuaState());
+		m_ObjectIndex = luaL_ref(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX);
+
+		// Clear Stack Ready for next script
+		lua_settop(ScriptingEngine::GetLuaState(), 0);
 	}
 
 	void Script::OnStart()
 	{
+		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_StartIndex);
+		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_ObjectIndex);
+		lua_pcall(ScriptingEngine::GetLuaState(), 1, 0, 0);
 	}
 
 	void Script::OnUpdate(float deltaTime)
 	{		
+		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_UpdateIndex);
+		
+		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_ObjectIndex);
+		lua_pushnumber(ScriptingEngine::GetLuaState(), deltaTime);
+		
+		lua_pcall(ScriptingEngine::GetLuaState(), 2, 0, 0);
 	}
 
 	void Script::SetEntityID(uint64_t entityID)
+	{
+	}
+
+	void Script::LoadScriptProperites()
 	{
 	}
 
@@ -96,9 +131,6 @@ namespace Arcane
 			}
 
 			m_Properties[key] = newProperty;
-
-			//const char* value = lua_tostring(L, -2);
-			//printf("%s => %s\n", key, value);
 			lua_pop(ScriptingEngine::GetLuaState(), 2);
 		}
 	}
