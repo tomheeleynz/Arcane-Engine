@@ -102,6 +102,17 @@ namespace Arcane
 		// Create lua table to add to the entity script
 		lua_newtable(ScriptingEngine::GetLuaState());
 		PrintStack(ScriptingEngine::GetLuaState());
+
+		// Set the fields of that new table
+		lua_pushnumber(ScriptingEngine::GetLuaState(), x);
+		lua_setfield(ScriptingEngine::GetLuaState(), -2, "x");
+
+		lua_pushnumber(ScriptingEngine::GetLuaState(), y);
+		lua_setfield(ScriptingEngine::GetLuaState(), -2, "y");
+
+		PrintStack(ScriptingEngine::GetLuaState());
+		lua_setfield(ScriptingEngine::GetLuaState(), -2, "EntityId");
+		PrintStack(ScriptingEngine::GetLuaState());
 	}
 
 	void Script::LoadScriptProperites()
