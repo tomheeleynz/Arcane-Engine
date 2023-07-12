@@ -70,6 +70,7 @@ namespace Arcane
 	struct ScriptComponent
 	{
 		Script* script;
+		bool updateProperties = true;
 	};
 
 	struct SpriteRendererComponent

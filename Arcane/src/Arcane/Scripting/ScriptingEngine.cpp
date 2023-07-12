@@ -68,12 +68,6 @@ namespace Arcane
 		return 1;
 	}
 
-	static int l_GetComponent(lua_State* L) {
-		const char* componentType = lua_tostring(L, 1);
-		return 1;
-	}
-
-
 	ScriptingEngine* ScriptingEngine::s_Instance = nullptr;
 
 	ScriptingEngine::ScriptingEngine()
@@ -87,9 +81,6 @@ namespace Arcane
 
 		lua_pushcfunction(m_LuaState, l_InputManager_GetKeyPressed);
 		lua_setglobal(m_LuaState, "GetKeyPressed");
-
-		lua_pushcfunction(m_LuaState, l_GetComponent);
-		lua_setglobal(m_LuaState, "GetComponent");
 	}
 
 	ScriptingEngine* ScriptingEngine::GetInstance()

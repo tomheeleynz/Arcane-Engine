@@ -1,8 +1,11 @@
 #include "Script.h"
 #include "Arcane/Scene/Scene.h"
 
+
 namespace Arcane
 {
+
+
 	static void PrintStack(lua_State* L)
 	{
 		int top = lua_gettop(L);
@@ -38,7 +41,6 @@ namespace Arcane
 		str = str + "\n";
 		std::cout << str;
 	}
-
 
 	Script::Script(std::string name)
 	{
@@ -81,19 +83,49 @@ namespace Arcane
 	void Script::OnUpdate(float deltaTime)
 	{		
 		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_UpdateIndex);
-		
 		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_ObjectIndex);
 		lua_pushnumber(ScriptingEngine::GetLuaState(), deltaTime);
-		
 		lua_pcall(ScriptingEngine::GetLuaState(), 2, 0, 0);
 	}
 
 	void Script::SetEntityID(uint64_t entityID)
 	{
+		// Will need to create an entity id table
+		// this table will combine the 64 bit entity id in two 32 bit integers
+		uint32_t x = (uint32_t)((entityID & 0xFFFFFFFF00000000LL) >> 32);
+		uint32_t y = (uint32_t)(entityID & 0xFFFFFFFFLL);
+
+		// Create Entity field that adds to table
+		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_ObjectIndex);
+		PrintStack(ScriptingEngine::GetLuaState());
+
+		// Create lua table to add to the entity script
+		lua_newtable(ScriptingEngine::GetLuaState());
+		PrintStack(ScriptingEngine::GetLuaState());
 	}
 
 	void Script::LoadScriptProperites()
 	{
+		// need to push object onto stack
+		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_ObjectIndex);
+
+		// Get properties
+		lua_pushstring(ScriptingEngine::GetLuaState(), "Properties");
+		lua_gettable(ScriptingEngine::GetLuaState(), -2);
+
+		// iterate through fields and set them 
+		lua_pushnil(ScriptingEngine::GetLuaState());
+		while (lua_next(ScriptingEngine::GetLuaState(), -2))
+		{
+			// Get Key and Value
+			lua_pushvalue(ScriptingEngine::GetLuaState(), -2);
+			const char* key = lua_tostring(ScriptingEngine::GetLuaState(), -1);
+			
+			std::string type = m_Properties[key].type;
+			std::any value = m_Properties[key].value;
+
+			lua_pop(ScriptingEngine::GetLuaState(), 2);
+		}
 	}
 
 	void Script::LoadProperties()

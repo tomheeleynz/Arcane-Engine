@@ -186,6 +186,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 
 		if (component.script != nullptr) {
 			ImGui::Text("Properties");
+			ImGui::Text(component.updateProperties == true ? "Update" : "No Update");
 
 			for (auto const& [key, val] : component.script->GetProperties()) {
 				std::string type = val.type;
@@ -199,8 +200,10 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 					int value = std::any_cast<int>(val.value);
 					ImGui::InputInt(key.c_str(), &change);
 
-					if (change != value)
+					if (change != value) {
+						component.updateProperties = true;
 						component.script->SetPropertyValue(key, change);
+					}
 				}
 
 				if (type == "float") {
@@ -208,8 +211,10 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 					float value = std::any_cast<float>(val.value);
 					ImGui::InputFloat(key.c_str(), &change);
 
-					if (change != value)
+					if (change != value) {
+						component.updateProperties = true;
 						component.script->SetPropertyValue(key, change);
+					}
 				}
 			}
 		}

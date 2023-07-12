@@ -237,7 +237,12 @@ namespace Arcane
 
 				if (scriptComponent.script != nullptr) {
 					Script* script = scriptComponent.script;
-					script->LoadScriptProperites();
+					
+					if (scriptComponent.updateProperties = true) {
+						script->LoadScriptProperites();
+						scriptComponent.updateProperties = false;
+					}
+
 					script->OnUpdate(deltaTime);
 				}
 			}
