@@ -16,10 +16,19 @@ extern "C"
 
 namespace Arcane
 {
+	class Entity;
+	class Scene;
+
 	struct ScriptProperty
 	{
 		std::string type;
 		std::any value;
+	};
+
+	struct ScriptEntityID
+	{
+		Scene* scene;
+		uint32_t entityId;
 	};
 
 	class Script : public Asset
@@ -32,9 +41,9 @@ namespace Arcane
 
 		std::unordered_map<std::string, ScriptProperty> GetProperties() { return m_Properties; }
 		void SetPropertyValue(std::string key, std::any newValue) { m_Properties[key].value = newValue; }
-		void SetEntityID(uint64_t entityID);
 
 		void LoadScriptProperites();
+		void SetEntity(Entity& entity);
 	private:
 		void LoadProperties();
 	private:

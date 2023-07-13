@@ -1,11 +1,9 @@
 #include "Script.h"
 #include "Arcane/Scene/Scene.h"
-
+#include "Arcane/ECS/Entity.h"
 
 namespace Arcane
 {
-
-
 	static void PrintStack(lua_State* L)
 	{
 		int top = lua_gettop(L);
@@ -88,27 +86,14 @@ namespace Arcane
 		lua_pcall(ScriptingEngine::GetLuaState(), 2, 0, 0);
 	}
 
-	void Script::SetEntityID(uint64_t entityID)
+	void Script::SetEntity(Entity& entity)
 	{
-		// Will need to create an entity id table
-		// this table will combine the 64 bit entity id in two 32 bit integers
-		uint32_t x = (uint32_t)((entityID & 0xFFFFFFFF00000000LL) >> 32);
-		uint32_t y = (uint32_t)(entityID & 0xFFFFFFFFLL);
-
-		// Create Entity field that adds to table
 		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_ObjectIndex);
 		PrintStack(ScriptingEngine::GetLuaState());
 
-		// Create lua table to add to the entity script
-		lua_newtable(ScriptingEngine::GetLuaState());
-		PrintStack(ScriptingEngine::GetLuaState());
-
-		// Set the fields of that new table
-		lua_pushnumber(ScriptingEngine::GetLuaState(), x);
-		lua_setfield(ScriptingEngine::GetLuaState(), -2, "x");
-
-		lua_pushnumber(ScriptingEngine::GetLuaState(), y);
-		lua_setfield(ScriptingEngine::GetLuaState(), -2, "y");
+		ScriptEntityID* scriptEntityID = (ScriptEntityID*)lua_newuserdata(ScriptingEngine::GetLuaState(), sizeof(ScriptEntityID));
+		scriptEntityID->entityId = (uint32_t)entity;
+		scriptEntityID->scene = entity.GetScene();
 
 		PrintStack(ScriptingEngine::GetLuaState());
 		lua_setfield(ScriptingEngine::GetLuaState(), -2, "EntityId");

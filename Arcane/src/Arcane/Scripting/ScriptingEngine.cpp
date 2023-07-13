@@ -2,6 +2,7 @@
 
 #include "ScriptingEngine.h"
 #include "Arcane/Core/InputManager.h"
+#include "Arcane/ECS/Entity.h"
 
 namespace Arcane
 {
@@ -68,6 +69,48 @@ namespace Arcane
 		return 1;
 	}
 
+	static int l_GetComponent(lua_State* L) {
+		lua_getfield(L, -1, "EntityId");
+
+		// Gets Script Entity
+		ScriptEntityID* scriptEntityID = (ScriptEntityID*)lua_touserdata(L, -1);
+		Entity entity((entt::entity)scriptEntityID->entityId, scriptEntityID->scene);
+
+		// Gets String 
+		std::string componentType = lua_tostring(L, -3);
+
+		if (componentType == "Transform") {
+			TransformComponent& component = entity.GetComponent<TransformComponent>();
+		}
+
+		return 1;
+	}
+
+	static int l_HasComponent(lua_State* L)
+	{
+		// Get Entity Id Struct
+		lua_getfield(L, -1, "EntityId");
+		
+		// Get Entity
+		ScriptEntityID* scriptEntityID = (ScriptEntityID*)lua_touserdata(L, -1);
+		Entity entity((entt::entity)scriptEntityID->entityId, scriptEntityID->scene);
+		
+		// Get Component Type
+		std::string componentType = lua_tostring(L, -3);
+
+		bool hasComponent = false;
+		if (componentType == "Transform")
+		{
+			hasComponent = entity.HasComponent<TransformComponent>();
+		}
+		else if (componentType == "MeshRenderer") {
+			hasComponent = entity.HasComponent<MeshRendererComponent>();
+		}
+	
+		lua_pushboolean(L, hasComponent);
+		return 1;
+	}
+
 	ScriptingEngine* ScriptingEngine::s_Instance = nullptr;
 
 	ScriptingEngine::ScriptingEngine()
@@ -81,6 +124,12 @@ namespace Arcane
 
 		lua_pushcfunction(m_LuaState, l_InputManager_GetKeyPressed);
 		lua_setglobal(m_LuaState, "GetKeyPressed");
+
+		lua_pushcfunction(m_LuaState, l_GetComponent);
+		lua_setglobal(m_LuaState, "GetComponent");
+
+		lua_pushcfunction(m_LuaState, l_HasComponent);
+		lua_setglobal(m_LuaState, "HasComponent");
 	}
 
 	ScriptingEngine* ScriptingEngine::GetInstance()

@@ -230,10 +230,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 
 				if (scriptAsset != nullptr && scriptAsset->GetAssetType() == AssetType::SCRIPT) {
 					Script* script = static_cast<Script*>(scriptAsset);
-					
-					// Get Entity ID
-					Arcane::Core::UUID uuid = entity.GetComponent<IDComponent>().uuid;
-					script->SetEntityID((uint64_t)uuid);
+					script->SetEntity(entity);
 					component.script = script;
 					memset(buf1, 0, sizeof(buf1));
 					std::strncpy(buf1, scriptAsset->GetName().c_str(), sizeof(buf1));
