@@ -91,8 +91,9 @@ namespace Arcane
 		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_ObjectIndex);
 		PrintStack(ScriptingEngine::GetLuaState());
 
-		uint32_t* entityId = (uint32_t*)lua_newuserdata(ScriptingEngine::GetLuaState(), sizeof(uint32_t));
-		entityId = (uint32_t*)&entity;
+		ScriptEntityID* newUserData = (ScriptEntityID*)lua_newuserdata(ScriptingEngine::GetLuaState(), sizeof(ScriptEntityID));
+		newUserData->id = (uint32_t)entity;
+
 
 		PrintStack(ScriptingEngine::GetLuaState());
 		lua_setfield(ScriptingEngine::GetLuaState(), -2, "EntityId");
@@ -164,6 +165,19 @@ namespace Arcane
 			{
 				newProperty.type = "string";
 				newProperty.value = (std::string)lua_tostring(ScriptingEngine::GetLuaState(), -2);
+			} 
+
+			if (lua_isuserdata(ScriptingEngine::GetLuaState(), -2)) 
+			{
+				if (luaL_testudata(ScriptingEngine::GetLuaState(), -2, "Vector3Metatable") != nullptr) {
+					newProperty.type = "Vector3";
+					newProperty.value = *(glm::vec3*)lua_touserdata(ScriptingEngine::GetLuaState(), -2);
+				}
+
+				if (luaL_testudata(ScriptingEngine::GetLuaState(), -2, "Vector2Metatable") != nullptr) {
+					newProperty.type = "Vector2";
+					newProperty.value = *(glm::vec2*)lua_touserdata(ScriptingEngine::GetLuaState(), -2);
+				}
 			}
 
 			m_Properties[key] = newProperty;

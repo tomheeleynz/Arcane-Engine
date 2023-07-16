@@ -216,6 +216,33 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 						component.script->SetPropertyValue(key, change);
 					}
 				}
+
+				if (type == "Vector2") {
+					glm::vec2 change = std::any_cast<glm::vec2>(val.value);
+					glm::vec2 value = std::any_cast<glm::vec2>(val.value);
+
+					ImGui::InputFloat2(key.c_str(), glm::value_ptr(change));
+
+					if (change.x != value.x || change.y != value.y)
+					{
+						component.updateProperties = true;
+						component.script->SetPropertyValue(key, change);
+					}
+					
+				}
+
+				if (type == "Vector3") {
+					glm::vec3 change = std::any_cast<glm::vec3>(val.value);
+					glm::vec3 value = std::any_cast<glm::vec3>(val.value);
+
+					ImGui::InputFloat3(key.c_str(), glm::value_ptr(change));
+
+					if (change.x != value.x || change.y != value.y || change.z != value.z)
+					{
+						component.updateProperties = true;
+						component.script->SetPropertyValue(key, change);
+					}
+				}
 			}
 		}
 

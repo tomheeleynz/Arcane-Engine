@@ -18,9 +18,11 @@ namespace Arcane
 	private:
 		static void CreateVec2Metatable(lua_State* L);
 		static void CreateVec3Metatable(lua_State* L);
+		static void CreateEntityIdMetatable(lua_State* L);
 
 	private:
 		static void CreateVec2Table(lua_State* L);
 		static void CreateVec3Table(lua_State* L);
+		static void CreateEntityIdTable(lua_State* L);
 	};
 }

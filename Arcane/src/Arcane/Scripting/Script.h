@@ -27,8 +27,7 @@ namespace Arcane
 
 	struct ScriptEntityID
 	{
-		Scene* scene;
-		uint32_t entityId;
+		uint32_t id;
 	};
 
 	class Script : public Asset

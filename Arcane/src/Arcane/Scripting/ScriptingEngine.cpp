@@ -72,8 +72,10 @@ namespace Arcane
 		lua_getfield(L, -1, "EntityId");
 
 		// Gets Script Entity
-		uint32_t* entityId = (uint32_t*)lua_touserdata(L, -1);
-		Entity entity((entt::entity)*entityId, ScriptingEngine::GetSceneContext());
+		ScriptEntityID* userData = (ScriptEntityID*)lua_touserdata(L, -1);
+		uint32_t id = userData->id;
+
+		Entity entity((entt::entity)id, GetSceneContext());
 
 		// Gets String 
 		std::string componentType = lua_tostring(L, -3);
@@ -98,7 +100,7 @@ namespace Arcane
 
 		// Get Entity
 		ScriptEntityID* scriptEntityID = (ScriptEntityID*)lua_touserdata(L, -1);
-		Entity entity((entt::entity)scriptEntityID->entityId, ScriptingEngine::GetSceneContext());
+		Entity entity((entt::entity)scriptEntityID->id, ScriptingEngine::GetSceneContext());
 
 		// Get Component Type
 		std::string componentType = lua_tostring(L, -3);

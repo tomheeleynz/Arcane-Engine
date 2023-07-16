@@ -2,6 +2,7 @@
 
 #include "Arcane/Scripting/ScriptingEngine.h"
 #include "Arcane/Core/InputManager.h"
+#include "Script.h"
 
 namespace Arcane
 {
@@ -34,6 +35,7 @@ namespace Arcane
 	{
 		CreateVec2Table(L);
 		CreateVec3Table(L);
+		CreateEntityIdTable(L);
 	}
 
 	void ScriptGlue::RegisterFunctions(lua_State* L)
@@ -44,12 +46,17 @@ namespace Arcane
 
 		lua_pushcfunction(L, l_InputManager_GetKeyPressed);
 		lua_setglobal(L, "GetKeyPressed");
+
+		// Component functions
+		lua_pushcfunction(L, ScriptingEngine::GetComponent);
+		lua_setglobal(L, "GetComponent");
 	}
 
 	void ScriptGlue::RegisterMetatables(lua_State* L)
 	{
 		CreateVec2Metatable(L);
 		CreateVec3Metatable(L);
+		CreateEntityIdMetatable(L);
 	}
 
 	void ScriptGlue::CreateVec2Metatable(lua_State* L)
@@ -170,6 +177,51 @@ namespace Arcane
 		lua_settable(L, -3);
 	}
 
+	void ScriptGlue::CreateEntityIdMetatable(lua_State* L)
+	{
+		luaL_newmetatable(L, "EntityIdMetatable");
+
+		auto EntityIdIndex = [](lua_State* L) -> int {
+			ScriptEntityID* userData = (ScriptEntityID*)lua_touserdata(L, -1);
+			const char* index = lua_tostring(L, -2);
+
+			if (strcmp(index, "id") == 0) {
+				lua_pushnumber(L, userData->id);
+				return 1;
+			}
+			else {
+				lua_getglobal(L, "EntityId");
+				lua_pushstring(L, index);
+				lua_rawget(L, -2);
+				return 1;
+			}
+		};
+
+		auto EntityIdNewIndex = [](lua_State* L) -> int {
+			ScriptEntityID* idUserData = (ScriptEntityID*)lua_touserdata(L, -3);
+			const char* index = lua_tostring(L, -2);
+			
+			if (strcmp(index, "id") == 0)
+			{
+				idUserData->id = (uint32_t)lua_tonumber(L, -1);
+			}
+			else
+			{
+				assert(false);
+			}
+
+			return 0;
+		};
+
+		lua_pushstring(L, "__index");
+		lua_pushcfunction(L, EntityIdIndex);
+		lua_settable(L, -3);
+
+		lua_pushstring(L, "__newindex");
+		lua_pushcfunction(L, EntityIdNewIndex);
+		lua_settable(L, -3);
+	}
+
 	void ScriptGlue::CreateVec2Table(lua_State* L)
 	{
 		lua_newtable(L);
@@ -208,5 +260,9 @@ namespace Arcane
 
 		lua_pushcfunction(L, CreateVector3);
 		lua_setfield(L, -2, "new");
+	}
+
+	void ScriptGlue::CreateEntityIdTable(lua_State* L)
+	{
 	}
 }
