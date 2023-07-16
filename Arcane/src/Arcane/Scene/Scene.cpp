@@ -232,15 +232,18 @@ namespace Arcane
 		// Run Update Scripts
 		{
 			auto view = m_Registry.view<ScriptComponent>();
+			ScriptingEngine::SetSceneContext(this);
+			
 			for (auto& entity : view) {
 				auto& scriptComponent = view.get<ScriptComponent>(entity);
 
 				if (scriptComponent.script != nullptr) {
 					Script* script = scriptComponent.script;
-					
-					if (scriptComponent.updateProperties = true) {
+		
+					if (scriptComponent.updateProperties == true) {
 						script->LoadScriptProperites();
 						scriptComponent.updateProperties = false;
+						m_Registry.emplace_or_replace<ScriptComponent>(entity, scriptComponent);
 					}
 
 					script->OnUpdate(deltaTime);

@@ -4,6 +4,8 @@
 #include "Arcane/Core/InputManager.h"
 #include "Arcane/ECS/Entity.h"
 
+#include "ScriptGlue.h"
+
 namespace Arcane
 {
 	static void PrintStack(lua_State* L)
@@ -43,58 +45,61 @@ namespace Arcane
 		std::cout << str;
 	}
 
+	ScriptingEngine* ScriptingEngine::s_Instance = nullptr;
 
-	static int l_InputManager_GetKeyReleased(lua_State* L) {
-		// Get Key Code
-		int keyCode = lua_tonumber(L, 1);
+	ScriptingEngine::ScriptingEngine()
+	{
+		m_LuaState = luaL_newstate();
+		luaL_openlibs(m_LuaState);
 
-		// Check Key Code
-		bool isReleased = InputManager::GetKeyReleased(keyCode);
-
-		// Push Boolean onto stack
-		lua_pushboolean(L, isReleased);
-		
-		return 1;
+		ScriptGlue::RegisterFunctions(m_LuaState);
+		ScriptGlue::RegisterMetatables(m_LuaState);
+		ScriptGlue::RegisterTables(m_LuaState);
 	}
 
-	static int l_InputManager_GetKeyPressed(lua_State* L) {
-		// Get Key Code
-		int keyCode = lua_tonumber(L, 1);
-
-		// Check Key Code
-		bool isPressed = InputManager::GetKeyPressed(keyCode);
-
-		// Push Boolean onto stack
-		lua_pushboolean(L, isPressed);
-		return 1;
+	void ScriptingEngine::SetSceneContext(Scene* scene)
+	{
+		GetInstance()->SetSceneContextImpl(scene);
 	}
 
-	static int l_GetComponent(lua_State* L) {
+	Scene* ScriptingEngine::GetSceneContext()
+	{
+		return GetInstance()->GetSceneContextImpl();
+	}
+
+	int ScriptingEngine::GetComponent(lua_State* L)
+	{
 		lua_getfield(L, -1, "EntityId");
 
 		// Gets Script Entity
-		ScriptEntityID* scriptEntityID = (ScriptEntityID*)lua_touserdata(L, -1);
-		Entity entity((entt::entity)scriptEntityID->entityId, scriptEntityID->scene);
+		uint32_t* entityId = (uint32_t*)lua_touserdata(L, -1);
+		Entity entity((entt::entity)*entityId, ScriptingEngine::GetSceneContext());
 
 		// Gets String 
 		std::string componentType = lua_tostring(L, -3);
 
 		if (componentType == "Transform") {
 			TransformComponent& component = entity.GetComponent<TransformComponent>();
+			return 1;
+		}
+		else if (componentType == "MeshRenderer")
+		{
+			MeshRendererComponent& component = entity.GetComponent<MeshRendererComponent>();
+			return 1;
 		}
 
 		return 1;
 	}
 
-	static int l_HasComponent(lua_State* L)
+	int ScriptingEngine::HasComponent(lua_State* L)
 	{
 		// Get Entity Id Struct
 		lua_getfield(L, -1, "EntityId");
-		
+
 		// Get Entity
 		ScriptEntityID* scriptEntityID = (ScriptEntityID*)lua_touserdata(L, -1);
-		Entity entity((entt::entity)scriptEntityID->entityId, scriptEntityID->scene);
-		
+		Entity entity((entt::entity)scriptEntityID->entityId, ScriptingEngine::GetSceneContext());
+
 		// Get Component Type
 		std::string componentType = lua_tostring(L, -3);
 
@@ -106,30 +111,14 @@ namespace Arcane
 		else if (componentType == "MeshRenderer") {
 			hasComponent = entity.HasComponent<MeshRendererComponent>();
 		}
-	
+
 		lua_pushboolean(L, hasComponent);
 		return 1;
 	}
 
-	ScriptingEngine* ScriptingEngine::s_Instance = nullptr;
-
-	ScriptingEngine::ScriptingEngine()
+	int ScriptingEngine::SetComponent(lua_State* L)
 	{
-		m_LuaState = luaL_newstate();
-		luaL_openlibs(m_LuaState);
-		
-		// Register Functions
-		lua_pushcfunction(m_LuaState, l_InputManager_GetKeyReleased);
-		lua_setglobal(m_LuaState, "GetKeyReleased");
-
-		lua_pushcfunction(m_LuaState, l_InputManager_GetKeyPressed);
-		lua_setglobal(m_LuaState, "GetKeyPressed");
-
-		lua_pushcfunction(m_LuaState, l_GetComponent);
-		lua_setglobal(m_LuaState, "GetComponent");
-
-		lua_pushcfunction(m_LuaState, l_HasComponent);
-		lua_setglobal(m_LuaState, "HasComponent");
+		return 0;
 	}
 
 	ScriptingEngine* ScriptingEngine::GetInstance()
@@ -161,5 +150,15 @@ namespace Arcane
 	lua_State* ScriptingEngine::GetLuaStateImpl()
 	{
 		return m_LuaState;
+	}
+
+	void ScriptingEngine::SetSceneContextImpl(Scene* scene)
+	{
+		m_SceneContext = scene;
+	}
+
+	Scene* ScriptingEngine::GetSceneContextImpl()
+	{
+		return m_SceneContext;
 	}
 }

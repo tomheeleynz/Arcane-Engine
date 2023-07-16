@@ -91,9 +91,8 @@ namespace Arcane
 		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_ObjectIndex);
 		PrintStack(ScriptingEngine::GetLuaState());
 
-		ScriptEntityID* scriptEntityID = (ScriptEntityID*)lua_newuserdata(ScriptingEngine::GetLuaState(), sizeof(ScriptEntityID));
-		scriptEntityID->entityId = (uint32_t)entity;
-		scriptEntityID->scene = entity.GetScene();
+		uint32_t* entityId = (uint32_t*)lua_newuserdata(ScriptingEngine::GetLuaState(), sizeof(uint32_t));
+		entityId = (uint32_t*)&entity;
 
 		PrintStack(ScriptingEngine::GetLuaState());
 		lua_setfield(ScriptingEngine::GetLuaState(), -2, "EntityId");
@@ -102,6 +101,9 @@ namespace Arcane
 
 	void Script::LoadScriptProperites()
 	{
+		// Clear lua stack
+		lua_settop(ScriptingEngine::GetLuaState(), 0);
+
 		// need to push object onto stack
 		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_ObjectIndex);
 
@@ -115,10 +117,16 @@ namespace Arcane
 		{
 			// Get Key and Value
 			lua_pushvalue(ScriptingEngine::GetLuaState(), -2);
+
 			const char* key = lua_tostring(ScriptingEngine::GetLuaState(), -1);
-			
+
 			std::string type = m_Properties[key].type;
 			std::any value = m_Properties[key].value;
+
+			if (type == "int") {
+				lua_pushinteger(ScriptingEngine::GetLuaState(), std::any_cast<int>(value));
+				lua_setfield(ScriptingEngine::GetLuaState(), -5, key);
+			}
 
 			lua_pop(ScriptingEngine::GetLuaState(), 2);
 		}
