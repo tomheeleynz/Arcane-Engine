@@ -200,16 +200,7 @@ namespace Arcane
 		auto EntityIdNewIndex = [](lua_State* L) -> int {
 			ScriptEntityID* idUserData = (ScriptEntityID*)lua_touserdata(L, -3);
 			const char* index = lua_tostring(L, -2);
-			
-			if (strcmp(index, "id") == 0)
-			{
-				idUserData->id = (uint32_t)lua_tonumber(L, -1);
-			}
-			else
-			{
-				assert(false);
-			}
-
+			assert(false);
 			return 0;
 		};
 

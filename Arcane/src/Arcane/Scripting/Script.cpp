@@ -94,7 +94,6 @@ namespace Arcane
 		ScriptEntityID* newUserData = (ScriptEntityID*)lua_newuserdata(ScriptingEngine::GetLuaState(), sizeof(ScriptEntityID));
 		newUserData->id = (uint32_t)entity;
 
-
 		PrintStack(ScriptingEngine::GetLuaState());
 		lua_setfield(ScriptingEngine::GetLuaState(), -2, "EntityId");
 		PrintStack(ScriptingEngine::GetLuaState());

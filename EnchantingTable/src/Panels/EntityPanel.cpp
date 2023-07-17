@@ -1,6 +1,8 @@
 #include "EntityPanel.h"
 #include "PanelStructs.h"
 
+#include <imgui_internal.h>
+#include <misc/cpp/imgui_stdlib.h>
 
 template <typename T, typename UIFunction>
 static void DrawComponent(std::string name, Arcane::Entity entity, UIFunction uiFunction)
@@ -13,6 +15,53 @@ static void DrawComponent(std::string name, Arcane::Entity entity, UIFunction ui
 		uiFunction(component, entity);
 		ImGui::Separator();
 	}
+}
+
+static void DrawVec3Control(std::string label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f)
+{
+	ImGui::PushID(label.c_str());
+
+	ImGui::Columns(2);
+	ImGui::SetColumnWidth(0, columnWidth);
+	ImGui::Text(label.c_str());
+
+	ImGui::NextColumn();
+	ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{0.0f, 0.0f});
+
+	float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+	ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight};
+
+	// X Value
+	if (ImGui::Button("X", buttonSize))
+		values.x = resetValue;
+
+	ImGui::SameLine();
+	ImGui::DragFloat("##X", &values.x, 0.1f);
+	ImGui::PopItemWidth();
+	ImGui::SameLine();
+
+	// Y Value
+	if (ImGui::Button("Y", buttonSize))
+		values.y = resetValue;
+
+	ImGui::SameLine();
+	ImGui::DragFloat("##Y", &values.y, 0.1f);
+	ImGui::PopItemWidth();
+	ImGui::SameLine();
+
+	// Z Value
+	if (ImGui::Button("Z", buttonSize))
+		values.z = resetValue;
+
+	ImGui::SameLine();
+	ImGui::DragFloat("##Z", &values.z, 0.1f);
+	ImGui::PopItemWidth();
+
+	ImGui::PopStyleVar();
+
+	ImGui::Columns(1);
+	ImGui::PopID();
 }
 
 EntityPanel::EntityPanel()
@@ -56,15 +105,16 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 
 	DrawComponent<TransformComponent>("Transform", entity, [](auto& component, auto& entity) {
 		// Position
-		ImGui::InputFloat3("Position", glm::value_ptr(component.pos));
+		// ImGui::InputFloat3("Position", glm::value_ptr(component.pos));
+		DrawVec3Control("Position", component.pos);
 
 		// Rotation
 		glm::vec3 rotation = glm::degrees(component.rotation);
-		ImGui::InputFloat3("Rotation", glm::value_ptr(rotation));
+		DrawVec3Control("Rotation", rotation);
 		component.rotation = glm::radians(rotation);
-		
+	
 		// Scale
-		ImGui::InputFloat3("Scale", glm::value_ptr(component.scale));
+		DrawVec3Control("Scale", component.scale);
 	});
 
 	DrawComponent<CameraComponent>("Camera", entity, [](auto& component, auto& entity) {
@@ -235,7 +285,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 					glm::vec3 change = std::any_cast<glm::vec3>(val.value);
 					glm::vec3 value = std::any_cast<glm::vec3>(val.value);
 
-					ImGui::InputFloat3(key.c_str(), glm::value_ptr(change));
+					DrawVec3Control(key, change);
 
 					if (change.x != value.x || change.y != value.y || change.z != value.z)
 					{
