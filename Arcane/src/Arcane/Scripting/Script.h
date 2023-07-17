@@ -27,7 +27,8 @@ namespace Arcane
 
 	struct ScriptEntityID
 	{
-		uint32_t id;
+		ScriptEntityID(uint32_t entityID) { id = entityID; }
+		uint32_t id = -1;
 	};
 
 	class Script : public Asset

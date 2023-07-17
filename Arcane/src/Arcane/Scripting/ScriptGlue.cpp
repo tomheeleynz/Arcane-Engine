@@ -6,6 +6,42 @@
 
 namespace Arcane
 {
+	static void PrintStack(lua_State* L)
+	{
+		int top = lua_gettop(L);
+
+		std::string str = "From top to bottom, the lua stack is \n";
+		for (unsigned index = top; index > 0; index--)
+		{
+			int type = lua_type(L, index);
+			switch (type)
+			{
+				// booleans
+			case LUA_TBOOLEAN:
+				str = str + (lua_toboolean(L, index) ? "true" : "false") + "\n";
+				break;
+
+				// numbers
+			case LUA_TNUMBER:
+				str = str + std::to_string(lua_tonumber(L, index)) + "\n";
+				break;
+
+				// strings
+			case LUA_TSTRING:
+				str = str + lua_tostring(L, index) + "\n";
+				break;
+
+				// other
+			default:
+				str = str + lua_typename(L, type) + "\n";
+				break;
+			}
+		}
+
+		str = str + "\n";
+		std::cout << str;
+	}
+
 	static int l_InputManager_GetKeyReleased(lua_State* L) {
 		// Get Key Code
 		int keyCode = lua_tonumber(L, 1);
@@ -179,18 +215,18 @@ namespace Arcane
 
 	void ScriptGlue::CreateEntityIdMetatable(lua_State* L)
 	{
-		luaL_newmetatable(L, "EntityIdMetatable");
+		luaL_newmetatable(L, "EntityMetatable");
 
 		auto EntityIdIndex = [](lua_State* L) -> int {
-			ScriptEntityID* userData = (ScriptEntityID*)lua_touserdata(L, -1);
-			const char* index = lua_tostring(L, -2);
+			ScriptEntityID* userData = (ScriptEntityID*)lua_touserdata(L, -2);
+			const char* index = lua_tostring(L, -1);
 
 			if (strcmp(index, "id") == 0) {
 				lua_pushnumber(L, userData->id);
 				return 1;
 			}
 			else {
-				lua_getglobal(L, "EntityId");
+				lua_getglobal(L, "Entity");
 				lua_pushstring(L, index);
 				lua_rawget(L, -2);
 				return 1;
@@ -255,5 +291,28 @@ namespace Arcane
 
 	void ScriptGlue::CreateEntityIdTable(lua_State* L)
 	{
+		lua_newtable(L);
+		int entityIdTable = lua_gettop(L);
+		lua_pushvalue(L, entityIdTable);
+		lua_setglobal(L, "Entity");
+
+		auto CreateEntityId = [](lua_State* L) -> int {
+			PrintStack(L);
+			
+			uint32_t entityId = 0;
+			if (lua_isnumber(L, -1))
+				entityId = (uint32_t)lua_tonumber(L, -1);
+			
+			void* ptrToScriptEntity = lua_newuserdata(L, sizeof(ScriptEntityID));
+			new (ptrToScriptEntity) ScriptEntityID(entityId);
+			
+			luaL_getmetatable(L, "EntityMetatable");
+			lua_setmetatable(L, -2);
+			
+			return 1;
+		};
+
+		lua_pushcfunction(L, CreateEntityId);
+		lua_setfield(L, -2, "new");
 	}
 }

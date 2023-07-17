@@ -293,6 +293,21 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 						component.script->SetPropertyValue(key, change);
 					}
 				}
+
+				if (type == "Entity")
+				{
+					uint32_t change = std::any_cast<uint32_t>(val.value);
+					uint32_t value = std::any_cast<uint32_t>(val.value);
+
+					if (change == 0) {
+						ImGui::InputText(key.c_str(), &std::string("Empty Entity"));
+					}
+					else {
+						Arcane::Entity entityProperty((entt::entity)change, m_Context.GetScene());
+						std::string entityPropertyName = entityProperty.GetComponent<TagComponent>().tag;
+						ImGui::InputText(key.c_str(), &entityPropertyName);
+					}
+				}
 			}
 		}
 
