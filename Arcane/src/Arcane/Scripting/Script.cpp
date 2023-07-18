@@ -184,8 +184,6 @@ namespace Arcane
 			lua_pushvalue(ScriptingEngine::GetLuaState(), -2);
 			
 			const char* key = lua_tostring(ScriptingEngine::GetLuaState(), -1);
-			
-			std::cout << key << std::endl;
 
 			ScriptProperty newProperty;
 

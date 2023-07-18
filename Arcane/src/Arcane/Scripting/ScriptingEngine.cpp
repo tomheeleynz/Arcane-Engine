@@ -123,6 +123,22 @@ namespace Arcane
 		return 0;
 	}
 
+	int ScriptingEngine::SetTransform(lua_State* L)
+	{
+		PrintStack(L);
+		
+		ScriptEntityID* scriptEntityId = (ScriptEntityID*)lua_touserdata(L, -1);
+		glm::vec3* translation = (glm::vec3*)lua_touserdata(L, -2);
+		Arcane::Entity scriptEntity((entt::entity)scriptEntityId->id, GetSceneContext());
+
+		TransformComponent& transform = scriptEntity.GetComponent<TransformComponent>();
+		transform.pos.x = translation->x;
+		transform.pos.y = translation->y;
+		transform.pos.z = translation->z;
+
+		return 0;
+	}
+
 	ScriptingEngine* ScriptingEngine::GetInstance()
 	{
 		if (!s_Instance)

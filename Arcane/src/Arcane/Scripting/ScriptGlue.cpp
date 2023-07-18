@@ -86,6 +86,9 @@ namespace Arcane
 		// Component functions
 		lua_pushcfunction(L, ScriptingEngine::GetComponent);
 		lua_setglobal(L, "GetComponent");
+
+		lua_pushcfunction(L, ScriptingEngine::SetTransform);
+		lua_setglobal(L, "SetTransform");
 	}
 
 	void ScriptGlue::RegisterMetatables(lua_State* L)
