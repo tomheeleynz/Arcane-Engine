@@ -63,9 +63,16 @@ void ScenePanel::DrawNode(Arcane::Entity& entity)
 	flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 	
 	bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());
+
 	if (ImGui::IsItemClicked())
 	{
 		m_SelectedEntity = entity;
+	}
+
+	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+		uint32_t entityId = (uint32_t)m_SelectedEntity;
+		ImGui::SetDragDropPayload("CURRENT_SELECTED_ENTITY", &entityId, sizeof(uint32_t));
+		ImGui::EndDragDropSource();
 	}
 
 	if (opened)

@@ -121,6 +121,7 @@ namespace Arcane
 
 		// iterate through fields and set them 
 		lua_pushnil(ScriptingEngine::GetLuaState());
+	
 		while (lua_next(ScriptingEngine::GetLuaState(), -2))
 		{
 			// Get Key and Value
@@ -132,8 +133,40 @@ namespace Arcane
 			std::any value = m_Properties[key].value;
 
 			if (type == "int") {
-				lua_pushinteger(ScriptingEngine::GetLuaState(), std::any_cast<int>(value));
+				// Working
+				int intValue = std::any_cast<int>(value);
+				lua_pushinteger(ScriptingEngine::GetLuaState(), intValue);
 				lua_setfield(ScriptingEngine::GetLuaState(), -5, key);
+			}
+
+			if (type == "float") {
+				// Working
+				float floatValue = std::any_cast<float>(value);
+				lua_pushnumber(ScriptingEngine::GetLuaState(), floatValue);
+				lua_setfield(ScriptingEngine::GetLuaState(), -5, key);
+			}
+
+			if (type == "string") {
+				// Working
+				std::string stringValue = std::any_cast<std::string>(value);
+				lua_pushstring(ScriptingEngine::GetLuaState(), stringValue.c_str());
+				lua_setfield(ScriptingEngine::GetLuaState(), -5, key);
+			}
+
+			if (type == "Vector3") {
+				// Working
+				glm::vec3 vector3Value = std::any_cast<glm::vec3>(value);
+				glm::vec3* ptrToUserData = (glm::vec3*)lua_touserdata(ScriptingEngine::GetLuaState(), -2);
+				ptrToUserData->x = vector3Value.x;
+				ptrToUserData->y = vector3Value.y;
+				ptrToUserData->z = vector3Value.z;
+			} 
+			if (type == "Vector2") {
+				// Working
+				glm::vec2 vector2Value = std::any_cast<glm::vec2>(value);
+				glm::vec2* ptrToUserData = (glm::vec2*)lua_touserdata(ScriptingEngine::GetLuaState(), -2);
+				ptrToUserData->x = vector2Value.x;
+				ptrToUserData->y = vector2Value.y;
 			}
 
 			lua_pop(ScriptingEngine::GetLuaState(), 2);
