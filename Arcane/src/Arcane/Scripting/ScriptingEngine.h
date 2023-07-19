@@ -29,6 +29,8 @@ namespace Arcane
 		static int GetComponent(lua_State* L);
 		static int HasComponent(lua_State* L);
 		static int SetComponent(lua_State* L);
+
+		// Set transform specifically
 		static int SetTransform(lua_State* L);
 	private:
 		ScriptingEngine();

@@ -304,10 +304,10 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 
 				if (type == "Entity")
 				{
-					uint32_t change = std::any_cast<uint32_t>(val.value);
-					uint32_t value = std::any_cast<uint32_t>(val.value);
+					Arcane::Entity* change = nullptr;
+					Arcane::Entity * value = nullptr;
 
-					if (change == 0) {
+					if (change == nullptr) {
 						ImGui::InputText(key.c_str(), &std::string("Empty Entity"));
 
 						if (ImGui::BeginDragDropTarget())
@@ -315,16 +315,13 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 							const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ENTITY");
 
 							if (payload != nullptr) {
-								uint32_t entityId = *static_cast<uint32_t*>(payload->Data);
-								std::cout << entityId << std::endl;
 							}
 
 							ImGui::EndDragDropTarget();
 						}
 					}
 					else {
-						Arcane::Entity entityProperty((entt::entity)change, m_Context.GetScene());
-						std::string entityPropertyName = entityProperty.GetComponent<TagComponent>().tag;
+						std::string entityPropertyName = change->GetComponent<TagComponent>().tag;
 						ImGui::InputText(key.c_str(), &entityPropertyName);
 
 						if (ImGui::BeginDragDropTarget())

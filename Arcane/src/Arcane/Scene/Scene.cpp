@@ -81,10 +81,13 @@ namespace Arcane
 	{
 		entt::entity newHandle = m_Registry.create();
 		Entity* newEntity = new Entity(newHandle, this);
+		Core::UUID newUUID = Core::UUID();
 
 		newEntity->AddComponent<TagComponent>(name);
-		newEntity->AddComponent<IDComponent>();
+		newEntity->AddComponent<IDComponent>(newUUID);
 		newEntity->AddComponent<TransformComponent>();
+
+		m_EntityMap[newUUID] = newHandle;
 
 		return newEntity;
 	}
@@ -98,10 +101,17 @@ namespace Arcane
 		newEntity->AddComponent<IDComponent>(uuid);
 		newEntity->AddComponent<TransformComponent>();
 
+		m_EntityMap[uuid] = newHandle;
+
 		return newEntity;
 	}
 
+	Entity Scene::GetEntityByUUID(Core::UUID uuid) {
+		if (m_EntityMap.find(uuid) != m_EntityMap.end())
+			return { m_EntityMap.at(uuid), this };
 
+		return {};
+	}
 
 	void Scene::DeleteEntity(Entity& entity)
 	{

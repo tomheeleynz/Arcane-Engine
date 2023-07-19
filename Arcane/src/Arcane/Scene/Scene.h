@@ -4,6 +4,7 @@
 #include <entt/entt.hpp>
 #include <Kinetics/Core/World.h>
 #include <map>
+#include <unordered_map>
 
 #include "Arcane/ECS/Component.h"
 #include "Arcane/Renderer/SceneRenderer.h"
@@ -21,6 +22,8 @@ namespace Arcane
 
 		Entity* CreateEntity(std::string name);
 		Entity* CreateEntityWithUUID(std::string name, uint64_t uuid);
+
+		Entity GetEntityByUUID(Core::UUID uuid);
 
 		static Scene* Copy(Scene* other);
 
@@ -49,6 +52,9 @@ namespace Arcane
 		SceneRenderer* m_SceneRenderer;
 		SceneRenderer2D* m_SceneRenderer2D;
 		Kinetics::World* m_PhysicsWorld;
+
+		std::unordered_map<Core::UUID, entt::entity> m_EntityMap;
+
 		friend class Entity;
 	};
 }

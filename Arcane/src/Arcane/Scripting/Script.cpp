@@ -42,29 +42,10 @@ namespace Arcane
 
 	Script::Script(std::string name)
 	{
+		lua_settop(ScriptingEngine::GetLuaState(), 0);
 		// Places the entity table on the lua stack
 		luaL_dofile(ScriptingEngine::GetLuaState(), name.c_str());
 
-		// Load Properies
-		LoadProperties();
-
-		// Store Start Function in lua registery
-		lua_pop(ScriptingEngine::GetLuaState(), 1);
-		
-		// Get start function
-		lua_getfield(ScriptingEngine::GetLuaState(), -1, "OnStart");
-		PrintStack(ScriptingEngine::GetLuaState());
-		m_StartIndex = luaL_ref(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX);
-		
-		// Get Update Function
-		lua_getfield(ScriptingEngine::GetLuaState(), -1, "OnUpdate");
-		PrintStack(ScriptingEngine::GetLuaState());
-		m_UpdateIndex = luaL_ref(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX);
-		PrintStack(ScriptingEngine::GetLuaState());
-
-		// Push an object reference onto the registery table (for later use)
-		lua_pushvalue(ScriptingEngine::GetLuaState(), -1);
-		PrintStack(ScriptingEngine::GetLuaState());
 		m_ObjectIndex = luaL_ref(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX);
 
 		// Clear Stack Ready for next script
@@ -74,37 +55,73 @@ namespace Arcane
 	void Script::OnStart()
 	{
 		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_StartIndex);
-		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_ObjectIndex);
+		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_EntityIdIndex);
 		lua_pcall(ScriptingEngine::GetLuaState(), 1, 0, 0);
 	}
 
 	void Script::OnUpdate(float deltaTime)
 	{		
 		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_UpdateIndex);
-		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_ObjectIndex);
+		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_EntityIdIndex);
 		lua_pushnumber(ScriptingEngine::GetLuaState(), deltaTime);
 		lua_pcall(ScriptingEngine::GetLuaState(), 2, 0, 0);
 	}
 
 	void Script::SetEntity(Entity& entity)
 	{
-		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_ObjectIndex);
-		PrintStack(ScriptingEngine::GetLuaState());
+		lua_State* L = ScriptingEngine::GetLuaState();
+		lua_newtable(L);
+		int entityTableIdx = lua_gettop(L);
+		PrintStack(L);
 
-		// Try call the contructor for the entity id
-		lua_getglobal(ScriptingEngine::GetLuaState(), "Entity");
-		PrintStack(ScriptingEngine::GetLuaState());
+		Entity* entityPtr = (Entity*)lua_newuserdata(L, sizeof(Entity));
+		*entityPtr = entity;
+		PrintStack(L);
 
-		lua_getfield(ScriptingEngine::GetLuaState(), -1, "new");
-		PrintStack(ScriptingEngine::GetLuaState());
+		lua_setfield(L, -2, "EntityId");
+		PrintStack(L);
 
-		lua_pushnumber(ScriptingEngine::GetLuaState(), (uint32_t)entity);
- 		
-		lua_pcall(ScriptingEngine::GetLuaState(), 1, 1, 0);		
-		PrintStack(ScriptingEngine::GetLuaState());
+		lua_pushcfunction(L, ScriptingEngine::GetComponent);
+		PrintStack(L);
 
-		lua_setfield(ScriptingEngine::GetLuaState(), -3, "EntityId");
-		PrintStack(ScriptingEngine::GetLuaState());
+		lua_setfield(L, -2, "GetComponent");
+		PrintStack(L);
+
+		lua_pushcfunction(L, ScriptingEngine::HasComponent);
+		PrintStack(L);
+
+		lua_setfield(L, -2, "HasComponent");
+		PrintStack(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, m_ObjectIndex); 
+		PrintStack(L);
+
+		// Copy Across Properties
+		lua_getfield(L, -1, "Properties");
+		PrintStack(L);
+
+		lua_setfield(L, -3, "Properties");
+		PrintStack(L);
+
+		// Set Metatable
+		lua_setmetatable(L, -2);
+		PrintStack(L);
+
+		// Get OnStart and Update metamethods
+		luaL_getmetafield(L, -1, "OnStart");
+		PrintStack(L);
+		m_StartIndex = luaL_ref(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX);
+		PrintStack(L);
+
+		luaL_getmetafield(L, -1, "OnUpdate");
+		PrintStack(L);
+		m_UpdateIndex = luaL_ref(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX);
+		PrintStack(L);
+
+		m_EntityIdIndex = luaL_ref(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX);
+
+		lua_settop(L, 0);
+		LoadProperties();
 	}
 
 	void Script::LoadScriptProperites()
@@ -113,7 +130,7 @@ namespace Arcane
 		lua_settop(ScriptingEngine::GetLuaState(), 0);
 
 		// need to push object onto stack
-		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_ObjectIndex);
+		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_EntityIdIndex);
 
 		// Get properties
 		lua_pushstring(ScriptingEngine::GetLuaState(), "Properties");
@@ -175,57 +192,64 @@ namespace Arcane
 
 	void Script::LoadProperties()
 	{
-		lua_pushstring(ScriptingEngine::GetLuaState(), "Properties");
-		lua_gettable(ScriptingEngine::GetLuaState(), -2);
-	
-		lua_pushnil(ScriptingEngine::GetLuaState());
-		while (lua_next(ScriptingEngine::GetLuaState(), -2))
-		{
-			lua_pushvalue(ScriptingEngine::GetLuaState(), -2);
-			
-			const char* key = lua_tostring(ScriptingEngine::GetLuaState(), -1);
+		lua_State* L = ScriptingEngine::GetLuaState();
+		PrintStack(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, m_EntityIdIndex);
+		PrintStack(L);
 
+		lua_getfield(L, -1, "Properties");
+		PrintStack(L);
+	
+		lua_pushnil(L);
+		PrintStack(L);
+		while (lua_next(L, -2))
+		{
+			PrintStack(L);
+			const char* key = lua_tostring(L, -2);
 			ScriptProperty newProperty;
 
-			if (lua_isinteger(ScriptingEngine::GetLuaState(), -2)) 
+			if (lua_isinteger(ScriptingEngine::GetLuaState(), -1)) 
 			{
 				newProperty.type = "int";
 				newProperty.value = (int)lua_tonumber(ScriptingEngine::GetLuaState(), -2);
 			}
 
-			if (lua_isnumber(ScriptingEngine::GetLuaState(), -2) && !lua_isinteger(ScriptingEngine::GetLuaState(), -2))
+			if (lua_isnumber(ScriptingEngine::GetLuaState(), -1) && !lua_isinteger(ScriptingEngine::GetLuaState(), -1))
 			{
 				newProperty.type = "float";
 				newProperty.value = (float)lua_tonumber(ScriptingEngine::GetLuaState(), -2);
 			}
 
-			if (lua_isstring(ScriptingEngine::GetLuaState(), -2) && !lua_isnumber(ScriptingEngine::GetLuaState(), -2))
+			if (lua_isstring(ScriptingEngine::GetLuaState(), -1) && !lua_isnumber(ScriptingEngine::GetLuaState(), -1))
 			{
 				newProperty.type = "string";
 				newProperty.value = (std::string)lua_tostring(ScriptingEngine::GetLuaState(), -2);
 			} 
 
-			if (lua_isuserdata(ScriptingEngine::GetLuaState(), -2)) 
+			if (lua_istable(L, -1))
 			{
-				if (luaL_testudata(ScriptingEngine::GetLuaState(), -2, "Vector3Metatable") != nullptr) {
+				newProperty.type = "Entity";
+				newProperty.value = nullptr;
+
+				// Add functions to this to load it up
+
+			}
+
+			if (lua_isuserdata(ScriptingEngine::GetLuaState(), -1)) 
+			{
+				if (luaL_testudata(ScriptingEngine::GetLuaState(), -1, "Vector3Metatable") != nullptr) {
 					newProperty.type = "Vector3";
-					newProperty.value = *(glm::vec3*)lua_touserdata(ScriptingEngine::GetLuaState(), -2);
+					newProperty.value = *(glm::vec3*)lua_touserdata(ScriptingEngine::GetLuaState(), -1);
 				}
 
-				if (luaL_testudata(ScriptingEngine::GetLuaState(), -2, "Vector2Metatable") != nullptr) {
+				if (luaL_testudata(ScriptingEngine::GetLuaState(), -1, "Vector2Metatable") != nullptr) {
 					newProperty.type = "Vector2";
-					newProperty.value = *(glm::vec2*)lua_touserdata(ScriptingEngine::GetLuaState(), -2);
-				}
-
-				if (luaL_testudata(ScriptingEngine::GetLuaState(), -2, "EntityMetatable") != nullptr) {
-					newProperty.type = "Entity";
-					ScriptEntityID* scriptEntityID = (ScriptEntityID*)lua_touserdata(ScriptingEngine::GetLuaState(), -2);
-					newProperty.value = scriptEntityID->id;
+					newProperty.value = *(glm::vec2*)lua_touserdata(ScriptingEngine::GetLuaState(), -1);
 				}
 			}
 
 			m_Properties[key] = newProperty;
-			lua_pop(ScriptingEngine::GetLuaState(), 2);
+			lua_pop(ScriptingEngine::GetLuaState(), 1);
 		}
 	}
 }

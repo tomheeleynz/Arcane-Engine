@@ -218,38 +218,10 @@ namespace Arcane
 
 	void ScriptGlue::CreateEntityIdMetatable(lua_State* L)
 	{
-		luaL_newmetatable(L, "EntityMetatable");
+	}
 
-		auto EntityIdIndex = [](lua_State* L) -> int {
-			ScriptEntityID* userData = (ScriptEntityID*)lua_touserdata(L, -2);
-			const char* index = lua_tostring(L, -1);
-
-			if (strcmp(index, "id") == 0) {
-				lua_pushnumber(L, userData->id);
-				return 1;
-			}
-			else {
-				lua_getglobal(L, "Entity");
-				lua_pushstring(L, index);
-				lua_rawget(L, -2);
-				return 1;
-			}
-		};
-
-		auto EntityIdNewIndex = [](lua_State* L) -> int {
-			ScriptEntityID* idUserData = (ScriptEntityID*)lua_touserdata(L, -3);
-			const char* index = lua_tostring(L, -2);
-			assert(false);
-			return 0;
-		};
-
-		lua_pushstring(L, "__index");
-		lua_pushcfunction(L, EntityIdIndex);
-		lua_settable(L, -3);
-
-		lua_pushstring(L, "__newindex");
-		lua_pushcfunction(L, EntityIdNewIndex);
-		lua_settable(L, -3);
+	void ScriptGlue::CreateEntityIdTable(lua_State* L)
+	{
 	}
 
 	void ScriptGlue::CreateVec2Table(lua_State* L)
@@ -292,30 +264,5 @@ namespace Arcane
 		lua_setfield(L, -2, "new");
 	}
 
-	void ScriptGlue::CreateEntityIdTable(lua_State* L)
-	{
-		lua_newtable(L);
-		int entityIdTable = lua_gettop(L);
-		lua_pushvalue(L, entityIdTable);
-		lua_setglobal(L, "Entity");
 
-		auto CreateEntityId = [](lua_State* L) -> int {
-			PrintStack(L);
-			
-			uint32_t entityId = 0;
-			if (lua_isnumber(L, -1))
-				entityId = (uint32_t)lua_tonumber(L, -1);
-			
-			void* ptrToScriptEntity = lua_newuserdata(L, sizeof(ScriptEntityID));
-			new (ptrToScriptEntity) ScriptEntityID(entityId);
-			
-			luaL_getmetatable(L, "EntityMetatable");
-			lua_setmetatable(L, -2);
-			
-			return 1;
-		};
-
-		lua_pushcfunction(L, CreateEntityId);
-		lua_setfield(L, -2, "new");
-	}
 }

@@ -27,8 +27,8 @@ namespace Arcane
 
 	struct ScriptEntityID
 	{
-		ScriptEntityID(uint32_t entityID) { id = entityID; }
-		uint32_t id = -1;
+		ScriptEntityID(Core::UUID* entityUUID) { uuid = entityUUID; }
+		Core::UUID* uuid;
 	};
 
 	class Script : public Asset
@@ -53,5 +53,6 @@ namespace Arcane
 		int m_StartIndex = 0;
 		int m_UpdateIndex = 0;
 		int m_ObjectIndex = 0;
+		int m_EntityIdIndex = 0;
 	};
 }

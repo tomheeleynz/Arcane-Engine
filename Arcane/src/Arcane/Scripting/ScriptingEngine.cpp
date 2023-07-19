@@ -69,49 +69,29 @@ namespace Arcane
 
 	int ScriptingEngine::GetComponent(lua_State* L)
 	{
+		PrintStack(L);
 		lua_getfield(L, -1, "EntityId");
-
-		// Gets Script Entity
-		ScriptEntityID* userData = (ScriptEntityID*)lua_touserdata(L, -1);
-		uint32_t id = userData->id;
-
-		Entity entity((entt::entity)id, GetSceneContext());
-
-		// Gets String 
-		std::string componentType = lua_tostring(L, -3);
-
-		if (componentType == "Transform") {
-			TransformComponent& component = entity.GetComponent<TransformComponent>();
-			return 1;
-		}
-		else if (componentType == "MeshRenderer")
-		{
-			MeshRendererComponent& component = entity.GetComponent<MeshRendererComponent>();
-			return 1;
-		}
-
+		PrintStack(L);
+		Entity entity = *(Entity*)lua_touserdata(L, -1);
+		std::cout << (uint32_t)entity << std::endl;
 		return 1;
 	}
 
 	int ScriptingEngine::HasComponent(lua_State* L)
 	{
-		// Get Entity Id Struct
-		lua_getfield(L, -1, "EntityId");
-
-		// Get Entity
-		ScriptEntityID* scriptEntityID = (ScriptEntityID*)lua_touserdata(L, -1);
-		Entity entity((entt::entity)scriptEntityID->id, ScriptingEngine::GetSceneContext());
-
-		// Get Component Type
-		std::string componentType = lua_tostring(L, -3);
+		std::string componentType = lua_tostring(L, -1);
+		lua_getfield(L, -2, "EntityId");
+		Entity entity = *(Entity*)lua_touserdata(L, -1);
 
 		bool hasComponent = false;
 		if (componentType == "Transform")
 		{
 			hasComponent = entity.HasComponent<TransformComponent>();
 		}
-		else if (componentType == "MeshRenderer") {
-			hasComponent = entity.HasComponent<MeshRendererComponent>();
+
+		if (componentType == "Mesh")
+		{
+			hasComponent = entity.HasComponent<MeshComponent>();
 		}
 
 		lua_pushboolean(L, hasComponent);
@@ -126,15 +106,6 @@ namespace Arcane
 	int ScriptingEngine::SetTransform(lua_State* L)
 	{
 		PrintStack(L);
-		
-		ScriptEntityID* scriptEntityId = (ScriptEntityID*)lua_touserdata(L, -1);
-		glm::vec3* translation = (glm::vec3*)lua_touserdata(L, -2);
-		Arcane::Entity scriptEntity((entt::entity)scriptEntityId->id, GetSceneContext());
-
-		TransformComponent& transform = scriptEntity.GetComponent<TransformComponent>();
-		transform.pos.x = translation->x;
-		transform.pos.y = translation->y;
-		transform.pos.z = translation->z;
 
 		return 0;
 	}
