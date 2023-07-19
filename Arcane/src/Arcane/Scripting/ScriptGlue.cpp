@@ -1,8 +1,10 @@
 #include "ScriptGlue.h"
 
 #include "Arcane/Scripting/ScriptingEngine.h"
+#include "Arcane/ECS/Component.h"
 #include "Arcane/Core/InputManager.h"
 #include "Script.h"
+
 
 namespace Arcane
 {
@@ -144,12 +146,25 @@ namespace Arcane
 			return 0;
 		};
 
+		auto Vec2ToString = [](lua_State* L) -> int {
+			glm::vec2* vec2 = (glm::vec2*)lua_touserdata(L, -3);
+
+			std::string returnString = "X: " + std::to_string(vec2->x) + ", Y: " + std::to_string(vec2->y);
+			lua_pushstring(L, returnString.c_str());
+			return 1;
+		};
+
 		lua_pushstring(L, "__index");
 		lua_pushcfunction(L, Vector2Index);
 		lua_settable(L, -3);
 
 		lua_pushstring(L, "__newindex");
 		lua_pushcfunction(L, Vector2NewIndex);
+		lua_settable(L, -3);
+
+
+		lua_pushstring(L, "__tostring");
+		lua_pushcfunction(L, Vec2ToString);
 		lua_settable(L, -3);
 	}
 
@@ -207,6 +222,14 @@ namespace Arcane
 			return 0;
 		};
 
+		auto Vec3ToString = [](lua_State* L) -> int {
+			glm::vec3* vec3 = (glm::vec3*)lua_touserdata(L, -3);
+
+			std::string returnString = "X: " + std::to_string(vec3->x) + ", Y: " + std::to_string(vec3->y) + ", Z: " + std::to_string(vec3->z);
+			lua_pushstring(L, returnString.c_str());
+			return 1;
+		};
+
 		lua_pushstring(L, "__index");
 		lua_pushcfunction(L, Vector3Index);
 		lua_settable(L, -3);
@@ -214,9 +237,21 @@ namespace Arcane
 		lua_pushstring(L, "__newindex");
 		lua_pushcfunction(L, Vector3NewIndex);
 		lua_settable(L, -3);
+
+		lua_pushstring(L, "__tostring");
+		lua_pushcfunction(L, Vec3ToString);
+		lua_settable(L, -3);
 	}
 
 	void ScriptGlue::CreateEntityIdMetatable(lua_State* L)
+	{
+	}
+
+	void ScriptGlue::CreateTransformComponentMetatable(lua_State* L)
+	{
+	}
+
+	void ScriptGlue::CreateTransformComponentTable(lua_State* L)
 	{
 	}
 

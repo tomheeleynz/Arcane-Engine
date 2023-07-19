@@ -69,11 +69,14 @@ namespace Arcane
 
 	int ScriptingEngine::GetComponent(lua_State* L)
 	{
-		PrintStack(L);
-		lua_getfield(L, -1, "EntityId");
-		PrintStack(L);
+		std::string componentType = lua_tostring(L, -1);
+		lua_getfield(L, -2, "EntityId");
 		Entity entity = *(Entity*)lua_touserdata(L, -1);
-		std::cout << (uint32_t)entity << std::endl;
+
+		if (componentType == "Transform") {
+
+		}
+
 		return 1;
 	}
 
