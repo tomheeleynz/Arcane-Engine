@@ -73,8 +73,17 @@ namespace Arcane
 		lua_getfield(L, -2, "EntityId");
 		Entity entity = *(Entity*)lua_touserdata(L, -1);
 
-		if (componentType == "Transform") {
+		if (componentType == "Transform") 
+		{
+			TransformComponent& transformComponent = entity.GetComponent<TransformComponent>();
+			TransformComponent* transformUserData = (TransformComponent*)lua_newuserdata(L, sizeof(TransformComponent));
+			*transformUserData = transformComponent;
+			PrintStack(L);
 
+			luaL_getmetatable(L, "TransformComponentMetatable");
+			PrintStack(L);
+
+			lua_setmetatable(L, -2);
 		}
 
 		return 1;
