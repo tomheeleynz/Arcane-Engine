@@ -73,7 +73,7 @@ namespace Arcane
 	{
 		CreateVec2Table(L);
 		CreateVec3Table(L);
-		CreateEntityIdTable(L);
+		CreateTransformComponentTable(L);
 	}
 
 	void ScriptGlue::RegisterFunctions(lua_State* L)
@@ -84,13 +84,6 @@ namespace Arcane
 
 		lua_pushcfunction(L, l_InputManager_GetKeyPressed);
 		lua_setglobal(L, "GetKeyPressed");
-
-		// Component functions
-		lua_pushcfunction(L, ScriptingEngine::GetComponent);
-		lua_setglobal(L, "GetComponent");
-
-		lua_pushcfunction(L, ScriptingEngine::SetTransform);
-		lua_setglobal(L, "SetTransform");
 	}
 
 	void ScriptGlue::RegisterMetatables(lua_State* L)
@@ -161,7 +154,6 @@ namespace Arcane
 		lua_pushstring(L, "__newindex");
 		lua_pushcfunction(L, Vector2NewIndex);
 		lua_settable(L, -3);
-
 
 		lua_pushstring(L, "__tostring");
 		lua_pushcfunction(L, Vec2ToString);
@@ -249,10 +241,50 @@ namespace Arcane
 
 	void ScriptGlue::CreateTransformComponentMetatable(lua_State* L)
 	{
+		luaL_newmetatable(L, "TransformComponentMetatable");
+
+		auto TransformComponentIndex = [](lua_State* L) -> int {
+			TransformComponent* transformComponent = (TransformComponent*)lua_touserdata(L, -2);
+			const char* index = lua_tostring(L, -1);
+
+			if (strcmp(index, "translation") == 0) {
+				// Create Transform Vector
+				glm::vec3* translation = (glm::vec3*)lua_newuserdata(L, sizeof(glm::vec3));
+				translation->x = transformComponent->pos.x;
+				translation->y = transformComponent->pos.y;
+				translation->z = transformComponent->pos.z;
+
+
+
+				return 1;
+			}
+			else {
+				lua_getglobal(L, "TransformComponent");
+				lua_pushstring(L, index);
+				lua_rawget(L, -2);
+				return 1;
+			}
+		};
+
 	}
 
 	void ScriptGlue::CreateTransformComponentTable(lua_State* L)
 	{
+		lua_newtable(L);
+		int transformComponentTable = lua_gettop(L);
+		lua_pushvalue(L, transformComponentTable);
+		lua_setglobal(L, "TransformComponent");
+
+		auto CreateTransformComponent = [](lua_State* L) -> int {
+			void* ptrToTransformComponent = lua_newuserdata(L, sizeof(TransformComponent));
+			new (ptrToTransformComponent) TransformComponent();
+			luaL_getmetatable(L, "TransformComponentMetatable");
+			lua_setmetatable(L, -2);
+			return 1;
+		};
+
+		lua_pushcfunction(L, CreateTransformComponent);
+		lua_setfield(L, -2, "new");
 	}
 
 	void ScriptGlue::CreateEntityIdTable(lua_State* L)
