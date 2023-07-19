@@ -90,7 +90,6 @@ namespace Arcane
 	{
 		CreateVec2Metatable(L);
 		CreateVec3Metatable(L);
-		CreateEntityIdMetatable(L);
 		CreateTransformComponentMetatable(L);
 	}
 
@@ -236,16 +235,13 @@ namespace Arcane
 		lua_settable(L, -3);
 	}
 
-	void ScriptGlue::CreateEntityIdMetatable(lua_State* L)
-	{
-	}
-
 	void ScriptGlue::CreateTransformComponentMetatable(lua_State* L)
 	{
 		luaL_newmetatable(L, "TransformComponentMetatable");
 
 		auto TransformComponentIndex = [](lua_State* L) -> int {
-			TransformComponent* transformComponent = (TransformComponent*)lua_touserdata(L, -2);
+			TransformComponent** transformComponentPtr = (TransformComponent**)lua_touserdata(L, -2);
+			TransformComponent* transformComponent = *transformComponentPtr;
 			const char* index = lua_tostring(L, -1);
 
 			if (strcmp(index, "translation") == 0) {
@@ -289,10 +285,6 @@ namespace Arcane
 
 		lua_pushcfunction(L, CreateTransformComponent);
 		lua_setfield(L, -2, "new");
-	}
-
-	void ScriptGlue::CreateEntityIdTable(lua_State* L)
-	{
 	}
 
 	void ScriptGlue::CreateVec2Table(lua_State* L)

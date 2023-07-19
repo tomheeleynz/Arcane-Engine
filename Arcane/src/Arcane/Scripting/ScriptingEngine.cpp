@@ -76,8 +76,8 @@ namespace Arcane
 		if (componentType == "Transform") 
 		{
 			TransformComponent& transformComponent = entity.GetComponent<TransformComponent>();
-			TransformComponent* transformUserData = (TransformComponent*)lua_newuserdata(L, sizeof(TransformComponent));
-			*transformUserData = transformComponent;
+			TransformComponent** transformUserData = (TransformComponent**)lua_newuserdata(L, sizeof(TransformComponent));
+			*transformUserData = &transformComponent;
 			PrintStack(L);
 
 			luaL_getmetatable(L, "TransformComponentMetatable");
