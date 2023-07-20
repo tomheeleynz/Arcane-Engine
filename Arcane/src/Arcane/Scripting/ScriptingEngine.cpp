@@ -78,11 +78,7 @@ namespace Arcane
 			TransformComponent& transformComponent = entity.GetComponent<TransformComponent>();
 			TransformComponent** transformUserData = (TransformComponent**)lua_newuserdata(L, sizeof(TransformComponent));
 			*transformUserData = &transformComponent;
-			PrintStack(L);
-
 			luaL_getmetatable(L, "TransformComponentMetatable");
-			PrintStack(L);
-
 			lua_setmetatable(L, -2);
 		}
 
@@ -117,8 +113,10 @@ namespace Arcane
 
 	int ScriptingEngine::SetTransform(lua_State* L)
 	{
-		PrintStack(L);
-
+		glm::vec3* newTranslation = (glm::vec3*)lua_touserdata(L, -1);
+		lua_getfield(L, -2, "EntityId");
+		Entity entity = *(Entity*)lua_touserdata(L, -1);
+		entity.GetComponent<TransformComponent>().pos = *newTranslation;
 		return 0;
 	}
 

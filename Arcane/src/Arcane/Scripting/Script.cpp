@@ -93,6 +93,13 @@ namespace Arcane
 		lua_setfield(L, -2, "HasComponent");
 		PrintStack(L);
 
+		lua_pushcfunction(L, ScriptingEngine::SetTransform);
+		PrintStack(L);
+
+		lua_setfield(L, -2, "SetTranslation");
+		PrintStack(L);
+
+
 		lua_rawgeti(L, LUA_REGISTRYINDEX, m_ObjectIndex); 
 		PrintStack(L);
 

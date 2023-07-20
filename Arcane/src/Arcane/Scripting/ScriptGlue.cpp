@@ -196,15 +196,15 @@ namespace Arcane
 			const char* index = lua_tostring(L, -2);
 			if (strcmp(index, "x") == 0)
 			{
-				vec3->x = (int)lua_tonumber(L, -1);
+				vec3->x = (float)lua_tonumber(L, -1);
 			}
 			else if (strcmp(index, "y") == 0)
 			{
-				vec3->y = (int)lua_tonumber(L, -1);
+				vec3->y = (float)lua_tonumber(L, -1);
 			}
 			else if (strcmp(index, "z") == 0) 
 			{
-				vec3->z = (int)lua_tonumber(L, -1);
+				vec3->z = (float)lua_tonumber(L, -1);
 			}
 			else
 			{
@@ -221,6 +221,7 @@ namespace Arcane
 			lua_pushstring(L, returnString.c_str());
 			return 1;
 		};
+
 
 		lua_pushstring(L, "__index");
 		lua_pushcfunction(L, Vector3Index);
@@ -278,8 +279,10 @@ namespace Arcane
 		auto CreateTransformComponent = [](lua_State* L) -> int {
 			void* ptrToTransformComponent = lua_newuserdata(L, sizeof(TransformComponent));
 			new (ptrToTransformComponent) TransformComponent();
+
 			luaL_getmetatable(L, "TransformComponentMetatable");
 			lua_setmetatable(L, -2);
+			
 			return 1;
 		};
 
