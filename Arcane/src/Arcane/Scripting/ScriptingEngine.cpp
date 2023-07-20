@@ -81,7 +81,6 @@ namespace Arcane
 			luaL_getmetatable(L, "TransformComponentMetatable");
 			lua_setmetatable(L, -2);
 		}
-
 		return 1;
 	}
 

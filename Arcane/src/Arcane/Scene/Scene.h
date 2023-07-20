@@ -8,7 +8,6 @@
 
 #include "Arcane/ECS/Component.h"
 #include "Arcane/Renderer/SceneRenderer.h"
-#include "Arcane/Renderer/SceneRenderer2D.h"
 #include "Arcane/Assets/Asset.h"
 
 namespace Arcane
@@ -42,7 +41,6 @@ namespace Arcane
 		entt::registry m_Registry;
 
 		void SetSceneRenderer(SceneRenderer* sceneRenderer) { m_SceneRenderer = sceneRenderer; }
-		void SetSceneRenderer2D(SceneRenderer2D* sceneRenderer) { m_SceneRenderer2D = sceneRenderer; }
 		void SetSceneCamera(Camera* sceneCamera);
 
 		Kinetics::DynamicBody* AddDynamicBodyToPhysicsWorld(Kinetics::BodyDef bodyDef);
@@ -50,7 +48,6 @@ namespace Arcane
 	private:
 		std::string m_Name;
 		SceneRenderer* m_SceneRenderer;
-		SceneRenderer2D* m_SceneRenderer2D;
 		Kinetics::World* m_PhysicsWorld;
 
 		std::unordered_map<Core::UUID, entt::entity> m_EntityMap;

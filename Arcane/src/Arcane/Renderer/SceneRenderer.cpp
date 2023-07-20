@@ -297,6 +297,7 @@ namespace Arcane
 
 				for (int j = 0; j < currentMesh->GetSubMeshes().size(); j++) {
 					SubMesh* currentSubMesh = currentMesh->GetSubMeshes()[j];
+
 					Renderer::RenderMesh(currentSubMesh->GetVertexBuffer(), material->GetPipeline(), {
 						s_Data.GlobalDescriptorSet,
 						s_Data.GeometryPassDescriptorSet,

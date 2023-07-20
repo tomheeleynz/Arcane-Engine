@@ -18,18 +18,13 @@ void EditorLayer::OnAttach()
 	m_EditorScene = new Arcane::Scene(true);
 
 	m_SceneRenderer = new Arcane::SceneRenderer();
-	m_SceneRenderer2D = new Arcane::SceneRenderer2D();
 	
 	m_EditorScene->SetSceneRenderer(m_SceneRenderer);
-	m_EditorScene->SetSceneRenderer2D(m_SceneRenderer2D);
 
 	Arcane::DimensionType dimensionType = Arcane::Application::Get().GetProject()->GetDimensionType();
 	
-	if (dimensionType == Arcane::DimensionType::ThreeD)
-		m_Viewport = Arcane::UI::AddTexture(m_SceneRenderer->GetFinalRenderFramebuffer());
-	else 
-		m_Viewport = Arcane::UI::AddTexture(m_SceneRenderer2D->GetFinalRenderFramebuffer());
-	
+	m_Viewport = Arcane::UI::AddTexture(m_SceneRenderer->GetFinalRenderFramebuffer());
+
 	m_ViewportSize = {0, 0};
 
 	// Create Panels
@@ -69,29 +64,18 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnUpdate(float deltaTime)
 {
-	Arcane::FramebufferSpecifications fbSpecs;
-
-	if (Arcane::Application::Get().GetProject()->GetDimensionType() == Arcane::DimensionType::TwoD)
-		fbSpecs = m_SceneRenderer2D->GetFinalRenderFramebuffer()->GetSpecs();
-	else 
-		fbSpecs = m_SceneRenderer->GetFinalRenderFramebuffer()->GetSpecs();
+	Arcane::FramebufferSpecifications fbSpecs = m_SceneRenderer->GetFinalRenderFramebuffer()->GetSpecs();
 
 	if (m_ViewportSize.x > 0.0f &&
 		m_ViewportSize.y > 0.0f &&
 		(fbSpecs.Width != m_ViewportSize.x || fbSpecs.Height != m_ViewportSize.y))
 	{
-		if (Arcane::Application::Get().GetProject()->GetDimensionType() == Arcane::DimensionType::ThreeD)
-			m_SceneRenderer->ResizeScene(m_ViewportSize.x, m_ViewportSize.y);
-		else
-			m_SceneRenderer2D->ResizeScene(m_ViewportSize.x, m_ViewportSize.y);
+		m_SceneRenderer->ResizeScene(m_ViewportSize.x, m_ViewportSize.y);
 
 		// Resize Camera
 		m_EditorCamera->OnResize(m_ViewportSize.x, m_ViewportSize.y);
 
-		if (Arcane::Application::Get().GetProject()->GetDimensionType() == Arcane::DimensionType::ThreeD)
-			m_Viewport = Arcane::UI::AddTexture(m_SceneRenderer->GetFinalRenderFramebuffer());
-		else 
-			m_Viewport = Arcane::UI::AddTexture(m_SceneRenderer2D->GetFinalRenderFramebuffer());
+		m_Viewport = Arcane::UI::AddTexture(m_SceneRenderer->GetFinalRenderFramebuffer());
 	}
 
 	switch (m_State)

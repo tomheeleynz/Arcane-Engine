@@ -20,7 +20,6 @@
 #include "Arcane/Renderer/Texture.h"
 #include "Arcane/Renderer/Framebuffer.h"
 #include "Arcane/Renderer/SceneRenderer.h"
-#include "Arcane/Renderer/SceneRenderer2D.h"
 #include "Arcane/Renderer/Camera.h"
 #include "Arcane/Renderer/DescriptorSet.h"
 #include "Arcane/Renderer/MeshFactory.h"

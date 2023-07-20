@@ -138,16 +138,6 @@ namespace Arcane
 	{
 		if (Application::Get().GetProject()->GetDimensionType() == DimensionType::TwoD)
 		{
-			auto view = m_Registry.view<TransformComponent, SpriteRendererComponent>();
-			for (auto& entity : view)
-			{
-				auto& spriteRenderer = view.get<SpriteRendererComponent>(entity);
-				auto& transform = view.get<TransformComponent>(entity);
-
-				if (spriteRenderer.material != nullptr && spriteRenderer.material->GetShader() != nullptr)
-					m_SceneRenderer2D->SubmitQuad(spriteRenderer.quad, transform, {1.0f, 1.0f, 1.0f}, spriteRenderer.material);
-			}
-			m_SceneRenderer2D->RenderScene();
 		}
 		else {
 			// Add Lights to scene
@@ -317,10 +307,7 @@ namespace Arcane
 
 	void Scene::SetSceneCamera(Camera* sceneCamera)
 	{
-		if (Application::Get().GetProject()->GetDimensionType() == DimensionType::TwoD)
-			m_SceneRenderer2D->SetCamera(sceneCamera);
-		else 
-			m_SceneRenderer->SetCamera(sceneCamera);
+		m_SceneRenderer->SetCamera(sceneCamera);
 	}
 
 	Kinetics::DynamicBody* Scene::AddDynamicBodyToPhysicsWorld(Kinetics::BodyDef bodyDef)

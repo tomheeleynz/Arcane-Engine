@@ -48,7 +48,6 @@ private:
 	Arcane::Scene* m_EditorScene;
 	Arcane::Scene* m_RuntimeScene;
 	Arcane::SceneRenderer* m_SceneRenderer;
-	Arcane::SceneRenderer2D* m_SceneRenderer2D;
 
 	// Panels
 	ScenePanel* m_ScenePanel;
