@@ -14,6 +14,7 @@ namespace Arcane {
 		virtual uint32_t GetCount() = 0;
 
 		static IndexBuffer* Create(void* data, uint32_t count);
+		static IndexBuffer* Create(uint32_t count);
 	private:
 
 
@@ -27,9 +28,15 @@ namespace Arcane {
 	{
 	public:
 		virtual void AddIndexBuffer(IndexBuffer* _indexBuffer) = 0;
+		virtual void SetData(void* data, uint32_t size) = 0;
 		virtual IndexBuffer* GetIndexBuffer() = 0;
 
+
 		static VertexBuffer* Create(void* data, uint32_t size);
+		static VertexBuffer* Create(uint32_t size);
+
+
+
 	private:
 
 	};

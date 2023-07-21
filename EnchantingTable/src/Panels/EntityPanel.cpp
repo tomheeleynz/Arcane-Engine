@@ -361,6 +361,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	});
 
 	DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [this](auto& component, auto& entity) {
+		ImGui::ColorPicker3("Color", glm::value_ptr(entity.GetComponent<SpriteRendererComponent>().color));
 	});
 
 	DrawComponent<RigidBodyComponent>("Rigid Body", entity, [this](auto& component, auto& entity) {
@@ -442,10 +443,6 @@ void EntityPanel::InitComponent<Arcane::SpriteRendererComponent>()
 	// Generate Quad
 	Arcane::SpriteRendererComponent spriteRenderer;
 	spriteRenderer.color = {1.0f, 1.0f, 1.0f};
-	spriteRenderer.quad = new Arcane::Quad();
-
-	// Get default shader
-	spriteRenderer.material = Arcane::Material::Create(Arcane::ShaderLibrary::GetShader("Sprite-Default"));
 
 	m_Context.AddComponent<Arcane::SpriteRendererComponent>(spriteRenderer);
 }

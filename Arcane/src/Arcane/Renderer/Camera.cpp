@@ -19,7 +19,7 @@ namespace Arcane
 		uint32_t halfWidth = width / 2;
 		uint32_t halfHeight = height / 2;
 		
-		m_Projection = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight);
+		m_Projection = glm::ortho(-(float)halfWidth, (float)halfWidth, -(float)halfHeight, (float)halfHeight);
 		
 		m_View = glm::lookAt(
 			m_ViewData.CameraPosition,
@@ -33,7 +33,7 @@ namespace Arcane
 		uint32_t halfWidth = width / 2;
 		uint32_t halfHeight = height / 2;
 
-		m_Projection = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight);
+		m_Projection = glm::ortho(-(float)halfWidth, (float)halfWidth, -(float)halfHeight, (float)halfHeight);
 
 		m_View = glm::lookAt(
 			m_ViewData.CameraPosition,

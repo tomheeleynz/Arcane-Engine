@@ -9,7 +9,6 @@
 #include "Arcane/Renderer/Mesh.h"
 #include "Arcane/Scripting/Script.h"
 #include "Arcane/Renderer/Camera.h"
-#include "Arcane/Renderer/Quad.h"
 
 namespace Arcane
 {
@@ -75,9 +74,7 @@ namespace Arcane
 
 	struct SpriteRendererComponent
 	{
-		Quad* quad;
-		Material* material;
-		glm::vec3 color;
+		glm::vec3 color = {1.0f, 1.0f, 1.0f};
 	};
 
 	struct RigidBodyComponent

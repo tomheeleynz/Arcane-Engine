@@ -15,6 +15,7 @@ namespace Arcane
 
 		void AddIndexBuffer(IndexBuffer* _indexBuffer) override;
 		IndexBuffer* GetIndexBuffer() override;
+		void SetData(void* data, uint32_t size);
 
 		void Bind();
 		void UnBind();

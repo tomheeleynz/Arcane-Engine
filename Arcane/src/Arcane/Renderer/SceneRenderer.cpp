@@ -24,6 +24,12 @@ namespace Arcane
 		alignas(16) glm::vec3 color;
 	};
 
+	struct QuadVertex
+	{
+		glm::vec3 position;
+		glm::vec3 color;
+	};
+
 	struct SceneRendererData
 	{
 		// Global Render Data
@@ -78,6 +84,22 @@ namespace Arcane
 		// Scene Lighting Stuff
 		LightComponent directionaLight;
 		TransformComponent directionalLightTransform;
+
+		////////////////////////////////////////////////////////////////////////////////
+		//// 2D Batch Rendering info
+		////////////////////////////////////////////////////////////////////////////////
+		int maxQuads = 100;
+		int maxQuadVertices = maxQuads * 4;
+		int quadCount = 0;
+		int quadIndicesCount = 0;
+		VertexDescriptor* QuadVertexDescriptor;
+		VertexBuffer* QuadVertexBuffer;
+		IndexBuffer* QuadIndexBuffer;
+		uint32_t* quadIndices;
+		glm::vec4 quadBase[4];
+		QuadVertex* quadVertices;
+		Shader* SpriteShader;
+		Pipeline* QuadPipeline;
 	};
 
 	static SceneRendererData s_Data;
@@ -114,7 +136,7 @@ namespace Arcane
 			FramebufferAttachmentType::DEPTH
 		};
 
-		geometryFramebufferSpecs.ClearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
+		geometryFramebufferSpecs.ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f };
 		geometryFramebufferSpecs.Width = 512;
 		geometryFramebufferSpecs.Height = 512;
 		s_Data.GeometryFramebuffer = Framebuffer::Create(geometryFramebufferSpecs);
@@ -251,6 +273,49 @@ namespace Arcane
 		compositePipelineSpecs.descriptor = s_Data.CompositeVertexDescriptor;
 		compositePipelineSpecs.DescriptorSets = { s_Data.CompositeDescriptorSet };
 		s_Data.CompositeRenderPipeline = Pipeline::Create(compositePipelineSpecs);
+
+
+		////////////////////////////////////////////////////////////////////////////////////
+		//// 2D Batch Rendering
+		////////////////////////////////////////////////////////////////////////////////////
+		s_Data.quadIndices = new uint32_t[s_Data.maxQuads * 6];
+		
+		s_Data.quadBase[0] = { -0.5f,-0.5f, 0.0f, 1.0f };
+		s_Data.quadBase[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
+		s_Data.quadBase[2] = { 0.5f,  0.5f, 0.0f, 1.0f };
+		s_Data.quadBase[3] = { -0.5f, 0.5f, 0.0f, 1.0f };
+
+		s_Data.quadVertices = new QuadVertex[s_Data.maxQuadVertices];
+
+		int offset = 0;
+		for (int index = 0; index < s_Data.maxQuads * 6; index += 6) {
+			s_Data.quadIndices[index] = (offset * 4) + 0;
+			s_Data.quadIndices[index + 1] = (offset * 4) + 1;
+			s_Data.quadIndices[index + 2] = (offset * 4) + 3;
+			s_Data.quadIndices[index + 3] = (offset * 4) + 1;
+			s_Data.quadIndices[index + 4] = (offset * 4) + 2;
+			s_Data.quadIndices[index + 5] = (offset * 4) + 3;
+			offset++;
+		}
+
+		s_Data.QuadVertexDescriptor = VertexDescriptor::Create({
+			VertexType::float3,
+			VertexType::float3
+		});
+
+		s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.quadVertices, s_Data.maxQuadVertices * sizeof(QuadVertex));
+		s_Data.QuadIndexBuffer = IndexBuffer::Create(s_Data.quadIndices, s_Data.maxQuads * 6);
+		s_Data.QuadVertexBuffer->AddIndexBuffer(s_Data.QuadIndexBuffer);
+
+		s_Data.SpriteShader = ShaderLibrary::GetShader("Sprite-Default");
+
+		PipelineSpecification quadPipelineSpecs;
+		quadPipelineSpecs.shader = s_Data.SpriteShader;
+		quadPipelineSpecs.renderPass = s_Data.GeometryRenderPass;
+		quadPipelineSpecs.descriptor = s_Data.QuadVertexDescriptor;
+		quadPipelineSpecs.DescriptorSets = { s_Data.GlobalDescriptorSet };
+		s_Data.QuadPipeline = Pipeline::Create(quadPipelineSpecs);
+
 	}
 
 	Framebuffer* SceneRenderer::GetFinalRenderFramebuffer()
@@ -276,6 +341,7 @@ namespace Arcane
 
 		// Update any per pass resources
 		Renderer::BeginRenderPass(s_Data.GeometryRenderPass);
+		
 		// 3D Geometry Pass
 		{
 			for (int i = 0; i < s_Data.Meshes.size(); i++)
@@ -306,9 +372,16 @@ namespace Arcane
 					});
 				}
 			}
-
 			if (m_RenderGrid)
 				Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, { s_Data.GlobalDescriptorSet });
+		}
+
+		// 2D Batch Render
+		{
+			if (s_Data.quadCount > 0) {
+				s_Data.QuadVertexBuffer->SetData(s_Data.quadVertices, s_Data.quadCount * 4 * sizeof(QuadVertex));
+				Renderer::RenderQuad(s_Data.QuadVertexBuffer, s_Data.QuadPipeline, {s_Data.GlobalDescriptorSet});
+			}
 		}
 		Renderer::EndRenderPass(s_Data.GeometryRenderPass);
 	}
@@ -331,6 +404,13 @@ namespace Arcane
 		s_Data.Meshes.clear();
 		s_Data.MeshTransforms.clear();
 		s_Data.materials.clear();
+
+		///////////////////////////////
+		/// 2D Batch Cleanup
+		///////////////////////////////
+		delete s_Data.quadVertices;
+		s_Data.quadVertices = new QuadVertex[s_Data.maxQuadVertices];
+		s_Data.quadCount = 0;
 	}
 
 	void SceneRenderer::SubmitMesh(Mesh* mesh, TransformComponent& transform, Material* material) 
@@ -345,6 +425,31 @@ namespace Arcane
 		material->SetDrawData(s_Data.ObjectDescriptorSet);
 		
 		s_Data.materials.push_back(material);
+	}
+
+	void SceneRenderer::SubmitQuad(TransformComponent& transformComponent, SpriteRendererComponent& spriteRendererComponent)
+	{
+		int quadSize = 4;
+
+		glm::mat4 translation = glm::translate(glm::mat4(1.0), transformComponent.pos);
+		glm::mat4 scale = glm::scale(glm::mat4(1.0), transformComponent.scale);
+		glm::mat4 rotation = glm::mat4(glm::quat(transformComponent.rotation));
+
+		glm::vec2 textureCoords[4] = {
+			{1.0f, 0.0f}, 
+			{0.0f, 0.0f},
+			{0.0f, 1.0f},
+			{1.0f, 1.0f}
+		};
+
+		for (int i = 0; i < quadSize; i++) {
+			QuadVertex v;
+			v.position = translation * rotation * scale * s_Data.quadBase[i];
+			v.color = spriteRendererComponent.color;
+			s_Data.quadVertices[(s_Data.quadCount * 4) + i] = v;
+		}
+
+		s_Data.quadCount++;
 	}
 
 	void SceneRenderer::SetCamera(Camera* camera)

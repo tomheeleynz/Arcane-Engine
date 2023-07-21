@@ -23,6 +23,15 @@ namespace Arcane {
 		}
 	}
 
+	VertexBuffer* VertexBuffer::Create(uint32_t size) 
+	{
+		switch (RendererAPI::Current())
+		{
+		case RendererAPIType::Vulkan: return new VulkanVertexBuffer(size);
+		default: return nullptr;
+		}
+	}
+
 	////////////////////////////////////////////////////////
 	//// Index Buffer
 	////////////////////////////////////////////////////////
@@ -32,6 +41,15 @@ namespace Arcane {
 		{
 		case RendererAPIType::Vulkan: return new VulkanIndexBuffer(data, count);
 		case RendererAPIType::OpenGL: return new OpenGLIndexBuffer(data, count);
+		default: return nullptr;
+		}
+	}
+
+	IndexBuffer* IndexBuffer::Create(uint32_t count)
+	{
+		switch (RendererAPI::Current())
+		{
+		case RendererAPIType::Vulkan: return new VulkanIndexBuffer(count);
 		default: return nullptr;
 		}
 	}

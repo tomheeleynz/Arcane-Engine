@@ -26,6 +26,10 @@ namespace Arcane
 		return m_IndexBuffer;
 	}
 
+	void OpenGLVertexBuffer::SetData(void* data, uint32_t size)
+	{
+	}
+
 	void OpenGLVertexBuffer::Bind()
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);

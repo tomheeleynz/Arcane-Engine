@@ -136,43 +136,50 @@ namespace Arcane
 
 	void Scene::OnUpdate(float deltaTime)
 	{
-		if (Application::Get().GetProject()->GetDimensionType() == DimensionType::TwoD)
+		// Add Lights to scene
 		{
-		}
-		else {
-			// Add Lights to scene
+			auto view = m_Registry.view<TransformComponent, LightComponent>();
+
+			for (auto& entity : view)
 			{
-				auto view = m_Registry.view<TransformComponent, LightComponent>();
+				auto& light = view.get<LightComponent>(entity);
+				auto& transform = view.get<TransformComponent>(entity);
 
-				for (auto& entity : view)
+				if (light.type == LightType::DIRECTIONAL)
 				{
-					auto& light = view.get<LightComponent>(entity);
-					auto& transform = view.get<TransformComponent>(entity);
-
-					if (light.type == LightType::DIRECTIONAL)
-					{
-						m_SceneRenderer->SetDirectionalLight(light, transform);
-					}
+					m_SceneRenderer->SetDirectionalLight(light, transform);
 				}
 			}
-
-			// Render Mesh
-			{
-				auto view = m_Registry.view<MeshComponent, TransformComponent, MeshRendererComponent>();
-				for (auto& entity : view) 
-				{
-					auto& mesh = view.get<MeshComponent>(entity);
-					auto& transform = view.get<TransformComponent>(entity);
-					auto& meshRenderer = view.get<MeshRendererComponent>(entity);
-
-					if (mesh.mesh != nullptr && meshRenderer.material != nullptr && meshRenderer.material->GetShader() != nullptr)
-						m_SceneRenderer->SubmitMesh(mesh.mesh, transform, meshRenderer.material);
-				}
-			}
-
-			m_SceneRenderer->RenderGrid(true);
-			m_SceneRenderer->RenderScene();
 		}
+
+		// Sprite Render Component
+		{
+			auto view = m_Registry.view<TransformComponent, SpriteRendererComponent>();
+			
+			for (auto& entity : view) 
+			{
+				auto& spriteRendererComponent = view.get<SpriteRendererComponent>(entity);
+				auto& transformComponent = view.get<TransformComponent>(entity);
+				m_SceneRenderer->SubmitQuad(transformComponent, spriteRendererComponent);
+			}
+		}
+
+		// Render Mesh
+		{
+			auto view = m_Registry.view<MeshComponent, TransformComponent, MeshRendererComponent>();
+			for (auto& entity : view) 
+			{
+				auto& mesh = view.get<MeshComponent>(entity);
+				auto& transform = view.get<TransformComponent>(entity);
+				auto& meshRenderer = view.get<MeshRendererComponent>(entity);
+
+				if (mesh.mesh != nullptr && meshRenderer.material != nullptr && meshRenderer.material->GetShader() != nullptr)
+					m_SceneRenderer->SubmitMesh(mesh.mesh, transform, meshRenderer.material);
+			}
+		}
+
+		// m_SceneRenderer->RenderGrid(true);
+		m_SceneRenderer->RenderScene();
 	}
 
 	void Scene::OnRuntimeUpdate(float deltaTime)

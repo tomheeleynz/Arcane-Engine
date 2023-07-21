@@ -23,6 +23,7 @@ void EditorLayer::OnAttach()
 
 	Arcane::DimensionType dimensionType = Arcane::Application::Get().GetProject()->GetDimensionType();
 	
+
 	m_Viewport = Arcane::UI::AddTexture(m_SceneRenderer->GetFinalRenderFramebuffer());
 
 	m_ViewportSize = {0, 0};
@@ -42,6 +43,7 @@ void EditorLayer::OnAttach()
 	if (dimensionType == Arcane::DimensionType::TwoD)
 		m_EditorCamera = new Arcane::OrthoCamera(512, 512);
 	else
+		//m_EditorCamera = new Arcane::OrthoCamera(512, 512);
 		m_EditorCamera = new Arcane::PerspectiveCamera(512, 512, 45.0f);
 	
 	
@@ -51,6 +53,7 @@ void EditorLayer::OnAttach()
 	if (dimensionType == Arcane::DimensionType::TwoD)
 		m_EditorCameraController = new OrthographicController();
 	else 
+		//m_EditorCameraController = new OrthographicController();
 		m_EditorCameraController = new PerspectiveController();
 	
 	m_EditorCameraController->SetCamera(m_EditorCamera);
