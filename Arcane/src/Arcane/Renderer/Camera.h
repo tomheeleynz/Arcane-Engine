@@ -8,7 +8,7 @@ namespace Arcane
 {	
 	struct ViewData
 	{
-		glm::vec3 CameraPosition = {0.0f, 1.0f, 3.0f};
+		glm::vec3 CameraPosition = {0.0f, 0.0f, 3.0f};
 		glm::vec3 CameraLookDir = {0.0f, 0.0f, 0.0f};
 		glm::vec3 CameraUpDir = {0.0f, 1.0f, 0.0f};
 	};
