@@ -16,6 +16,7 @@ namespace Arcane
 		void AddUniformBuffer(UniformBuffer* buffer, uint32_t setNumber, uint32_t bindingNumber) override;
 		void AddImageSampler(Texture* texture, uint32_t setNumber, uint32_t bindingNumber) override;
 		void AddImageSampler(Framebuffer* framebuffer, uint32_t setNumber, uint32_t bindingNumber) override;
+		void AddImageSamplerArray(std::vector<Texture*> textures, uint32_t setNum, uint32_t bindingNum) override;
 
 		// Get Descriptor Set Layout
 		VkDescriptorSetLayout GetLayout() { return m_DescriptorSetLayout; }

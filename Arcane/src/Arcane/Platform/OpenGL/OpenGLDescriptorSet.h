@@ -15,6 +15,7 @@ namespace Arcane
 		void AddImageSampler(Texture* texture, uint32_t setNum, uint32_t bindingNum) override;
 		void AddImageSampler(Framebuffer* framebuffer, uint32_t setNum, uint32_t bindingNum) override;
 		void AddUniformBuffer(UniformBuffer* buffer, uint32_t setNum, uint32_t bindingNum) override;
+		void AddImageSamplerArray(std::vector<Texture*> textures, uint32_t setNum, uint32_t bindingNum) override;
 
 		// OpenGL Specific Functions
 		void BindTextures(uint32_t shaderID);

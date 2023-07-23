@@ -9,7 +9,8 @@ namespace Arcane {
 		float1,
 		float2,
 		float3,
-		float4
+		float4,
+		integer
 	};
 
 

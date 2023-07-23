@@ -28,6 +28,14 @@ namespace Arcane
 	{
 		glm::vec3 position;
 		glm::vec3 color;
+		glm::vec2 texCoord;
+		int texId;
+	};
+
+	enum class BatchTextureType
+	{
+		BASE,
+		ASSET
 	};
 
 	struct SceneRendererData
@@ -100,6 +108,10 @@ namespace Arcane
 		QuadVertex* quadVertices;
 		Shader* SpriteShader;
 		Pipeline* QuadPipeline;
+		DescriptorSet* QuadDescriptorSet;
+		Texture* QuadBaseTexture;
+		std::vector<Texture*> SpriteTextures;
+		std::vector<BatchTextureType> SpriteTextureTypes;
 	};
 
 	static SceneRendererData s_Data;
@@ -260,7 +272,7 @@ namespace Arcane
 
 		// Create per pass Descriptor
 		DescriptorSetSpecs compositeSetSpecs;
-		compositeSetSpecs.SetNumber = 1;
+		compositeSetSpecs.SetNumber = 0;
 		s_Data.CompositeDescriptorSet = DescriptorSet::Create(compositeSetSpecs, {
 			{0, 1, DescriptorType::SAMPLER, "Geo Framebuffer Texture", DescriptorLocation::FRAGMENT}
 		});
@@ -300,7 +312,9 @@ namespace Arcane
 
 		s_Data.QuadVertexDescriptor = VertexDescriptor::Create({
 			VertexType::float3,
-			VertexType::float3
+			VertexType::float3,
+			VertexType::float2,
+			VertexType::integer
 		});
 
 		s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.quadVertices, s_Data.maxQuadVertices * sizeof(QuadVertex));
@@ -308,14 +322,31 @@ namespace Arcane
 		s_Data.QuadVertexBuffer->AddIndexBuffer(s_Data.QuadIndexBuffer);
 
 		s_Data.SpriteShader = ShaderLibrary::GetShader("Sprite-Default");
+		s_Data.QuadBaseTexture = Texture::Create(255.0f, 255.0f, 255.0f, 255.0f);
+
+		s_Data.SpriteTextures.resize(32);
+		s_Data.SpriteTextureTypes.resize(32);
+
+		for (int i = 0; i < s_Data.SpriteTextures.size(); i++)
+		{
+			s_Data.SpriteTextures[i] = s_Data.QuadBaseTexture;
+			s_Data.SpriteTextureTypes[i] = BatchTextureType::BASE;
+		}
+
+		DescriptorSetSpecs quadSetSpecs;
+		quadSetSpecs.SetNumber = 1;
+		s_Data.QuadDescriptorSet = DescriptorSet::Create(quadSetSpecs, {
+			{0, 32, DescriptorType::SAMPLER, "sprites", DescriptorLocation::FRAGMENT}
+		});
+
+		s_Data.QuadDescriptorSet->AddImageSampler(s_Data.QuadBaseTexture, 1, 0);
 
 		PipelineSpecification quadPipelineSpecs;
 		quadPipelineSpecs.shader = s_Data.SpriteShader;
 		quadPipelineSpecs.renderPass = s_Data.GeometryRenderPass;
 		quadPipelineSpecs.descriptor = s_Data.QuadVertexDescriptor;
-		quadPipelineSpecs.DescriptorSets = { s_Data.GlobalDescriptorSet };
+		quadPipelineSpecs.DescriptorSets = { s_Data.GlobalDescriptorSet, s_Data.QuadDescriptorSet };
 		s_Data.QuadPipeline = Pipeline::Create(quadPipelineSpecs);
-
 	}
 
 	Framebuffer* SceneRenderer::GetFinalRenderFramebuffer()
@@ -372,15 +403,16 @@ namespace Arcane
 					});
 				}
 			}
-			if (m_RenderGrid)
-				Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, { s_Data.GlobalDescriptorSet });
+			/*if (m_RenderGrid)
+				Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, { s_Data.GlobalDescriptorSet });*/
 		}
 
 		// 2D Batch Render
 		{
 			if (s_Data.quadCount > 0) {
+				s_Data.QuadDescriptorSet->AddImageSamplerArray(s_Data.SpriteTextures, 1, 0);
 				s_Data.QuadVertexBuffer->SetData(s_Data.quadVertices, s_Data.quadCount * 4 * sizeof(QuadVertex));
-				Renderer::RenderQuad(s_Data.QuadVertexBuffer, s_Data.QuadPipeline, {s_Data.GlobalDescriptorSet});
+				Renderer::RenderQuad(s_Data.QuadVertexBuffer, s_Data.QuadPipeline, {s_Data.GlobalDescriptorSet, s_Data.QuadDescriptorSet});
 			}
 		}
 		Renderer::EndRenderPass(s_Data.GeometryRenderPass);
@@ -442,10 +474,41 @@ namespace Arcane
 			{1.0f, 1.0f}
 		};
 
+		int textureId = -1;
+		int lastBaseIndex = 0;
+		
+		for (int i = 1; i < s_Data.SpriteTextures.size(); i++) {
+			if (spriteRendererComponent.sprite == nullptr) {
+				textureId = 0;
+				break;
+			}
+			else {
+				if (spriteRendererComponent.sprite->GetID() == s_Data.SpriteTextures[i]->GetID() && s_Data.SpriteTextureTypes[i] == BatchTextureType::ASSET)
+				{
+					textureId = i;
+					break;
+				}
+				else if (s_Data.SpriteTextureTypes[i] == BatchTextureType::BASE) {
+					lastBaseIndex = i;
+					break;
+				}
+			}
+		}
+
+		if (textureId == -1)
+		{
+			s_Data.SpriteTextures[lastBaseIndex] = spriteRendererComponent.sprite;
+			s_Data.SpriteTextureTypes[lastBaseIndex] = BatchTextureType::ASSET;
+			textureId = lastBaseIndex;
+		}
+
+
 		for (int i = 0; i < quadSize; i++) {
 			QuadVertex v;
 			v.position = translation * rotation * scale * s_Data.quadBase[i];
 			v.color = spriteRendererComponent.color;
+			v.texCoord = textureCoords[i];
+			v.texId = textureId;
 			s_Data.quadVertices[(s_Data.quadCount * 4) + i] = v;
 		}
 

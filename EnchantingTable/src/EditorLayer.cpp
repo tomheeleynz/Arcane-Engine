@@ -52,7 +52,7 @@ void EditorLayer::OnAttach()
 	// Setup Camera Controller
 	if (dimensionType == Arcane::DimensionType::TwoD)
 		m_EditorCameraController = new OrthographicController();
-	else 
+	else
 		//m_EditorCameraController = new OrthographicController();
 		m_EditorCameraController = new PerspectiveController();
 	

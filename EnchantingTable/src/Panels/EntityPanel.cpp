@@ -361,7 +361,32 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	});
 
 	DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [this](auto& component, auto& entity) {
-		ImGui::ColorPicker3("Color", glm::value_ptr(entity.GetComponent<SpriteRendererComponent>().color));
+		ImGui::ColorPicker3("Color", glm::value_ptr(component.color));
+		ImGui::Text("Sprite");
+
+		if (component.sprite == nullptr) {
+			ImGui::Text("No Sprite");
+		}
+		else {
+			Arcane::UI::Image(component.sprite);
+		}
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
+
+			if (payload != nullptr) {
+				AssetInfo assetInfo = *static_cast<AssetInfo*>(payload->Data);
+				Asset* asset = Arcane::Application::Get().GetAssetDatabase().GetAsset(assetInfo.id);
+
+				if (asset != nullptr && asset->GetAssetType() == AssetType::TEXTURE)
+				{
+					Texture* texture = static_cast<Texture*>(asset);
+					component.sprite = texture;
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
 	});
 
 	DrawComponent<RigidBodyComponent>("Rigid Body", entity, [this](auto& component, auto& entity) {

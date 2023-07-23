@@ -10,6 +10,11 @@ namespace Arcane {
 		{
 			switch (element)
 			{
+			case VertexType::integer:
+			{
+				stride += sizeof(int);
+				break;
+			}
 			case VertexType::float1:
 			{
 				stride += sizeof(float);
@@ -95,6 +100,19 @@ namespace Arcane {
 
 				location++;
 				offset += sizeof(float) * 4;
+				m_AttributeDescriptions.push_back(attribDesc);
+				break;
+			}
+			case VertexType::integer: 
+			{
+				VkVertexInputAttributeDescription attribDesc;
+				attribDesc.binding = 0;
+				attribDesc.location = location;
+				attribDesc.format = VK_FORMAT_R32_SINT;
+				attribDesc.offset = offset;
+
+				location++;
+				offset += sizeof(int);
 				m_AttributeDescriptions.push_back(attribDesc);
 				break;
 			}

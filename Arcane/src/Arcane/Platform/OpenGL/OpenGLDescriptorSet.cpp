@@ -45,6 +45,10 @@ namespace Arcane
 
 	}
 
+	void OpenGLDescriptorSet::AddImageSamplerArray(std::vector<Texture*> textures, uint32_t setNum, uint32_t bindingNum)
+	{
+	}
+
 	void OpenGLDescriptorSet::BindTextures(uint32_t shaderID)
 	{
 		int textureCount = 0;

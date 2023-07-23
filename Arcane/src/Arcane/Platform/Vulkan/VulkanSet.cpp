@@ -250,4 +250,44 @@ namespace Arcane
 			vkUpdateDescriptorSets(context->GetDevice().GetLogicalDevice(), 1, &descriptorWrite, 0, nullptr);
 		}
 	}
+
+	void VulkanSet::AddImageSamplerArray(std::vector<Texture*> textures, uint32_t setNum, uint32_t bindingNum)
+	{
+		Application& app = Application::Get();
+		VulkanContext* context = static_cast<VulkanContext*>(Application::Get().GetWindow().GetContext());
+		VulkanSwapChain& swapchain = context->GetSwapChain();
+		uint32_t imageCount = swapchain.GetSwapChainImagesSize();
+
+		std::vector<VkDescriptorImageInfo> imageInfos;
+
+		for (int i = 0; i < textures.size(); i++)
+		{
+			if (textures[i] == nullptr)
+				break;
+
+			VulkanTexture* vulkanTexture = static_cast<VulkanTexture*>(textures[i]);
+
+			VkDescriptorImageInfo imageInfo;
+			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			imageInfo.imageView = vulkanTexture->GetImageDescriptorInfo().imageView;
+			imageInfo.sampler = vulkanTexture->GetImageDescriptorInfo().sampler;
+
+			imageInfos.push_back(imageInfo);
+		}
+
+		for (int i = 0; i < imageCount; i++) {
+			// Create a descriptor write, then update descriptor set
+			VkWriteDescriptorSet descriptorWrite{};
+			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptorWrite.dstSet = m_DescriptorSets[i];
+			descriptorWrite.dstBinding = bindingNum;
+			descriptorWrite.dstArrayElement = 0;
+			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			descriptorWrite.descriptorCount = imageInfos.size();
+			descriptorWrite.pImageInfo = imageInfos.data();
+
+			// Update Descriptor Sets
+			vkUpdateDescriptorSets(context->GetDevice().GetLogicalDevice(), 1, &descriptorWrite, 0, nullptr);
+		}
+	}
 }

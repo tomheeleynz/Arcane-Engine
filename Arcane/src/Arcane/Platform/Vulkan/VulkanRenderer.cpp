@@ -376,7 +376,7 @@ namespace Arcane {
 				VulkanSet* vulkanSet = static_cast<VulkanSet*>(descriptorSets[j]);
 
 				// Bind Descriptor Sets
-				vkCmdBindDescriptorSets(swapChainBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline->GetLayout(), 0, 1, &vulkanSet->GetDescriptorSets()[i], 0, nullptr);
+				vkCmdBindDescriptorSets(swapChainBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline->GetLayout(), vulkanSet->GetSetNumber(), 1, &vulkanSet->GetDescriptorSets()[i], 0, nullptr);
 			}
 
 			// Bind Index Buffer

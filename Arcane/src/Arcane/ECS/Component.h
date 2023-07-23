@@ -75,6 +75,7 @@ namespace Arcane
 	struct SpriteRendererComponent
 	{
 		glm::vec3 color = {1.0f, 1.0f, 1.0f};
+		Texture* sprite = nullptr;
 	};
 
 	struct RigidBodyComponent
