@@ -23,7 +23,6 @@ void EditorLayer::OnAttach()
 
 	Arcane::DimensionType dimensionType = Arcane::Application::Get().GetProject()->GetDimensionType();
 	
-
 	m_Viewport = Arcane::UI::AddTexture(m_SceneRenderer->GetFinalRenderFramebuffer());
 
 	m_ViewportSize = {0, 0};
@@ -36,6 +35,7 @@ void EditorLayer::OnAttach()
 	m_FileBrowserPanel = new FileBrowserPanel();
 	m_MaterialViewerPanel = new MaterialViewerPanel();
 	m_EnviromentPanel = new EnvironmentPanel();
+	m_SpriteEditor = new SpriteEditor();
 
 	m_FileBrowserPanel->SetMaterialViewPanel(m_MaterialViewerPanel);
 
@@ -162,6 +162,14 @@ void EditorLayer::OnImGuiRender()
 			ImGui::EndMenu();
 		}
 
+		if (ImGui::BeginMenu("Tools"))
+		{
+			if (ImGui::MenuItem("Sprite Editor"))
+				m_ShowSpriteEditor = true;
+
+			ImGui::EndMenu();
+		}
+
 		ImGui::EndMenuBar();
 	}
 
@@ -179,6 +187,9 @@ void EditorLayer::OnImGuiRender()
 
 	if (m_ShowEnvironmentPanel)
 		m_EnviromentPanel->OnImGuiRender();
+
+	if (m_ShowSpriteEditor)
+		m_SpriteEditor->OnImGuiRender();
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	

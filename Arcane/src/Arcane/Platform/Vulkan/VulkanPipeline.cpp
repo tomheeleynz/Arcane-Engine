@@ -12,6 +12,11 @@
 namespace Arcane {
 	VulkanPipeline::VulkanPipeline(PipelineSpecification& spec)
 	{
+		std::map<PrimativeTopology, VkPrimitiveTopology> vulkanToplogyTypes = {
+			{PrimativeTopology::LINE_LIST, VK_PRIMITIVE_TOPOLOGY_LINE_LIST},
+			{PrimativeTopology::TRIANGLE_STRIP, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST}
+		};
+
 		VulkanShader* shader = static_cast<VulkanShader*>(spec.shader);
 
 		// Get Vulkan Context to be able to get the devices
@@ -51,7 +56,7 @@ namespace Arcane {
 		// What type of shape to draw
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 		inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-		inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		inputAssembly.topology = vulkanToplogyTypes[spec.topolgy];
 		inputAssembly.primitiveRestartEnable = VK_FALSE;
 
 		// If the pipeline is using an custom framebuffer, set these values tpo those

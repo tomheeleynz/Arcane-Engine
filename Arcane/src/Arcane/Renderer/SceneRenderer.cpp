@@ -32,6 +32,15 @@ namespace Arcane
 		int texId;
 	};
 
+
+	struct AnimData
+	{
+		float currentFrameCountX;
+		float currentFrameCountY;
+		float totalFrameCountX;
+		float totalFrameCountY;
+	};
+
 	enum class BatchTextureType
 	{
 		BASE,
@@ -110,8 +119,14 @@ namespace Arcane
 		Pipeline* QuadPipeline;
 		DescriptorSet* QuadDescriptorSet;
 		Texture* QuadBaseTexture;
+
 		std::vector<Texture*> SpriteTextures;
 		std::vector<BatchTextureType> SpriteTextureTypes;
+
+		////////////////////////////////////////////////////////////////////////////////
+		//// 2D Animated Rendering Info
+		////////////////////////////////////////////////////////////////////////////////
+
 	};
 
 	static SceneRendererData s_Data;
@@ -148,7 +163,7 @@ namespace Arcane
 			FramebufferAttachmentType::DEPTH
 		};
 
-		geometryFramebufferSpecs.ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f };
+		geometryFramebufferSpecs.ClearColor = { 0.19215686274509805f, 0.30196078431372547f, 0.4745098039215686f, 1.0f };
 		geometryFramebufferSpecs.Width = 512;
 		geometryFramebufferSpecs.Height = 512;
 		s_Data.GeometryFramebuffer = Framebuffer::Create(geometryFramebufferSpecs);
@@ -224,6 +239,7 @@ namespace Arcane
 		gridSpecs.descriptor = s_Data.GridVertexDescriptor;
 		gridSpecs.shader = s_Data.GridShader;
 		gridSpecs.DescriptorSets = {s_Data.GlobalDescriptorSet};
+		gridSpecs.topolgy = PrimativeTopology::TRIANGLE_STRIP;
 		s_Data.GridPipleine = Pipeline::Create(gridSpecs);
 
 
@@ -283,6 +299,7 @@ namespace Arcane
 		compositePipelineSpecs.shader = s_Data.CompositeShader;
 		compositePipelineSpecs.renderPass = s_Data.CompositeRenderPass;
 		compositePipelineSpecs.descriptor = s_Data.CompositeVertexDescriptor;
+		compositePipelineSpecs.topolgy = PrimativeTopology::TRIANGLE_STRIP;
 		compositePipelineSpecs.DescriptorSets = { s_Data.CompositeDescriptorSet };
 		s_Data.CompositeRenderPipeline = Pipeline::Create(compositePipelineSpecs);
 
@@ -346,6 +363,7 @@ namespace Arcane
 		quadPipelineSpecs.renderPass = s_Data.GeometryRenderPass;
 		quadPipelineSpecs.descriptor = s_Data.QuadVertexDescriptor;
 		quadPipelineSpecs.DescriptorSets = { s_Data.GlobalDescriptorSet, s_Data.QuadDescriptorSet };
+		quadPipelineSpecs.topolgy = PrimativeTopology::TRIANGLE_STRIP;
 		s_Data.QuadPipeline = Pipeline::Create(quadPipelineSpecs);
 	}
 

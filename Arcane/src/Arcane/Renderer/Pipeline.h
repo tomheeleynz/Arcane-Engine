@@ -7,12 +7,19 @@
 #include "DescriptorSet.h"
 
 namespace Arcane {
+	enum class PrimativeTopology
+	{
+		LINE_LIST,
+		TRIANGLE_STRIP
+	};
+
 	struct PipelineSpecification
 	{
 		Shader* shader = nullptr;
 		RenderPass* renderPass = nullptr;
 		VertexDescriptor* descriptor = nullptr;
 		std::vector<DescriptorSet*> DescriptorSets;
+		PrimativeTopology topolgy;
 	};
 
 	class Pipeline

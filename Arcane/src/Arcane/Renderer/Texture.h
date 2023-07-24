@@ -12,6 +12,21 @@ namespace Arcane {
 		SAMPLER
 	};
 
+	enum class TextureImageAmountType
+	{
+		SINGLE, 
+		MULTIPLE
+	};
+
+	struct TextureSpecs 
+	{
+		uint32_t width;
+		uint32_t height;
+		TextureImageAmountType amountType;
+		float cellWidth;
+		float cellHeight;
+	};
+
 	class Texture : public Asset
 	{
 	public:
@@ -21,6 +36,10 @@ namespace Arcane {
 
 		virtual TextureImageDataType GetTextureDataType() = 0;
 		virtual void SetTextureDataType(TextureImageDataType type) = 0;
+
+		virtual TextureSpecs& GetTextureSpecs() = 0;
+
+		virtual void SetTextureAmountType(TextureImageAmountType type) = 0;
 
 		static Texture* Create(std::string fileName);
 		static Texture* Create(float r, float g, float b, float a);

@@ -1,0 +1,47 @@
+#shader vertex
+#version 450
+
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aColor;
+layout (location = 2) in vec2 aTexCoord;
+
+layout (location = 0) out vec3 fragColor;
+layout (location = 1) out vec2 fragTexCoord;
+
+// Global Frame data
+layout (set = 0, binding = 0) uniform Camera {
+	mat4 proj;
+	mat4 view;
+	vec3 cameraPosition;
+} camera;
+
+void main() {
+	gl_Position = camera.proj * camera.view * vec4(aPos, 1.0);
+	fragColor = aColor;
+	fragTexCoord = aTexCoord;
+}
+
+#shader fragment
+#version 450
+
+layout (location = 0) in vec3 fragColor;
+layout (location = 1) in vec2 fragTexCoord;
+
+layout (set = 1, binding = 0) uniform sampler2D sprite;
+
+layout (set = 1, binding = 1) uniform AnimData {
+	float currentFrameCountX;
+	float currentFrameCountY;
+	float totalFrameCountX;
+	float totalFrameCountY;
+} animData;
+
+layout(location = 0) out vec4 Color;
+
+void main() {
+	float animTexCoordX = (fragTexCoord.x + animData.currentFrameCountX) * (1.0 / animData.totalFrameCountX);
+	float animTexCoordY = (fragTexCoord.y + animData.currentFrameCountY) * (1.0 / animData.totalFrameCountY);
+
+	vec2 animTexCoords = vec2(animTexCoordX, animTexCoordY);
+	Color = texture(sprite, animTexCoords) * vec4(fragColor, 1.0);
+}

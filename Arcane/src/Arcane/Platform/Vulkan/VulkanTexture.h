@@ -23,6 +23,10 @@ namespace Arcane
 		void SetRGBAValue(glm::vec4 value) override;
 
 		VkDescriptorImageInfo GetImageDescriptorInfo() { return m_ImageInfo; }
+
+		TextureSpecs& GetTextureSpecs() { return m_Specs; }
+
+		void SetTextureAmountType(TextureImageAmountType type) { m_Specs.amountType = type; }
 	private:
 		VkCommandBuffer BeginSingleTimeCommands();
 		void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
@@ -43,6 +47,6 @@ namespace Arcane
 		VkDescriptorImageInfo m_ImageInfo;
 		TextureImageDataType m_TextureDataType;
 		glm::vec4 m_RGBAValue;
-
+		TextureSpecs m_Specs;
 	};
 }

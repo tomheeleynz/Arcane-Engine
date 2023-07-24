@@ -34,6 +34,10 @@ namespace Arcane
 		stbi_uc* pixels = stbi_load(fileName.c_str(), &width, &height, &channels, STBI_rgb_alpha);
 		VkDeviceSize imageSize = width * height * 4;
 
+		m_Specs.width = width;
+		m_Specs.height = height;
+		m_Specs.amountType = TextureImageAmountType::SINGLE;
+
 		if (pixels) {
 			VkBuffer stagingBuffer;
 			VkDeviceMemory stagingBufferMemory;
