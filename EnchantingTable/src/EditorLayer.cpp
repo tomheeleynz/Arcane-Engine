@@ -201,12 +201,13 @@ void EditorLayer::OnImGuiRender()
 			}
 
 			if (Arcane::InputManager::GetKeyReleased(32)) {
-				if (m_State == SceneState::EDIT) {
-					OnScenePlay();
-				}
-				else if (m_State == SceneState::PLAY) {
-					OnSceneStop();
-				}
+				m_SceneRenderer->ReadGeometryFramebufferPixel(1);
+				//if (m_State == SceneState::EDIT) {
+				//	OnScenePlay();
+				//}
+				//else if (m_State == SceneState::PLAY) {
+				//	OnSceneStop();
+				//}
 			}
 		}
 

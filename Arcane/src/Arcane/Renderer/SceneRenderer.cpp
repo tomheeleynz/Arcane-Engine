@@ -160,6 +160,7 @@ namespace Arcane
 		FramebufferSpecifications geometryFramebufferSpecs;
 		geometryFramebufferSpecs.AttachmentSpecs = {
 			FramebufferAttachmentType::COLOR,
+			FramebufferAttachmentType::R32_INT,
 			FramebufferAttachmentType::DEPTH
 		};
 
@@ -370,6 +371,11 @@ namespace Arcane
 	Framebuffer* SceneRenderer::GetFinalRenderFramebuffer()
 	{
 		return s_Data.CompositeFramebuffer;
+	}
+
+	void SceneRenderer::ReadGeometryFramebufferPixel(uint32_t index)
+	{
+		int test = s_Data.GeometryFramebuffer->ReadPixel(1);
 	}
 
 	void SceneRenderer::CompositeRenderPass()

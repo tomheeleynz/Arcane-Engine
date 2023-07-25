@@ -38,11 +38,11 @@ namespace Arcane {
 		virtual void Resize(uint32_t width, uint32_t height) = 0;
 		static Framebuffer* Create(FramebufferSpecifications& specs);
 
-		// Read Pixel 
-
-
 		// Get a certain color attachment
 		virtual void* GetColorAttachment(uint32_t index = 0) = 0;
+		virtual int GetColorAttachmentCount() = 0;
+
+		virtual int ReadPixel(uint32_t index = 0) = 0;
 	private:
 
 	};

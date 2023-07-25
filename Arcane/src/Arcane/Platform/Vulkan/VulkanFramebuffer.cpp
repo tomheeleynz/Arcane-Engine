@@ -2,6 +2,7 @@
 
 #include "Arcane/Core/Application.h"
 #include "VulkanContext.h"
+#include "VulkanTools.h"
 
 namespace Arcane {
 	static uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
@@ -33,6 +34,46 @@ namespace Arcane {
 		Create();
 	}
 
+	int VulkanFramebuffer::ReadPixel(uint32_t index)
+	{
+		Application& app = Application::Get();
+		VulkanContext* context = static_cast<VulkanContext*>(app.GetWindow().GetContext());
+
+		VkImage srcImage = m_Attachments[index].Image;
+		VkImage dstImage = VK_NULL_HANDLE;
+
+		VkImageCreateInfo imageCreateInfo = {};
+		imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+		imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
+		imageCreateInfo.format = VK_FORMAT_R32_SINT;
+		imageCreateInfo.extent.width = m_Specs.Width;
+		imageCreateInfo.extent.height = m_Specs.Height;
+		imageCreateInfo.extent.depth = 1;
+		imageCreateInfo.mipLevels = 1;
+		imageCreateInfo.arrayLayers = 1;
+		imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+		imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+		imageCreateInfo.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+		imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+
+		// Create Destination Image
+		vkCreateImage(context->GetDevice().GetLogicalDevice(), &imageCreateInfo, nullptr, &dstImage);
+
+		//// Get Image Memory Requirmentes
+		VkMemoryRequirements memRequirements;
+		vkGetImageMemoryRequirements(context->GetDevice().GetLogicalDevice(), dstImage, &memRequirements);
+
+		VkMemoryAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		allocInfo.allocationSize = memRequirements.size;
+		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+		VkDeviceMemory dstImageMemory;
+		vkAllocateMemory(context->GetDevice().GetLogicalDevice(), &allocInfo, nullptr, &dstImageMemory);
+		vkBindImageMemory(context->GetDevice().GetLogicalDevice(), dstImage, dstImageMemory, 0);
+		return 0;
+	}
+
 	void VulkanFramebuffer::Create()
 	{
 		Application& app = Application::Get();
@@ -48,6 +89,8 @@ namespace Arcane {
 				case FramebufferAttachmentType::COLOR:
 				{
 					FrameBufferAttachment attachment = {};
+
+					m_ColorAttachmentCount += 1;
 
 					// Image Create Info
 					VkImageCreateInfo imageCreateInfo = {};
@@ -160,6 +203,8 @@ namespace Arcane {
 				{
 					FrameBufferAttachment attachment = {};
 
+					m_ColorAttachmentCount += 1;
+
 					// Image Create Info
 					VkImageCreateInfo imageCreateInfo = {};
 					imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -263,17 +308,11 @@ namespace Arcane {
 
 					attachmentCount++;
 
-					VulkanColorAttachment newColorAttachment;
-
 					VkDescriptorImageInfo imageDescriptor;
 					imageDescriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 					imageDescriptor.imageView = attachment.ImageView;
 					imageDescriptor.sampler = imageSampler;
 
-					newColorAttachment.imageInfo = imageDescriptor;
-					newColorAttachment.imageSampler = imageSampler;
-
-					m_ColorAttachments.push_back(newColorAttachment);
 					break;
 				}
 				case FramebufferAttachmentType::DEPTH: 
@@ -363,16 +402,29 @@ namespace Arcane {
 
 		VkSubpassDescription subpass{};
 		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+		int colorAttachmentCount = 0;
+		std::vector<VkAttachmentReference> colorReferences;
 
 		for (auto const& [key, val] : m_AttachmentReferenceMap) {
 			if (key == FramebufferAttachmentType::COLOR) {
-				subpass.colorAttachmentCount = 1;
-				subpass.pColorAttachments = &val;
+				colorAttachmentCount += 1;
+				colorReferences.push_back(val);
+
+				/*subpass.colorAttachmentCount = 1;
+				subpass.pColorAttachments = &val;*/
+			}
+			else if (key == FramebufferAttachmentType::R32_INT)
+			{
+				colorAttachmentCount += 1;
+				colorReferences.push_back(val);
 			}
 			else if (key == FramebufferAttachmentType::DEPTH) {
 				subpass.pDepthStencilAttachment = &val;
 			}
 		}
+
+		subpass.colorAttachmentCount = colorAttachmentCount;
+		subpass.pColorAttachments = colorReferences.data();
 
 		std::array<VkSubpassDependency, 2> dependencies;
 
@@ -442,7 +494,7 @@ namespace Arcane {
 		// Set Specs
 		m_Specs.Height = height;
 		m_Specs.Width = width;
-		m_Specs.AttachmentSpecs.m_Attachments = {FramebufferAttachmentType::COLOR, FramebufferAttachmentType::DEPTH};
+		// m_Specs.AttachmentSpecs.m_Attachments = {FramebufferAttachmentType::COLOR, FramebufferAttachmentType::DEPTH};
 
 		// Clear Things
 		m_Attachments.clear();

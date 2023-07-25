@@ -97,24 +97,57 @@ namespace Arcane {
 		multisampling.sampleShadingEnable = VK_FALSE;
 		multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 
-		// Color Blend Attachment
-		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
-		colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-		colorBlendAttachment.blendEnable = VK_TRUE;
-		colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-		colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-		colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-		colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-		colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-		colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
-		// Color Blending
+		VkRenderPass renderPass = VK_NULL_HANDLE;
+
+		if (spec.renderPass->GetRenderPassSpecs().SwapchainFramebuffer)
+		{
+			renderPass = _context->GetSwapChain().GetSwapchainRenderPass();
+		}
+		else {
+			VulkanFramebuffer* frameBuffer = static_cast<VulkanFramebuffer*>(spec.renderPass->GetRenderPassSpecs().TargetFramebuffer);
+			renderPass = frameBuffer->GetFramebufferRenderPass();
+		}
+
+		// Color Blend Attachment
+		std::vector<VkPipelineColorBlendAttachmentState> colorBlendAttachments;
+		colorBlendAttachments.resize(spec.renderPass->GetRenderPassSpecs().TargetFramebuffer->GetColorAttachmentCount());
+
+		for (int i = 0; i < spec.renderPass->GetRenderPassSpecs().TargetFramebuffer->GetSpecs().AttachmentSpecs.m_Attachments.size(); i++) {
+			FramebufferAttachmentType type = spec.renderPass->GetRenderPassSpecs().TargetFramebuffer->GetSpecs().AttachmentSpecs.m_Attachments[i];
+
+			if (type == FramebufferAttachmentType::COLOR)
+			{
+				colorBlendAttachments[i].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+				colorBlendAttachments[i].blendEnable = VK_TRUE;
+				colorBlendAttachments[i].srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+				colorBlendAttachments[i].dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+				colorBlendAttachments[i].colorBlendOp = VK_BLEND_OP_ADD;
+				colorBlendAttachments[i].srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+				colorBlendAttachments[i].dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+				colorBlendAttachments[i].alphaBlendOp = VK_BLEND_OP_ADD;
+			}
+
+			if (type == FramebufferAttachmentType::R32_INT)
+			{
+				colorBlendAttachments[i].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+				colorBlendAttachments[i].blendEnable = VK_FALSE;
+				colorBlendAttachments[i].srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+				colorBlendAttachments[i].dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+				colorBlendAttachments[i].colorBlendOp = VK_BLEND_OP_ADD;
+				colorBlendAttachments[i].srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+				colorBlendAttachments[i].dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+				colorBlendAttachments[i].alphaBlendOp = VK_BLEND_OP_ADD;
+			}
+
+		}
+
 		VkPipelineColorBlendStateCreateInfo colorBlending{};
 		colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 		colorBlending.logicOpEnable = VK_FALSE;
 		colorBlending.logicOp = VK_LOGIC_OP_COPY;
-		colorBlending.attachmentCount = 1;
-		colorBlending.pAttachments = &colorBlendAttachment;
+		colorBlending.attachmentCount = colorBlendAttachments.size();
+		colorBlending.pAttachments = colorBlendAttachments.data();
 		colorBlending.blendConstants[0] = 0.0f;
 		colorBlending.blendConstants[1] = 0.0f;
 		colorBlending.blendConstants[2] = 0.0f;
@@ -154,16 +187,6 @@ namespace Arcane {
 			printf("Pipeline Layout Created\n");
 		}
 
-		VkRenderPass renderPass = VK_NULL_HANDLE;
-
-		if (spec.renderPass->GetRenderPassSpecs().SwapchainFramebuffer)
-		{
-			renderPass = _context->GetSwapChain().GetSwapchainRenderPass();
-		}
-		else {
-			VulkanFramebuffer* frameBuffer = static_cast<VulkanFramebuffer*>(spec.renderPass->GetRenderPassSpecs().TargetFramebuffer);
-			renderPass = frameBuffer->GetFramebufferRenderPass();
-		}
 
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;

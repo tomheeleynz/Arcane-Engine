@@ -32,11 +32,16 @@ namespace Arcane
 		// Lighting code
 		void SetDirectionalLight(LightComponent& light, TransformComponent& transform);
 
+		// Resize Scene
 		void ResizeScene(uint32_t width, uint32_t height);
 
+		// Get Scene Size
 		glm::vec2 GetSceneSize() { return m_SceneSize; }
 
+		// Render Grid
 		void RenderGrid(bool render) { m_RenderGrid = render; }
+
+		void ReadGeometryFramebufferPixel(uint32_t index);
 	private:
 		void CompositeRenderPass();
 		void GeometryPass();
