@@ -38,6 +38,49 @@ namespace Arcane
 
 		str = str + "\n";
 		std::cout << str;
+	} 
+
+	static int l_Entity_Index(lua_State* L)
+	{
+		const char* index = lua_tostring(L, -1);
+		lua_getfield(L, -2, "EntityId");
+
+		Entity entity = *(Entity*)lua_touserdata(L, -1);
+
+		if (strcmp(index, "translation") == 0)
+		{
+			glm::vec3* newValue = (glm::vec3*)lua_newuserdata(L, sizeof(glm::vec3));
+			
+			TransformComponent& transformComponent = entity.GetComponent<TransformComponent>();
+			newValue->x = transformComponent.pos.x;
+			newValue->y = transformComponent.pos.y;
+			newValue->z = transformComponent.pos.z;
+			
+			luaL_getmetatable(L, "Vector3Metatable");
+			lua_setmetatable(L, -2);
+
+			return 1;
+		}
+
+		return 1;
+	}
+
+	static int l_Entity_NewIndex(lua_State* L)
+	{
+		glm::vec3* vec3 = (glm::vec3*)lua_touserdata(L, -1);
+		const char* index = lua_tostring(L, -2);
+		
+		lua_getfield(L, -3, "EntityId");
+		Entity entity = *(Entity*)lua_touserdata(L, -1);
+
+		if (strcmp(index, "translation") == 0)
+		{
+			entity.GetComponent<TransformComponent>().pos.x = vec3->x;
+			entity.GetComponent<TransformComponent>().pos.y = vec3->y;
+			entity.GetComponent<TransformComponent>().pos.z = vec3->z;
+		}
+
+		return 0;
 	}
 
 	Script::Script(std::string name)
@@ -99,7 +142,6 @@ namespace Arcane
 		lua_setfield(L, -2, "SetTranslation");
 		PrintStack(L);
 
-
 		lua_rawgeti(L, LUA_REGISTRYINDEX, m_ObjectIndex); 
 		PrintStack(L);
 
@@ -109,6 +151,21 @@ namespace Arcane
 
 		lua_setfield(L, -3, "Properties");
 		PrintStack(L);
+
+		// Add Extra Metamethods like index and newindex to entity (at this point script table is at the top (-1))
+		lua_pushstring(L, "__newindex");
+		PrintStack(L);
+		lua_pushcfunction(L, l_Entity_NewIndex);
+		PrintStack(L);
+		lua_settable (L, -3);
+		PrintStack(L);
+
+		lua_pushstring(L, "__index");
+		PrintStack(L);
+		lua_pushcfunction(L, l_Entity_Index);
+		PrintStack(L);
+		lua_settable(L, -3);
+
 
 		// Set Metatable
 		lua_setmetatable(L, -2);

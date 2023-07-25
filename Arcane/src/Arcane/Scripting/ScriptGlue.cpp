@@ -69,6 +69,7 @@ namespace Arcane
 		return 1;
 	}
 
+
 	void ScriptGlue::RegisterTables(lua_State* L)
 	{
 		CreateVec2Table(L);

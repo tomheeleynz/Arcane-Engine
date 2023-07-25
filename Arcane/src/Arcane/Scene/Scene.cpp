@@ -271,6 +271,18 @@ namespace Arcane
 		// Update Physics Engine
 		m_PhysicsWorld->Step(1.0f / 60.0f);
 
+		// Sprite Render Component
+		{
+			auto view = m_Registry.view<TransformComponent, SpriteRendererComponent>();
+
+			for (auto& entity : view)
+			{
+				auto& spriteRendererComponent = view.get<SpriteRendererComponent>(entity);
+				auto& transformComponent = view.get<TransformComponent>(entity);
+				m_SceneRenderer->SubmitQuad(transformComponent, spriteRendererComponent);
+			}
+		}
+
 		// Render Mesh
 		{
 			auto view = m_Registry.view<MeshComponent, TransformComponent, MeshRendererComponent>();
