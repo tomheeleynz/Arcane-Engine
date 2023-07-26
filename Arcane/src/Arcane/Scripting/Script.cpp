@@ -294,9 +294,6 @@ namespace Arcane
 			{
 				newProperty.type = "Entity";
 				newProperty.value = nullptr;
-
-				// Add functions to this to load it up
-
 			}
 
 			if (lua_isuserdata(ScriptingEngine::GetLuaState(), -1)) 

@@ -90,4 +90,12 @@ namespace Arcane
 		Kinetics::Shape* shape;
 		glm::vec3 center;
 	};
+
+	///////////////////////
+	/// Animation
+	//////////////////////
+	struct Animator
+	{
+		float stuff;
+	};
 }

@@ -400,6 +400,9 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	DrawComponent<BoxColliderComponent>("Box Collider", entity, [this](auto& component, auto& entity) {
 	});
 
+	DrawComponent<Animator>("Animator", entity, [this](auto& component, auto& entity) {
+	});
+
 
 	ImGui::SameLine();
 	ImGui::PushItemWidth(-1);
@@ -416,6 +419,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		DisplayAddComponentEntry<SpriteRendererComponent>("Sprite Renderer");
 		DisplayAddComponentEntry<RigidBodyComponent>("Rigid Body");
 		DisplayAddComponentEntry<BoxColliderComponent>("Box Collider");
+		DisplayAddComponentEntry<Animator>("Animator");
 		ImGui::EndPopup();
 	}
 
@@ -460,7 +464,6 @@ void EntityPanel::InitComponent<Arcane::CameraComponent>()
 {	
 	m_Context.AddComponent<Arcane::CameraComponent>();
 }
-
 
 template <>
 void EntityPanel::InitComponent<Arcane::SpriteRendererComponent>()
@@ -524,4 +527,10 @@ void EntityPanel::InitComponent<Arcane::BoxColliderComponent>()
 		m_Context.GetComponent<Arcane::RigidBodyComponent>().body->SetShape(collider.shape);
 
 	m_Context.AddComponent<Arcane::BoxColliderComponent>(collider);
+}
+
+template <>
+void EntityPanel::InitComponent<Arcane::Animator>()
+{
+	m_Context.AddComponent<Arcane::Animator>();
 }

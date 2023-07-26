@@ -16,10 +16,11 @@ EditorLayer::EditorLayer()
 void EditorLayer::OnAttach()
 {
 	m_EditorScene = new Arcane::Scene(true);
+	m_ActiveScene = m_EditorScene;
 
 	m_SceneRenderer = new Arcane::SceneRenderer();
 	
-	m_EditorScene->SetSceneRenderer(m_SceneRenderer);
+	m_ActiveScene->SetSceneRenderer(m_SceneRenderer);
 
 	Arcane::DimensionType dimensionType = Arcane::Application::Get().GetProject()->GetDimensionType();
 	
@@ -29,7 +30,7 @@ void EditorLayer::OnAttach()
 
 	// Create Panels
 	m_ScenePanel = new ScenePanel();
-	m_ScenePanel->SetContext(m_EditorScene);
+	m_ScenePanel->SetContext(m_ActiveScene);
 
 	m_EntityPanel = new EntityPanel();
 	m_FileBrowserPanel = new FileBrowserPanel();
@@ -57,8 +58,6 @@ void EditorLayer::OnAttach()
 		m_EditorCameraController = new PerspectiveController();
 	
 	m_EditorCameraController->SetCamera(m_EditorCamera);
-
-	m_ActiveScene = m_EditorScene;
 }
 
 void EditorLayer::OnDetach()
@@ -201,7 +200,6 @@ void EditorLayer::OnImGuiRender()
 			}
 
 			if (Arcane::InputManager::GetKeyReleased(32)) {
-				//m_SceneRenderer->ReadGeometryFramebufferPixel(1);
 				if (m_State == SceneState::EDIT) {
 					OnScenePlay();
 				}
@@ -274,7 +272,9 @@ void EditorLayer::OnScenePlay()
 {
 	m_State = SceneState::PLAY;
 
-	m_ActiveScene = Arcane::Scene::Copy(m_EditorScene);
+	m_RuntimeScene = Arcane::Scene::Copy(m_EditorScene);
+	m_ActiveScene = m_RuntimeScene; 
+
 	m_ActiveScene->SetSceneRenderer(m_SceneRenderer);
 
 	m_ActiveScene->OnRuntimeStart();
@@ -286,5 +286,9 @@ void EditorLayer::OnSceneStop()
 {
 	m_State = SceneState::EDIT;
 	m_ActiveScene = m_EditorScene;
+
+	delete m_RuntimeScene;
+	m_RuntimeScene = nullptr;
+	
 	m_ScenePanel->SetContext(m_ActiveScene);
 }

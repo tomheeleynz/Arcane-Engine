@@ -32,6 +32,12 @@ namespace Arcane
 		int texId;
 	};
 
+	struct AnimatedQuadVertex
+	{
+		glm::vec3 position;
+		glm::vec3 color;
+		glm::vec2 texCoord;
+	};
 
 	struct AnimData
 	{
@@ -126,7 +132,20 @@ namespace Arcane
 		////////////////////////////////////////////////////////////////////////////////
 		//// 2D Animated Rendering Info
 		////////////////////////////////////////////////////////////////////////////////
+		std::vector<VertexBuffer*> AnimatedQuadBuffers;
+		std::vector<IndexBuffer*> AnimatedQuadIndexBuffers;
+		std::vector<Texture*> AnimatedQuadTextures;
+		std::vector<AnimData> AnimatedQuadAnimationData;
 
+		Shader* SpriteAnimatedShader;
+		Pipeline* SpriteAnimatedPipeline;
+		DescriptorSet* SpriteAnimatedDescriptorSet;
+		UniformBuffer* AnimDataUniformBuffer;
+		VertexDescriptor* SpriteAnimatedVertexDescriptor;
+		
+		
+		int animatedQuadCount = 0;
+		int maxAnimatedQuads = 10;
 	};
 
 	static SceneRendererData s_Data;
@@ -366,6 +385,53 @@ namespace Arcane
 		quadPipelineSpecs.DescriptorSets = { s_Data.GlobalDescriptorSet, s_Data.QuadDescriptorSet };
 		quadPipelineSpecs.topolgy = PrimativeTopology::TRIANGLE_STRIP;
 		s_Data.QuadPipeline = Pipeline::Create(quadPipelineSpecs);
+
+
+		////////////////////////////////////////////////////////////////////////////////////
+		//// 2D Animation Render (needs to be seperate buffers (probably?))
+		////////////////////////////////////////////////////////////////////////////////////
+		s_Data.AnimatedQuadBuffers.resize(s_Data.maxAnimatedQuads);
+		s_Data.AnimatedQuadIndexBuffers.resize(s_Data.maxAnimatedQuads);
+		s_Data.AnimatedQuadTextures.resize(s_Data.maxAnimatedQuads);
+		s_Data.AnimatedQuadAnimationData.resize(s_Data.maxAnimatedQuads);
+
+		std::vector<uint32_t> animatedQuadIndices = {
+			0, 1, 3,
+			1, 2, 3
+		};
+
+		for (int i = 0; i < s_Data.maxAnimatedQuads; i++) {
+			s_Data.AnimatedQuadBuffers[i] = VertexBuffer::Create(sizeof(AnimatedQuadVertex) * 4);
+			s_Data.AnimatedQuadIndexBuffers[i] = IndexBuffer::Create(animatedQuadIndices.data(), 6);
+			s_Data.AnimatedQuadBuffers[i]->AddIndexBuffer(s_Data.AnimatedQuadIndexBuffers[i]);
+		}
+
+		s_Data.SpriteAnimatedVertexDescriptor = VertexDescriptor::Create({
+			VertexType::float3,
+			VertexType::float3,
+			VertexType::float2
+		});
+
+		s_Data.SpriteAnimatedShader = ShaderLibrary::GetShader("Sprite-Animated");
+
+		DescriptorSetSpecs spriteAnimatedDescriptorSpecs;
+		spriteAnimatedDescriptorSpecs.SetNumber = 1;
+
+		s_Data.SpriteAnimatedDescriptorSet = DescriptorSet::Create(spriteAnimatedDescriptorSpecs, {
+			{0, 1, DescriptorType::SAMPLER, "sprite", DescriptorLocation::FRAGMENT},
+			{1, 1, DescriptorType::UNIFORM_BUFFER, "animData", DescriptorLocation::FRAGMENT}
+		});
+
+		s_Data.AnimDataUniformBuffer = UniformBuffer::Create(sizeof(AnimData));
+		s_Data.SpriteAnimatedDescriptorSet->AddUniformBuffer(s_Data.AnimDataUniformBuffer, 1, 1);
+
+		PipelineSpecification animatedQuadPipelineSpecs;
+		animatedQuadPipelineSpecs.shader = s_Data.SpriteAnimatedShader;
+		animatedQuadPipelineSpecs.renderPass = s_Data.GeometryRenderPass;
+		animatedQuadPipelineSpecs.descriptor = s_Data.SpriteAnimatedVertexDescriptor;
+		animatedQuadPipelineSpecs.DescriptorSets = { s_Data.GlobalDescriptorSet, s_Data.SpriteAnimatedDescriptorSet };
+		animatedQuadPipelineSpecs.topolgy = PrimativeTopology::TRIANGLE_STRIP;
+		s_Data.SpriteAnimatedPipeline = Pipeline::Create(animatedQuadPipelineSpecs);
 	}
 
 	Framebuffer* SceneRenderer::GetFinalRenderFramebuffer()
@@ -431,12 +497,33 @@ namespace Arcane
 				Renderer::RenderQuad(s_Data.GridVertexBuffer, s_Data.GridPipleine, { s_Data.GlobalDescriptorSet });*/
 		}
 
-		// 2D Batch Render
+		// 2D Renderer
 		{
+			// Batch non animated quads
 			if (s_Data.quadCount > 0) {
 				s_Data.QuadDescriptorSet->AddImageSamplerArray(s_Data.SpriteTextures, 1, 0);
 				s_Data.QuadVertexBuffer->SetData(s_Data.quadVertices, s_Data.quadCount * 4 * sizeof(QuadVertex));
 				Renderer::RenderQuad(s_Data.QuadVertexBuffer, s_Data.QuadPipeline, {s_Data.GlobalDescriptorSet, s_Data.QuadDescriptorSet});
+			}
+
+			// Render Animated Quads Seperatly
+			if (s_Data.animatedQuadCount > 0)
+			{
+				for (int i = 0; i < s_Data.animatedQuadCount; i++)
+				{
+					// Set Uniforms
+					AnimData currentAnimData = s_Data.AnimatedQuadAnimationData[i];
+					Texture* currentTexture = s_Data.AnimatedQuadTextures[i];
+
+					s_Data.AnimDataUniformBuffer->WriteData((void*)&currentAnimData, sizeof(AnimData));
+					s_Data.SpriteAnimatedDescriptorSet->AddImageSampler(currentTexture, 1, 0);
+
+					// Render Quad
+					Renderer::RenderQuad(s_Data.AnimatedQuadBuffers[i], s_Data.SpriteAnimatedPipeline, {
+						s_Data.GlobalDescriptorSet,
+						s_Data.SpriteAnimatedDescriptorSet
+					});
+				}
 			}
 		}
 		Renderer::EndRenderPass(s_Data.GeometryRenderPass);
@@ -467,6 +554,7 @@ namespace Arcane
 		delete s_Data.quadVertices;
 		s_Data.quadVertices = new QuadVertex[s_Data.maxQuadVertices];
 		s_Data.quadCount = 0;
+		s_Data.animatedQuadCount = 0;
 	}
 
 	void SceneRenderer::SubmitMesh(Mesh* mesh, TransformComponent& transform, Material* material) 
@@ -537,6 +625,48 @@ namespace Arcane
 		}
 
 		s_Data.quadCount++;
+	}
+
+	void SceneRenderer::SubmitAnimatedQuad(TransformComponent& transformComponent, SpriteRendererComponent& spriteRendererComponent)
+	{
+		int quadSize = 4;
+
+		glm::mat4 translation = glm::translate(glm::mat4(1.0), transformComponent.pos);
+		glm::mat4 scale = glm::scale(glm::mat4(1.0), transformComponent.scale);
+		glm::mat4 rotation = glm::mat4(glm::quat(transformComponent.rotation));
+
+		glm::vec2 textureCoords[4] = {
+			{1.0f, 0.0f},
+			{0.0f, 0.0f},
+			{0.0f, 1.0f},
+			{1.0f, 1.0f}
+		};
+
+		std::vector<AnimatedQuadVertex> vertices;
+		
+		for (int i = 0; i < quadSize; i++) {
+			AnimatedQuadVertex v;
+			v.position = translation * rotation * scale * s_Data.quadBase[i];
+			v.color = spriteRendererComponent.color;
+			v.texCoord = textureCoords[i];
+			vertices.push_back(v);
+		}
+
+		AnimData newData;
+		newData.currentFrameCountX = 0;
+		newData.currentFrameCountY = 0;
+
+		newData.totalFrameCountY = 1;
+		newData.totalFrameCountX = 6;
+
+		if (spriteRendererComponent.sprite == nullptr)
+			s_Data.AnimatedQuadTextures[s_Data.animatedQuadCount] = s_Data.QuadBaseTexture;
+		else
+			s_Data.AnimatedQuadTextures[s_Data.animatedQuadCount] = spriteRendererComponent.sprite;
+
+		s_Data.AnimatedQuadAnimationData[s_Data.animatedQuadCount] = newData;
+		s_Data.AnimatedQuadBuffers[s_Data.animatedQuadCount]->SetData(vertices.data(), vertices.size() * sizeof(AnimatedQuadVertex));
+		s_Data.animatedQuadCount++;
 	}
 
 	void SceneRenderer::SetCamera(Camera* camera)
