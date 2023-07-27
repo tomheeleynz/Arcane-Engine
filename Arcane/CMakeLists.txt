@@ -90,6 +90,7 @@ target_include_directories(
 	"vendor/entt/single_include" 
 	"vendor/json/single_include" 
 	"vendor/dotnet" 
+	"vendor/ImGuizmo"
 	${OPENGL_INCLUDE_DIRS} 
 	"vendor/SPIRV-Cross"  
 	${Python_INCLUDE_DIRS}

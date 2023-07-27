@@ -164,7 +164,7 @@ namespace Arcane
 				Entity entityHandle = Entity(entity, this);
 
 				if (entityHandle.HasComponent<Animator>())
-					m_SceneRenderer->SubmitAnimatedQuad(transformComponent, spriteRendererComponent);
+					m_SceneRenderer->SubmitAnimatedQuad(transformComponent, spriteRendererComponent, entityHandle.GetComponent<Animator>());
 				else
 					m_SceneRenderer->SubmitQuad(transformComponent, spriteRendererComponent);
 			}

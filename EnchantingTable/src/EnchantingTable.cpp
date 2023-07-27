@@ -1,5 +1,6 @@
 #include <filesystem>
 #include <Arcane.h>
+#include <ImGuizmo.h>
 
 #include "EditorLayer.h"
 #include "OpenGLTestLayer.h"

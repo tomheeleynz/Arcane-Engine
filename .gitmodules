@@ -34,3 +34,6 @@
 [submodule "Arcane/vendor/Kinetics"]
 	path = Arcane/vendor/Kinetics
 	url = https://github.com/tomheeleynz/Kinetics.git
+[submodule "Arcane/vendor/ImGuizmo"]
+	path = Arcane/vendor/ImGuizmo
+	url = https://github.com/CedricGuillemet/ImGuizmo.git

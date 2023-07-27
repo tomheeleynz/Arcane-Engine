@@ -9,6 +9,7 @@
 #include "Arcane/Renderer/Mesh.h"
 #include "Arcane/Scripting/Script.h"
 #include "Arcane/Renderer/Camera.h"
+#include "Arcane/Animation/AnimationController.h"
 
 namespace Arcane
 {
@@ -96,6 +97,6 @@ namespace Arcane
 	//////////////////////
 	struct Animator
 	{
-		float stuff;
+		AnimationController* controller;
 	};
 }

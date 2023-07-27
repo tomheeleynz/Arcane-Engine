@@ -627,7 +627,7 @@ namespace Arcane
 		s_Data.quadCount++;
 	}
 
-	void SceneRenderer::SubmitAnimatedQuad(TransformComponent& transformComponent, SpriteRendererComponent& spriteRendererComponent)
+	void SceneRenderer::SubmitAnimatedQuad(TransformComponent& transformComponent, SpriteRendererComponent& spriteRendererComponent, Animator& animatorComponent)
 	{
 		int quadSize = 4;
 
@@ -653,11 +653,28 @@ namespace Arcane
 		}
 
 		AnimData newData;
-		newData.currentFrameCountX = 0;
-		newData.currentFrameCountY = 0;
 
-		newData.totalFrameCountY = 1;
+		Animation* currentAnimation = animatorComponent.controller->GetCurrentAnimation();
+		KeyFrame* currentKeyFrame = currentAnimation->GetCurrentKeyFrame();
+
+		if (currentKeyFrame->GetType() == KeyFrameType::TWO_DIMENSIONAL)
+		{
+			KeyFrame2D* currentKeyFrame2D = static_cast<KeyFrame2D*>(currentKeyFrame);
+			
+			if (currentAnimation->CurrentFrameCount >= currentKeyFrame2D->GetKeyFrameLength()) {
+				currentAnimation->SetNextKeyFrame();
+				currentAnimation->CurrentFrameCount = 0;
+			}
+			else {
+				currentAnimation->CurrentFrameCount += 1;
+			}
+
+			newData.currentFrameCountX = currentKeyFrame2D->GetImageIndexX();
+			newData.currentFrameCountY = currentKeyFrame2D->GetImageIndexY();
+		}
+
 		newData.totalFrameCountX = 6;
+		newData.totalFrameCountY = 1;
 
 		if (spriteRendererComponent.sprite == nullptr)
 			s_Data.AnimatedQuadTextures[s_Data.animatedQuadCount] = s_Data.QuadBaseTexture;

@@ -1,0 +1,37 @@
+#include "Animation.h"
+
+namespace Arcane
+{
+	/////////////////////////////////////////////////
+	//// Base Animation
+	/////////////////////////////////////////////////
+	Animation::Animation()
+	{
+		
+	}
+
+	void Animation::SetNextKeyFrame()
+	{
+		m_CurrentKeyframe += 1;
+
+		if (m_CurrentKeyframe == m_KeyFrames.size())
+		{
+			m_CurrentKeyframe = 0;
+		}
+	}
+
+	/////////////////////////////////////////////////
+	//// Base Keyframe
+	/////////////////////////////////////////////////
+	KeyFrame::KeyFrame(KeyFrameType type)
+	{
+		m_Type = type;
+	}
+
+	/////////////////////////////////////////////////
+	//// 2D Keyframe
+	/////////////////////////////////////////////////
+	KeyFrame2D::KeyFrame2D() : KeyFrame(KeyFrameType::TWO_DIMENSIONAL)
+	{
+	}
+}
