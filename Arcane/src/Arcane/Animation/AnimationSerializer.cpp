@@ -21,7 +21,7 @@ namespace Arcane
 
 		for (auto const& [key, val] : m_Animation->GetKeyFrames())
 		{
-			nlohmann::json keyFrameObject = nlohmann::json::array();
+			nlohmann::json keyFrameObject = nlohmann::json::object();
 			KeyFrameType type = val->GetType();
 
 			keyFrameObject["type"] = type == KeyFrameType::TWO_DIMENSIONAL ? "2D" : "3D";

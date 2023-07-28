@@ -25,6 +25,8 @@ struct AnimationSequencer : public ImSequencer::SequenceInterface
 		return (int)keyFrameItems.size();
 	}
 
+	virtual const char* GetItemTypeName(int typeIndex) const { return animationNames[typeIndex].c_str(); }
+
 	virtual void Get(int index, int** start, int** end, int* type, unsigned int* color) override
 	{
 		KeyFrameItem& item = keyFrameItems[index];
@@ -50,6 +52,7 @@ struct AnimationSequencer : public ImSequencer::SequenceInterface
 	};
 
 	std::vector<KeyFrameItem> keyFrameItems;
+	std::vector<std::string> animationNames;
 };
 
 class AnimationPanel

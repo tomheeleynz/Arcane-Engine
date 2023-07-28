@@ -34,30 +34,50 @@ void AnimationPanel::OnImGuiRender()
 				CreateAnimation();
 		}
 		else {
-			for (const auto& [key, val] : m_Animation->GetKeyFrames())
-			{
-				if (val->GetType() == Arcane::KeyFrameType::TWO_DIMENSIONAL)
+			if (m_Animation->GetKeyFrames().size() != 0) {
+				m_AnimationSequencer.animationNames.push_back(m_Animation->GetName());
+				for (const auto& [key, val] : m_Animation->GetKeyFrames())
 				{
-					Arcane::KeyFrame2D* keyFrame2D = static_cast<Arcane::KeyFrame2D*>(val);
-					AnimationSequencer::KeyFrameItem newItem;
-					if (key != 0) {
-						AnimationSequencer::KeyFrameItem prevItem = m_AnimationSequencer.keyFrameItems[key - 1];
-						newItem.frameStart = prevItem.frameEnd;
-						newItem.frameEnd = newItem.frameStart + keyFrame2D->GetKeyFrameLength();
-					}
-					else {
-						newItem.frameStart = 0;
-						newItem.frameEnd = keyFrame2D->GetKeyFrameLength();
-					}
+					if (val->GetType() == Arcane::KeyFrameType::TWO_DIMENSIONAL)
+					{
+						Arcane::KeyFrame2D* keyFrame2D = static_cast<Arcane::KeyFrame2D*>(val);
+						AnimationSequencer::KeyFrameItem newItem;
+						if (key != 0) {
+							AnimationSequencer::KeyFrameItem prevItem = m_AnimationSequencer.keyFrameItems[key - 1];
+							newItem.frameStart = prevItem.frameEnd;
+							newItem.frameEnd = newItem.frameStart + keyFrame2D->GetKeyFrameLength();
+						}
+						else {
+							newItem.frameStart = 0;
+							newItem.frameEnd = keyFrame2D->GetKeyFrameLength();
+						}
 
-					m_AnimationSequencer.keyFrameItems.push_back(newItem);
+						m_AnimationSequencer.keyFrameItems.push_back(newItem);
+					}
+				}
+				int currentFrame = 0;
+				int selectedEntry = -1;
+				bool expanded = true;
+				ImSequencer::Sequencer(&m_AnimationSequencer, &currentFrame, &expanded, &selectedEntry, 0, ImSequencer::SEQUENCER_EDIT_STARTEND | ImSequencer::SEQUENCER_ADD | ImSequencer::SEQUENCER_DEL | ImSequencer::SEQUENCER_COPYPASTE | ImSequencer::SEQUENCER_CHANGE_FRAME);
+
+				if (ImGui::Button("Save"))
+				{
+					Arcane::AnimationSerializer serializer(m_Animation);
+					serializer.Serialize(m_Animation->GetPath());
+				}
+
+				m_AnimationSequencer.keyFrameItems.clear();
+			}
+			else {
+				if (ImGui::Button("Add Keyframe"))
+				{
+					Arcane::KeyFrame2D* newKeyFrame = new Arcane::KeyFrame2D();
+					newKeyFrame->SetImageIndexX(1);
+					newKeyFrame->SetImageIndexY(1);
+					newKeyFrame->SetKeyFrameLength(30);
+					m_Animation->AddKeyFrame(0, newKeyFrame);
 				}
 			}
-
-			int currentFrame = 0;
-			int selectedEntry = -1;
-			bool expanded = true;
-			ImSequencer::Sequencer(&m_AnimationSequencer, &currentFrame, &expanded, &selectedEntry, 0, ImSequencer::SEQUENCER_EDIT_STARTEND | ImSequencer::SEQUENCER_ADD | ImSequencer::SEQUENCER_DEL | ImSequencer::SEQUENCER_COPYPASTE | ImSequencer::SEQUENCER_CHANGE_FRAME);
 		}
 	}
 	ImGui::End();
@@ -76,6 +96,9 @@ void AnimationPanel::CreateAnimation()
 		m_Animation->SetName(name);
 
 		serializer.Serialize(animationPath);
+
+		Arcane::AssetDatabase& database = Arcane::Application::Get().GetAssetDatabase();
+		database.GenerateAsset(animationPath, true);
 
 	}
 }

@@ -28,6 +28,5 @@ add_subdirectory("Arcane/vendor/SPIRV-Cross")
 
 # -- Set Global Properties
 set_property(TARGET Arcane PROPERTY CXX_STANDARD 17)
-set_property(TARGET Kinetics PROPERTY CXX_STANDARD 17)
 set_property(TARGET EnchantingTable PROPERTY CXX_STANDARD 17)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

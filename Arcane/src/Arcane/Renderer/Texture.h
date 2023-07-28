@@ -22,9 +22,12 @@ namespace Arcane {
 	{
 		uint32_t width;
 		uint32_t height;
+
 		TextureImageAmountType amountType;
+		
 		float cellWidth;
 		float cellHeight;
+		float cellCount;
 	};
 
 	class Texture : public Asset

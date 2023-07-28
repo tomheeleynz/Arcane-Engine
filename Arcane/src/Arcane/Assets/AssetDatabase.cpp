@@ -8,7 +8,6 @@
 #include "Arcane/Renderer/Shader.h"
 #include "Arcane/Core/UUID.h"
 #include "Arcane/Renderer/Mesh.h"
-#include "Arcane/Renderer/Texture.h"
 #include "Arcane/Scripting/Script.h"
 #include "Arcane/Renderer/MaterialDeserializer.h"
 #include "Arcane/Scene/SceneDeserializer.h"
@@ -104,6 +103,7 @@ namespace Arcane
 			newTextureAsset->SetID(Arcane::Core::UUID(assetID));
 			newTextureAsset->SetName(name);
 			newTextureAsset->SetPath(currentAssetPath);
+			ParseTextureMetafile(newTextureAsset, metaPath);
 			m_Assets[assetID] = newTextureAsset;
 		}
 		else if (currentAssetPath.extension() == ".png") {
@@ -112,6 +112,7 @@ namespace Arcane
 			newTextureAsset->SetID(Arcane::Core::UUID(assetID));
 			newTextureAsset->SetName(name);
 			newTextureAsset->SetPath(currentAssetPath);
+			ParseTextureMetafile(newTextureAsset, metaPath);
 			m_Assets[assetID] = newTextureAsset;
 		}
 		else if (currentAssetPath.extension() == ".lua") {
@@ -233,5 +234,17 @@ namespace Arcane
 		m_DefaultAssets["MeshMaterial"] = (uint64_t)defaultMaterialId;
 		
 		return true;
+	}
+
+	void AssetDatabase::ParseTextureMetafile(Texture* texture, std::filesystem::path metaPath)
+	{
+		TextureSpecs& specs = texture->GetTextureSpecs();
+		nlohmann::json metaFileJson;
+		std::ifstream(metaPath) >> metaFileJson;
+
+		specs.amountType = metaFileJson["Type"] == "M" ? TextureImageAmountType::MULTIPLE : TextureImageAmountType::SINGLE;
+		specs.cellCount = metaFileJson["CellCount"];
+		specs.cellWidth = metaFileJson["CellWidth"];
+		specs.cellHeight = metaFileJson["CellHeight"];
 	}
 }

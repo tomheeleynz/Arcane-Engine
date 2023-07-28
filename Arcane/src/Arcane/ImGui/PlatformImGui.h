@@ -10,7 +10,7 @@ namespace Arcane::UI
 	/// Images
 	//////////////////////////////////////////
 	void Image(ImTextureID id, ImVec2 size);
-	void Image(Texture* texture);
+	void Image(Texture* texture, ImVec2 size = ImVec2(128, 128));
 
 	//////////////////////////////////////////
 	/// Image Buttons

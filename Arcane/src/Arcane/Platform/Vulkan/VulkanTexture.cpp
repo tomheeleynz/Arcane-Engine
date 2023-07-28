@@ -37,6 +37,9 @@ namespace Arcane
 		m_Specs.width = width;
 		m_Specs.height = height;
 		m_Specs.amountType = TextureImageAmountType::SINGLE;
+		m_Specs.cellWidth = width;
+		m_Specs.cellHeight = height;
+		m_Specs.cellCount = 1;
 
 		if (pixels) {
 			VkBuffer stagingBuffer;

@@ -18,16 +18,16 @@ namespace Arcane::UI
 		ImGui::Image(id, size);
 	}
 
-	void Image(Texture* texture)
+	void Image(Texture* texture, ImVec2 size)
 	{
 		if (RendererAPI::Current() == RendererAPIType::Vulkan) {
 			VulkanTexture* vulkanTexture = static_cast<VulkanTexture*>(texture);
 			VkDescriptorImageInfo textureInfo = vulkanTexture->GetImageDescriptorInfo();
-			ImGui::Image((ImTextureID)ImGui_ImplVulkan_AddTexture(textureInfo.sampler, textureInfo.imageView, textureInfo.imageLayout), ImVec2{ 128, 128 });
+			ImGui::Image((ImTextureID)ImGui_ImplVulkan_AddTexture(textureInfo.sampler, textureInfo.imageView, textureInfo.imageLayout), size);
 		}
 		else if (RendererAPI::Current() == RendererAPIType::OpenGL) {
 			OpenGLTexture* openglTexture = static_cast<OpenGLTexture*>(texture);
-			ImGui::Image((ImTextureID)openglTexture->GetTextureID(), ImVec2{ 128, 128 });
+			ImGui::Image((ImTextureID)openglTexture->GetTextureID(), size);
 		}
 	}
 

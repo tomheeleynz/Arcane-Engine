@@ -5,7 +5,7 @@
 #include <string>
 
 #include "Asset.h"
-
+#include "Arcane/Renderer/Texture.h"
 namespace Arcane
 {
 	class AssetDatabase
@@ -31,6 +31,7 @@ namespace Arcane
 		uint64_t GetMetaID(std::filesystem::path metaPath);
 	private:
 		bool GenerateDefaultAssets();
+		void ParseTextureMetafile(Texture* texture, std::filesystem::path metaPath);
 	
 	private:
 		std::unordered_map<std::string, uint64_t> m_DefaultAssets;

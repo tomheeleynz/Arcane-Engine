@@ -1,5 +1,6 @@
 #include "SpriteEditor.h"
 #include "PanelStructs.h"
+#include <fstream>
 
 SpriteEditor::SpriteEditor()
 {
@@ -31,8 +32,7 @@ void SpriteEditor::OnImGuiRender()
 		}
 		else {
 			TextureSpecs& textureSpecs = m_Texture->GetTextureSpecs();
-			ImGui::InputInt("Width", &(int)textureSpecs.width);
-			ImGui::InputInt("Height", &(int)textureSpecs.height);
+
 
 			item_current_idx = TypeToIndex[textureSpecs.amountType];
 			const char* combo_label = items[item_current_idx];
@@ -42,7 +42,7 @@ void SpriteEditor::OnImGuiRender()
 				for (int n = 0; n < IM_ARRAYSIZE(items); n++)
 				{
 					const bool is_selected = (item_current_idx == n);
-					
+
 					if (ImGui::Selectable(items[n], is_selected))
 						item_current_idx = n;
 
@@ -57,9 +57,20 @@ void SpriteEditor::OnImGuiRender()
 
 			if (textureSpecs.amountType == TextureImageAmountType::MULTIPLE)
 			{
+				ImGui::InputFloat("Cell Width", &textureSpecs.cellHeight);
+				ImGui::InputFloat("Cell Height", &textureSpecs.cellWidth);
+
+				// Calc size of the sprites
+				float cellCountX = textureSpecs.width / textureSpecs.cellWidth;
+				float cellCountY = textureSpecs.height / textureSpecs.cellHeight;
+				float cellCount = cellCountX * cellCountY;
+				textureSpecs.cellCount = cellCount;
 			}
 
-			Arcane::UI::Image(m_Texture);
+			Arcane::UI::Image(m_Texture, {(float)textureSpecs.width, (float)textureSpecs.width});
+
+			if (ImGui::Button("Apply"))
+				ApplyMetaInfo();
 		}
 
 		if (ImGui::BeginDragDropTarget())
@@ -73,6 +84,9 @@ void SpriteEditor::OnImGuiRender()
 				if (asset != nullptr && asset->GetAssetType() == AssetType::TEXTURE)
 				{
 					Texture* texture = static_cast<Texture*>(asset);
+					std::filesystem::path metaPath = asset->GetPath().replace_extension("arcmeta");
+					std::ifstream i(metaPath);
+					i >> m_TextureMetaFile;
 					m_Texture = texture;
 				}
 			}
@@ -80,4 +94,17 @@ void SpriteEditor::OnImGuiRender()
 		}
 	}
 	ImGui::End();
+}
+
+void SpriteEditor::ApplyMetaInfo()
+{
+	m_TextureMetaFile["CellWidth"] = m_Texture->GetTextureSpecs().cellWidth;
+	m_TextureMetaFile["CellHeight"] = m_Texture->GetTextureSpecs().cellHeight;
+	m_TextureMetaFile["CellCount"] = m_Texture->GetTextureSpecs().cellCount;
+	m_TextureMetaFile["Type"] = m_Texture->GetTextureSpecs().amountType == Arcane::TextureImageAmountType::MULTIPLE ? "M" : "S";
+	
+	std::filesystem::path metaFilePath = m_Texture->GetPath().replace_extension("arcmeta");
+	
+	std::ofstream o(metaFilePath);
+	o << std::setw(4) << m_TextureMetaFile << std::endl;
 }

@@ -11,4 +11,8 @@ public:
 	void OnImGuiRender();
 private:
 	Arcane::Texture* m_Texture = nullptr;
+	nlohmann::json m_TextureMetaFile;
+
+private:
+	void ApplyMetaInfo();
 };
