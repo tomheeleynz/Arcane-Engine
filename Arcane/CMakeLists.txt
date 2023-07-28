@@ -10,6 +10,7 @@ file(GLOB ASSET_MANAGER_FILES "src/Arcane/Assets/*.h" "src/Arcane/Assets/*.cpp")
 file(GLOB SCRIPTING_FILES "src/Arcane/Scripting/*.h" "src/Arcane/Scripting/*.cpp")
 file(GLOB PROJECT_SYSTEM_FILES "src/Arcane/Project/*.h" "src/Arcane/Project/*.cpp")
 file(GLOB ANIMATION_FILES "src/Arcane/Animation/*.h" "src/Arcane/Animation/*.cpp")
+file(GLOB IMGUIZMO_FILES "vendor/ImGuizmo/*.h" "vendor/ImGuizmo/*.cpp")
 
 if (WIN32 OR (UNIX AND NOT APPLE))
 	# Find Vulkan
@@ -78,6 +79,7 @@ add_library(
 	${PROJECT_SYSTEM_FILES}
 	${PHYSICS_FILES}
 	${ANIMATION_FILES}
+	${IMGUIZMO_FILES}
 )
 
 # Link Source Directories

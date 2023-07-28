@@ -544,23 +544,29 @@ void EntityPanel::InitComponent<Arcane::Animator>()
 	Arcane::KeyFrame2D* firstKeyFrame = new Arcane::KeyFrame2D();
 	firstKeyFrame->SetImageIndexX(1);
 	firstKeyFrame->SetImageIndexY(1);
-	firstKeyFrame->SetKeyFrameLength(10);
+	firstKeyFrame->SetKeyFrameLength(30);
 
 	Arcane::KeyFrame2D* secondKeyFrame = new Arcane::KeyFrame2D();
 	secondKeyFrame->SetImageIndexX(2);
 	secondKeyFrame->SetImageIndexY(1);
-	secondKeyFrame->SetKeyFrameLength(10);
+	secondKeyFrame->SetKeyFrameLength(30);
 
 
 	Arcane::KeyFrame2D* thirdKeyFrame = new Arcane::KeyFrame2D();
 	secondKeyFrame->SetImageIndexX(3);
 	secondKeyFrame->SetImageIndexY(1);
-	secondKeyFrame->SetKeyFrameLength(10);
+	secondKeyFrame->SetKeyFrameLength(30);
+
+	Arcane::KeyFrame2D* fourthKeyFrame = new Arcane::KeyFrame2D();
+	secondKeyFrame->SetImageIndexX(4);
+	secondKeyFrame->SetImageIndexY(1);
+	secondKeyFrame->SetKeyFrameLength(30);
 
 	// Add to animation
  	idleAnimation->AddKeyFrame(0, firstKeyFrame);
 	idleAnimation->AddKeyFrame(1, secondKeyFrame);
 	idleAnimation->AddKeyFrame(2, thirdKeyFrame);
+	idleAnimation->AddKeyFrame(3, fourthKeyFrame);
 
 	// Add Animation to animation controller
 	newController = new Arcane::AnimationController();

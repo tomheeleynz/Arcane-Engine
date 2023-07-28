@@ -38,6 +38,7 @@ void EditorLayer::OnAttach()
 	m_MaterialViewerPanel = new MaterialViewerPanel();
 	m_EnviromentPanel = new EnvironmentPanel();
 	m_SpriteEditor = new SpriteEditor();
+	m_AnimationPanel = new AnimationPanel();
 
 	m_FileBrowserPanel->SetMaterialViewPanel(m_MaterialViewerPanel);
 
@@ -170,6 +171,14 @@ void EditorLayer::OnImGuiRender()
 			ImGui::EndMenu();
 		}
 
+		if (ImGui::BeginMenu("Animation"))
+		{
+			if (ImGui::MenuItem("Animation"))
+				m_ShowAnimationPanel = true;
+
+			ImGui::EndMenu();
+		}
+
 		ImGui::EndMenuBar();
 	}
 
@@ -190,6 +199,9 @@ void EditorLayer::OnImGuiRender()
 
 	if (m_ShowSpriteEditor)
 		m_SpriteEditor->OnImGuiRender();
+
+	if (m_ShowAnimationPanel)
+		m_AnimationPanel->OnImGuiRender();
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	

@@ -11,6 +11,7 @@
 #include "Panels/MaterialViewerPanel.h"
 #include "Panels/EnvironmentPanel.h"
 #include "Panels/SpriteEditor.h"
+#include "Panels/AnimationPanel.h"
 
 #include "Controllers/PerspectiveController.h"
 #include "Controllers/OrthographicController.h"
@@ -57,6 +58,7 @@ private:
 	MaterialViewerPanel* m_MaterialViewerPanel;
 	EnvironmentPanel* m_EnviromentPanel;
 	SpriteEditor* m_SpriteEditor;
+	AnimationPanel* m_AnimationPanel;
 
 	// Editor Camera
 	Arcane::Camera* m_EditorCamera;
@@ -68,4 +70,5 @@ private:
 	// Panel States
 	bool m_ShowEnvironmentPanel = false;
 	bool m_ShowSpriteEditor = false;
+	bool m_ShowAnimationPanel = false;
 };

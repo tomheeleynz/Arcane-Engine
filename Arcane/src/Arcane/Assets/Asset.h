@@ -14,7 +14,8 @@ namespace Arcane
 		SCRIPT,
 		SHADER,
 		MATERIAL,
-		SCENE
+		SCENE,
+		ANIMATION
 	};
 
 	class Asset

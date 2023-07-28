@@ -12,6 +12,7 @@
 #include "Arcane/Scripting/Script.h"
 #include "Arcane/Renderer/MaterialDeserializer.h"
 #include "Arcane/Scene/SceneDeserializer.h"
+#include "Arcane/Animation/AnimationSerializer.h"
 
 namespace Arcane
 {
@@ -170,6 +171,18 @@ namespace Arcane
 				scene->SetPath(currentAssetPath);
 				m_Assets[assetID] = scene;
 			}
+		}
+		else if (currentAssetPath.extension() == ".arcaneanim")
+		{
+			Animation* newAnimation = new Animation();
+			AnimationSerializer deserializer(newAnimation);
+
+			deserializer.Deserialize(currentAssetPath);
+			newAnimation->SetAssetType(AssetType::ANIMATION);
+			newAnimation->SetPath(currentAssetPath);
+			newAnimation->SetID(Arcane::Core::UUID(assetID));
+			
+			m_Assets[assetID] = newAnimation;
 		}
 		return true;
 	}
