@@ -12,6 +12,7 @@
 #include "Arcane/Renderer/MaterialDeserializer.h"
 #include "Arcane/Scene/SceneDeserializer.h"
 #include "Arcane/Animation/AnimationSerializer.h"
+#include "Arcane/Animation/AnimationControllerSerializer.h"
 
 namespace Arcane
 {
@@ -184,6 +185,25 @@ namespace Arcane
 			newAnimation->SetID(Arcane::Core::UUID(assetID));
 			
 			m_Assets[assetID] = newAnimation;
+		}
+		else if (currentAssetPath.extension() == ".arcaneanimcontroller")
+		{
+			if (!dependent) {
+				DependentAssetSpec spec;
+				spec.path = currentAssetPath;
+				spec.type = AssetType::ANIMATION_CONTROLLER;
+				m_DependentAssets.push_back(spec);
+			}
+			else {
+				AnimationController* newController = new AnimationController();
+				AnimationControllerSerializer deserializer(newController);
+				deserializer.Deserialize(currentAssetPath);
+				newController->SetAssetType(AssetType::ANIMATION_CONTROLLER);
+				newController->SetID(Arcane::Core::UUID(assetID));
+				newController->SetName(name);
+				newController->SetPath(currentAssetPath);
+				m_Assets[assetID] = newController;
+			}
 		}
 		return true;
 	}

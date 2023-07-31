@@ -35,6 +35,9 @@ FileBrowserPanel::FileBrowserPanel()
 
 	// -- Animation Icon
 	m_Icons["Animation"] = Arcane::UI::AddTexture(Arcane::Texture::Create(dir + "/src/EditorAssets/Icons/animation_icon.png"));
+
+	// -- Animation Controller
+	m_Icons["AnimationController"] = Arcane::UI::AddTexture(Arcane::Texture::Create(dir + "/src/EditorAssets/Icons/animation_controller_icon.png"));
 }
 
 void FileBrowserPanel::OnUpdate()
@@ -305,6 +308,7 @@ void FileBrowserPanel::OnUpdate()
 		ImGui::InputText("Animation Name", buf1, 64);
 
 		if (ImGui::Button("Create")) {
+			CreateAnimation(std::string(buf1));
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
@@ -315,6 +319,7 @@ void FileBrowserPanel::OnUpdate()
 		ImGui::InputText("Animation Controller Name", buf1, 64);
 
 		if (ImGui::Button("Create")) {
+			CreateAnimationController(std::string(buf1));
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
@@ -352,6 +357,11 @@ std::string FileBrowserPanel::GetIconType(std::string extension)
 
 	if (extension == ".arcaneanim") {
 		return "Animation";
+	}
+
+
+	if (extension == ".arcaneanimcontroller") {
+		return "AnimationController";
 	}
 
 	return std::string();
@@ -458,12 +468,41 @@ void FileBrowserPanel::CreateStandardShader(std::string name)
 
 void FileBrowserPanel::CreateAnimation(std::string name)
 {
+	// Get Current Directory
+	std::string dir = std::string(Arcane::Application::Get().GetEditorAssetPath());
 
+	// Create filepath
+	std::filesystem::path newFilePath = m_Watcher->GetDirectory() / name;
+	newFilePath.replace_extension("arcaneanim");
+
+	// Create animation and serialize
+	Arcane::Animation* newAnimation = new Arcane::Animation();
+	newAnimation->SetName(name);
+	Arcane::AnimationSerializer serializer(newAnimation);
+	serializer.Serialize(newFilePath);
+
+	// Add to database
+	Arcane::AssetDatabase& database = Arcane::Application::Get().GetAssetDatabase();
+	database.GenerateAsset(newFilePath, true);
 }
 
 void FileBrowserPanel::CreateAnimationController(std::string name)
 {
+	// Get Current Directory
+	std::string dir = std::string(Arcane::Application::Get().GetEditorAssetPath());
 
+	// Create filepath
+	std::filesystem::path newFilePath = m_Watcher->GetDirectory() / name;
+	newFilePath.replace_extension("arcaneanimcontroller");
+
+	// Create AnimationController and serialize
+	Arcane::AnimationController* newAnimationController = new Arcane::AnimationController();
+	Arcane::AnimationControllerSerializer serializer(newAnimationController);
+	serializer.Serialize(newFilePath);
+
+	// Add to database
+	Arcane::AssetDatabase& database = Arcane::Application::Get().GetAssetDatabase();
+	database.GenerateAsset(newFilePath, true);
 }
 
 void FileBrowserPanel::ImportAsset(std::string fileLocation)

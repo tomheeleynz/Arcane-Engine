@@ -157,7 +157,9 @@ public:
 
 	void SetAnimationController(Arcane::AnimationController* controller);
 private:
-	Arcane::AnimationController* m_AnimationController;
+    void UpdateAnimationController();
+private:
+	Arcane::AnimationController* m_AnimationController = nullptr;
     GraphEditorDelegate m_Delegate;
     GraphEditor::FitOnScreen m_Fit;
     GraphEditor::Options m_Options;

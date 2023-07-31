@@ -401,8 +401,31 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	});
 
 	DrawComponent<Animator>("Animator", entity, [this](auto& component, auto& entity) {
-	});
+		static char buf1[64] = "";
+		ImGui::InputText("Controller", buf1, 64);
 
+		if (ImGui::BeginDragDropTarget())
+		{
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
+
+			if (payload != nullptr) {
+				AssetInfo assetInfo = *static_cast<AssetInfo*>(payload->Data);
+				Asset* asset = Arcane::Application::Get().GetAssetDatabase().GetAsset(assetInfo.id);
+
+				if (asset != nullptr && asset->GetAssetType() == AssetType::ANIMATION_CONTROLLER)
+				{
+					AnimationController* controller = static_cast<AnimationController*>(asset);
+					component.controller = controller;
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		if (component.controller) {
+			memset(buf1, 0, sizeof(buf1));
+			std::strncpy(buf1, component.controller->GetName().c_str(), sizeof(buf1));
+		}
+	});
 
 	ImGui::SameLine();
 	ImGui::PushItemWidth(-1);

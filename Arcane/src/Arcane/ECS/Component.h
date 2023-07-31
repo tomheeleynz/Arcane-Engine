@@ -97,6 +97,6 @@ namespace Arcane
 	//////////////////////
 	struct Animator
 	{
-		AnimationController* controller;
+		AnimationController* controller = nullptr;
 	};
 }

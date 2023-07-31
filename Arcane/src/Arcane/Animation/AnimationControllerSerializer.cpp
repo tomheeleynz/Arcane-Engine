@@ -11,8 +11,10 @@ namespace Arcane
 	void AnimationControllerSerializer::Serialize(std::filesystem::path path)
 	{
 		nlohmann::json jsonObject;
-		jsonObject["name"] = m_AnimationController->GetName();
-		jsonObject["current"] = m_AnimationController->GetCurrentAnimation()->GetID();
+		jsonObject["name"] = path.stem().string();
+
+		if (m_AnimationController->GetCurrentAnimation() != nullptr)
+			jsonObject["current"] = m_AnimationController->GetCurrentAnimation()->GetID();
 
 		nlohmann::json animationArray = nlohmann::json::array();
 		for (auto const& [key, val] : m_AnimationController->GetAnimations())
@@ -42,10 +44,13 @@ namespace Arcane
 			m_AnimationController->AddAnimation(element["name"], animation);
 		}
 
-		for (auto const& [key, val] : m_AnimationController->GetAnimations())
+		if (jsonObject.contains("current"))
 		{
-			if (jsonObject["current"] == val->GetID())
-				m_AnimationController->SetCurrentAnimation(key);
+			for (auto const& [key, val] : m_AnimationController->GetAnimations())
+			{
+				if (jsonObject["current"] == val->GetID())
+					m_AnimationController->SetCurrentAnimation(key);
+			}
 		}
 	}
 }

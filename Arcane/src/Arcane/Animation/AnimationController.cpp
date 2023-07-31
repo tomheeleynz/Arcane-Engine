@@ -13,6 +13,9 @@ namespace Arcane
 
 	Animation* AnimationController::GetCurrentAnimation()
 	{
+		if (m_Animations.find(m_CurrentAnimation) == m_Animations.end())
+			return nullptr;
+
 		return m_Animations[m_CurrentAnimation];
 	}
 }

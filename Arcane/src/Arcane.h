@@ -57,3 +57,4 @@
 #include "Arcane/Animation/Animation.h"
 #include "Arcane/Animation/AnimationController.h"
 #include "Arcane/Animation/AnimationSerializer.h"
+#include "Arcane/Animation/AnimationControllerSerializer.h"
