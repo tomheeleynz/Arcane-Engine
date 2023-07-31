@@ -12,6 +12,7 @@
 #include "Panels/EnvironmentPanel.h"
 #include "Panels/SpriteEditor.h"
 #include "Panels/AnimationPanel.h"
+#include "Panels/AnimationControllerPanel.h"
 
 #include "Controllers/PerspectiveController.h"
 #include "Controllers/OrthographicController.h"
@@ -59,6 +60,7 @@ private:
 	EnvironmentPanel* m_EnviromentPanel;
 	SpriteEditor* m_SpriteEditor;
 	AnimationPanel* m_AnimationPanel;
+	AnimationControllerPanel* m_AnimationControllerPanel;
 
 	// Editor Camera
 	Arcane::Camera* m_EditorCamera;

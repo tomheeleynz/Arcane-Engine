@@ -242,9 +242,34 @@ namespace Arcane
 		nlohmann::json metaFileJson;
 		std::ifstream(metaPath) >> metaFileJson;
 
-		specs.amountType = metaFileJson["Type"] == "M" ? TextureImageAmountType::MULTIPLE : TextureImageAmountType::SINGLE;
-		specs.cellCount = metaFileJson["CellCount"];
-		specs.cellWidth = metaFileJson["CellWidth"];
-		specs.cellHeight = metaFileJson["CellHeight"];
+		if (metaFileJson.contains("Type"))
+			specs.amountType = metaFileJson["Type"] == "M" ? TextureImageAmountType::MULTIPLE : TextureImageAmountType::SINGLE;
+		else {
+			specs.amountType = TextureImageAmountType::SINGLE;
+			metaFileJson["Type"] = "S";
+		}
+
+		if (metaFileJson.contains("CellCount"))
+			specs.cellCount = metaFileJson["CellCount"];
+		else {
+			specs.cellCount = 1.0f;
+			metaFileJson["CellCount"] = specs.cellCount;
+		}
+
+		if (metaFileJson.contains("CellHeight"))
+			specs.cellHeight = metaFileJson["CellHeight"];
+		else {
+			specs.cellHeight = specs.height;
+			metaFileJson["CellHeight"] = specs.height;
+		}
+		if (metaFileJson.contains("CellWidth"))
+			specs.cellWidth = metaFileJson["CellWidth"];
+		else {
+			specs.cellWidth = specs.width;
+			metaFileJson["CellWidth"] = specs.width;
+		}
+
+		std::ofstream o(metaPath);
+		o << std::setw(4) << metaFileJson << std::endl;
 	}
 }

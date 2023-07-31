@@ -39,6 +39,7 @@ void EditorLayer::OnAttach()
 	m_EnviromentPanel = new EnvironmentPanel();
 	m_SpriteEditor = new SpriteEditor();
 	m_AnimationPanel = new AnimationPanel();
+	m_AnimationControllerPanel = new AnimationControllerPanel();
 
 	m_FileBrowserPanel->SetMaterialViewPanel(m_MaterialViewerPanel);
 
@@ -60,6 +61,8 @@ void EditorLayer::OnAttach()
 		m_EditorCameraController = new PerspectiveController();
 	
 	m_EditorCameraController->SetCamera(m_EditorCamera);
+
+
 }
 
 void EditorLayer::OnDetach()
@@ -202,6 +205,8 @@ void EditorLayer::OnImGuiRender()
 
 	if (m_ShowAnimationPanel)
 		m_AnimationPanel->OnImGuiRender();
+
+	m_AnimationControllerPanel->OnImGuiRender();
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	

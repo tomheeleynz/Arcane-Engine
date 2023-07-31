@@ -36,6 +36,7 @@ void AnimationPanel::OnImGuiRender()
 		else {
 			if (m_Animation->GetKeyFrames().size() != 0) {
 				m_AnimationSequencer.animationNames.push_back(m_Animation->GetName());
+
 				for (const auto& [key, val] : m_Animation->GetKeyFrames())
 				{
 					if (val->GetType() == Arcane::KeyFrameType::TWO_DIMENSIONAL)
@@ -69,14 +70,33 @@ void AnimationPanel::OnImGuiRender()
 				m_AnimationSequencer.keyFrameItems.clear();
 			}
 			else {
-				if (ImGui::Button("Add Keyframe"))
+				ImGui::Text("Drag and Drop Texture to Begin");
+
+				if (ImGui::BeginDragDropTarget())
 				{
-					Arcane::KeyFrame2D* newKeyFrame = new Arcane::KeyFrame2D();
-					newKeyFrame->SetImageIndexX(1);
-					newKeyFrame->SetImageIndexY(1);
-					newKeyFrame->SetKeyFrameLength(30);
-					m_Animation->AddKeyFrame(0, newKeyFrame);
+					const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CURRENT_SELECTED_ASSET");
+
+					if (payload != nullptr) {
+						// Get Asset Id
+						AssetInfo assetInfo = *static_cast<AssetInfo*>(payload->Data);
+						Arcane::Asset* textureAsset = Arcane::Application::Get().GetAssetDatabase().GetAsset(assetInfo.id);
+
+						if (textureAsset != nullptr && textureAsset->GetAssetType() == Arcane::AssetType::TEXTURE) {
+							Arcane::Texture* texture = static_cast<Arcane::Texture*>(textureAsset);
+
+							for (int i = 0; i < texture->GetTextureSpecs().cellCount; i++) {
+								Arcane::KeyFrame2D* newKeyFrame = new Arcane::KeyFrame2D();
+								newKeyFrame->SetImageIndexX(i);
+								newKeyFrame->SetImageIndexY(1);
+								newKeyFrame->SetKeyFrameLength(1);
+								m_Animation->AddKeyFrame(i, newKeyFrame);
+
+							}
+						}
+					}
+					ImGui::EndDragDropTarget();
 				}
+
 			}
 		}
 	}
