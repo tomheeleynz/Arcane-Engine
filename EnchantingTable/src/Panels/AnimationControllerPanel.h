@@ -61,7 +61,6 @@ struct GraphEditorDelegate : public GraphEditor::Delegate
 
     void CustomDraw(ImDrawList* drawList, ImRect rectangle, GraphEditor::NodeIndex nodeIndex) override
     {
-        drawList->AddLine(rectangle.Min, rectangle.Max, IM_COL32(0, 0, 0, 255));
         drawList->AddText(rectangle.Min, IM_COL32(255, 128, 64, 255), "Draw");
     }
 
@@ -108,25 +107,23 @@ struct GraphEditorDelegate : public GraphEditor::Delegate
             IM_COL32(160, 160, 180, 255),
             IM_COL32(100, 100, 140, 255),
             IM_COL32(110, 110, 150, 255),
-            1,
-            Array{"MyInput"},
+            0,
             nullptr,
-            2,
-            Array{"MyOutput0", "MyOuput1"},
+            nullptr,
+            1,
+            Array{"Output"},
+            nullptr
+        },{
+            IM_COL32(160, 160, 180, 255),
+            IM_COL32(100, 100, 140, 255),
+            IM_COL32(110, 110, 150, 255),
+            1,
+            Array{"Input"},
+            nullptr,
+            1,
+            Array{"Output"},
             nullptr
         },
-
-        {
-            IM_COL32(180, 160, 160, 255),
-            IM_COL32(140, 100, 100, 255),
-            IM_COL32(150, 110, 110, 255),
-            3,
-            nullptr,
-            Array{ IM_COL32(200,100,100,255), IM_COL32(100,200,100,255), IM_COL32(100,100,200,255) },
-            1,
-            Array{"MyOutput0"},
-            Array{ IM_COL32(200,200,200,255)}
-        }
     };
 
     struct Node
@@ -139,28 +136,14 @@ struct GraphEditorDelegate : public GraphEditor::Delegate
 
     std::vector<Node> mNodes = {
         {
-            "My Node 0",
+            "Entry",
             0,
             0, 0,
-            false
-        },
-
-        {
-            "My Node 1",
-            0,
-            400, 0,
-            false
-        },
-
-        {
-            "My Node 2",
-            1,
-            400, 400,
             false
         }
     };
 
-    std::vector<GraphEditor::Link> mLinks = { {0, 0, 1, 0} };
+    std::vector<GraphEditor::Link> mLinks = { };
 };
 
 

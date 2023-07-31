@@ -17,6 +17,8 @@ namespace Arcane
 
 		void SetCurrentAnimation(std::string name) { m_CurrentAnimation = name; }
 		void AddAnimation(std::string name, Animation* animation) { m_Animations[name] = animation; };
+
+		std::map<std::string, Animation*> GetAnimations() { return m_Animations; }
 	private:
 		std::map<std::string, Animation*> m_Animations;
 		std::string m_CurrentAnimation;

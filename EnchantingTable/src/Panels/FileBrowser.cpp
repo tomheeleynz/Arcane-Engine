@@ -119,6 +119,8 @@ void FileBrowserPanel::OnUpdate()
 	bool bCreateScene = false;
 	bool bCreateUnlitShader = false;
 	bool bCreateStandardShader = false;
+	bool bCreateAnimation = false;
+	bool bCreateAnimationController = false;
 
 	// Import boolean
 	bool bImport = false;
@@ -161,6 +163,19 @@ void FileBrowserPanel::OnUpdate()
 				ImGui::EndMenu();
 			}
 
+			if (ImGui::BeginMenu("Animation"))
+			{
+				if (ImGui::MenuItem("Animation")) {
+					bCreateAnimation = true;
+				}
+
+				if (ImGui::MenuItem("Animation Controller")) {
+					bCreateAnimationController = true;
+				}
+
+				ImGui::EndMenu();
+			}
+
 			ImGui::EndMenu();
 		}
 
@@ -190,6 +205,12 @@ void FileBrowserPanel::OnUpdate()
 
 	if (bCreateStandardShader)
 		ImGui::OpenPopup("Create Standard Shader");
+
+	if (bCreateAnimation)
+		ImGui::OpenPopup("Create Animation");
+
+	if (bCreateAnimationController)
+		ImGui::OpenPopup("Create Animation Controller");
 
 	if (ImGui::BeginPopupModal("CreateFolderModal", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
@@ -279,6 +300,25 @@ void FileBrowserPanel::OnUpdate()
 		ImGui::EndPopup();
 	}
 
+	if (ImGui::BeginPopupModal("Create Animation", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		static char buf1[64] = "";
+		ImGui::InputText("Animation Name", buf1, 64);
+
+		if (ImGui::Button("Create")) {
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+
+	if (ImGui::BeginPopupModal("Create Animation Controller", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		static char buf1[64] = "";
+		ImGui::InputText("Animation Controller Name", buf1, 64);
+
+		if (ImGui::Button("Create")) {
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
 	
 
 	ImGui::End();
@@ -414,6 +454,16 @@ void FileBrowserPanel::CreateStandardShader(std::string name)
 	// Add to asset database
 	Arcane::AssetDatabase& database = Arcane::Application::Get().GetAssetDatabase();
 	database.GenerateAsset(newFilePath, true);
+}
+
+void FileBrowserPanel::CreateAnimation(std::string name)
+{
+
+}
+
+void FileBrowserPanel::CreateAnimationController(std::string name)
+{
+
 }
 
 void FileBrowserPanel::ImportAsset(std::string fileLocation)

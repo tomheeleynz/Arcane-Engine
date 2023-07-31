@@ -23,6 +23,8 @@ private:
 	void CreateScene(std::string name);
 	void CreateUnlitShader(std::string name);
 	void CreateStandardShader(std::string name);
+	void CreateAnimation(std::string name);
+	void CreateAnimationController(std::string name);
 
 	// Import Asset Function
 	void ImportAsset(std::string fileLocation);
