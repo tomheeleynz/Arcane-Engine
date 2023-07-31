@@ -7,6 +7,12 @@
 
 namespace Arcane
 {
+	struct AnimationLink
+	{
+		Animation* from;
+		Animation* to;
+	};
+
 	class AnimationController : public Asset
 	{
 	public:
@@ -19,7 +25,11 @@ namespace Arcane
 		void AddAnimation(std::string name, Animation* animation) { m_Animations[name] = animation; };
 
 		std::map<std::string, Animation*> GetAnimations() { return m_Animations; }
+
+		std::vector<AnimationLink> GetLinks() { return m_AnimationLinks; }
+		void AddLink(AnimationLink& link) { m_AnimationLinks.push_back(link); }
 	private:
+		std::vector<AnimationLink> m_AnimationLinks;
 		std::map<std::string, Animation*> m_Animations;
 		std::string m_CurrentAnimation;
 	};

@@ -39,6 +39,7 @@ void AnimationControllerPanel::OnImGuiRender()
                     newNode.templateIndex = 1;
                     newNode.x = 300.0f;
                     newNode.y = 0.0f;
+                    newNode.animation = val;
 
                     m_Delegate.mNodes.push_back(newNode);
                 }
@@ -64,6 +65,7 @@ void AnimationControllerPanel::OnImGuiRender()
                         newNode.templateIndex = 1;
                         newNode.x = 300.0f;
                         newNode.y = 0.0f;
+                        newNode.animation = animation;
 
                         m_Delegate.mNodes.push_back(newNode);
                         m_AnimationController->AddAnimation(animation->GetName(), animation);
@@ -88,6 +90,7 @@ void AnimationControllerPanel::OnImGuiRender()
                     {
                         Arcane::AnimationController* controller = static_cast<Arcane::AnimationController*>(asset);
                         m_AnimationController = controller;
+                        m_Delegate.controller = controller;
                     }
                 }
                 ImGui::EndDragDropTarget();

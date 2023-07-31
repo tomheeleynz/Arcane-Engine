@@ -88,9 +88,8 @@ void AnimationPanel::OnImGuiRender()
 								Arcane::KeyFrame2D* newKeyFrame = new Arcane::KeyFrame2D();
 								newKeyFrame->SetImageIndexX(i);
 								newKeyFrame->SetImageIndexY(1);
-								newKeyFrame->SetKeyFrameLength(1);
+								newKeyFrame->SetKeyFrameLength(15);
 								m_Animation->AddKeyFrame(i, newKeyFrame);
-
 							}
 						}
 					}

@@ -28,7 +28,7 @@ namespace Arcane
 		void SetCamera(Camera* camera);
 		void SubmitMesh(Mesh* mesh, TransformComponent& component, Material* material);
 		void SubmitQuad(TransformComponent& transformComponent, SpriteRendererComponent& spriteRendererComponent);
-		void SubmitAnimatedQuad(TransformComponent& transformComponent, SpriteRendererComponent& spriteRendererComponent, Animator& animatorComponent);
+		void SubmitAnimatedQuad(TransformComponent& transformComponent, SpriteRendererComponent& spriteRendererComponent, Animator& animatorComponent, bool playAnimation);
 
 		// Lighting code
 		void SetDirectionalLight(LightComponent& light, TransformComponent& transform);

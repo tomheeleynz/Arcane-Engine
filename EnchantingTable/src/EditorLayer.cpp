@@ -290,23 +290,23 @@ void EditorLayer::OnScenePlay()
 {
 	m_State = SceneState::PLAY;
 
-	m_RuntimeScene = Arcane::Scene::Copy(m_EditorScene);
-	m_ActiveScene = m_RuntimeScene; 
+	//m_RuntimeScene = Arcane::Scene::Copy(m_EditorScene);
+	//m_ActiveScene = m_RuntimeScene; 
 
-	m_ActiveScene->SetSceneRenderer(m_SceneRenderer);
+	//m_ActiveScene->SetSceneRenderer(m_SceneRenderer);
 
-	m_ActiveScene->OnRuntimeStart();
-	
-	m_ScenePanel->SetContext(m_ActiveScene);
+	//m_ActiveScene->OnRuntimeStart();
+	//
+	//m_ScenePanel->SetContext(m_ActiveScene);
 }
 
 void EditorLayer::OnSceneStop()
 {
 	m_State = SceneState::EDIT;
-	m_ActiveScene = m_EditorScene;
+	//m_ActiveScene = m_EditorScene;
 
-	delete m_RuntimeScene;
-	m_RuntimeScene = nullptr;
-	
-	m_ScenePanel->SetContext(m_ActiveScene);
+	//delete m_RuntimeScene;
+	//m_RuntimeScene = nullptr;
+	//
+	//m_ScenePanel->SetContext(m_ActiveScene);
 }

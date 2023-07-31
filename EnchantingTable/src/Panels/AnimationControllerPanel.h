@@ -52,6 +52,22 @@ struct GraphEditorDelegate : public GraphEditor::Delegate
     void AddLink(GraphEditor::NodeIndex inputNodeIndex, GraphEditor::SlotIndex inputSlotIndex, GraphEditor::NodeIndex outputNodeIndex, GraphEditor::SlotIndex outputSlotIndex) override
     {
         mLinks.push_back({ inputNodeIndex, inputSlotIndex, outputNodeIndex, outputSlotIndex });
+
+        // This is if we are connecting to the entry node
+        if (inputNodeIndex == 0) {
+            Node currentNode = mNodes[outputNodeIndex];
+            controller->SetCurrentAnimation(currentNode.animation->GetName());
+        }
+        else {
+            Node fromNode = mNodes[inputNodeIndex];
+            Node toNode = mNodes[outputNodeIndex];
+
+            Arcane::AnimationLink newLink;
+            newLink.from = fromNode.animation;
+            newLink.to = toNode.animation;
+
+            controller->AddLink(newLink);
+        }
     }
 
     void DelLink(GraphEditor::LinkIndex linkIndex) override
@@ -87,7 +103,7 @@ struct GraphEditorDelegate : public GraphEditor::Delegate
             myNode.name,
             myNode.templateIndex,
             ImRect(ImVec2(myNode.x, myNode.y), ImVec2(myNode.x + 200, myNode.y + 200)),
-            myNode.mSelected
+            myNode.mSelected,
         };
     }
 
@@ -103,6 +119,7 @@ struct GraphEditorDelegate : public GraphEditor::Delegate
 
     // Graph datas
     static const inline GraphEditor::Template mTemplates[] = {
+        // Entry Node Template
         {
             IM_COL32(160, 160, 180, 255),
             IM_COL32(100, 100, 140, 255),
@@ -113,7 +130,9 @@ struct GraphEditorDelegate : public GraphEditor::Delegate
             1,
             Array{"Output"},
             nullptr
-        },{
+        },
+        // Other node index
+        {
             IM_COL32(160, 160, 180, 255),
             IM_COL32(100, 100, 140, 255),
             IM_COL32(110, 110, 150, 255),
@@ -132,6 +151,7 @@ struct GraphEditorDelegate : public GraphEditor::Delegate
         GraphEditor::TemplateIndex templateIndex;
         float x, y;
         bool mSelected;
+        Arcane::Animation* animation;
     };
 
     std::vector<Node> mNodes = {
@@ -144,6 +164,7 @@ struct GraphEditorDelegate : public GraphEditor::Delegate
     };
 
     std::vector<GraphEditor::Link> mLinks = { };
+    Arcane::AnimationController* controller = nullptr;
 };
 
 

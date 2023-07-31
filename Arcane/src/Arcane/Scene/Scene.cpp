@@ -164,7 +164,7 @@ namespace Arcane
 				Entity entityHandle = Entity(entity, this);
 
 				if (entityHandle.HasComponent<Animator>())
-					m_SceneRenderer->SubmitAnimatedQuad(transformComponent, spriteRendererComponent, entityHandle.GetComponent<Animator>());
+					m_SceneRenderer->SubmitAnimatedQuad(transformComponent, spriteRendererComponent, entityHandle.GetComponent<Animator>(), false);
 				else
 					m_SceneRenderer->SubmitQuad(transformComponent, spriteRendererComponent);
 			}
@@ -285,7 +285,13 @@ namespace Arcane
 			{
 				auto& spriteRendererComponent = view.get<SpriteRendererComponent>(entity);
 				auto& transformComponent = view.get<TransformComponent>(entity);
-				m_SceneRenderer->SubmitQuad(transformComponent, spriteRendererComponent);
+
+				Entity entityHandle = Entity(entity, this);
+
+				if (entityHandle.HasComponent<Animator>())
+					m_SceneRenderer->SubmitAnimatedQuad(transformComponent, spriteRendererComponent, entityHandle.GetComponent<Animator>(), true);
+				else
+					m_SceneRenderer->SubmitQuad(transformComponent, spriteRendererComponent);
 			}
 		}
 

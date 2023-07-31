@@ -43,7 +43,8 @@ namespace Arcane {
 
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Enable Docking for ImGui
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;   // Enable Docking for ImGui
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport / Platform Windows
 
 		float fontSize = 18.0f;
 		
