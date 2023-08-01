@@ -9,6 +9,18 @@ static const char* SequencerTypeNames[] = { "Animation" };
 
 struct AnimationSequencer : public ImSequencer::SequenceInterface
 {
+	virtual void BeginEdit(int index) {
+	
+		if (keyFrameItems[index].keyframe->GetType() == Arcane::KeyFrameType::TWO_DIMENSIONAL)
+		{
+			Arcane::KeyFrame2D* keyframe2D = static_cast<Arcane::KeyFrame2D*>(keyFrameItems[index].keyframe);
+			keyframe2D->SetKeyFrameLength(keyframe2D->GetKeyFrameLength() + 1);
+		}
+	}
+	
+	virtual void EndEdit() {
+	}
+
 	// Inherited via SequenceInterface
 	virtual int GetFrameMin() const override
 	{
@@ -49,6 +61,7 @@ struct AnimationSequencer : public ImSequencer::SequenceInterface
 	{
 		int frameStart;
 		int frameEnd;
+		Arcane::KeyFrame* keyframe;
 	};
 
 	std::vector<KeyFrameItem> keyFrameItems;

@@ -653,7 +653,10 @@ namespace Arcane
 		}
 
 		AnimData newData;
-		Animation* currentAnimation = animatorComponent.controller->GetCurrentAnimation();
+		Animation* currentAnimation = nullptr;
+
+		if (animatorComponent.controller != nullptr)
+			currentAnimation = animatorComponent.controller->GetCurrentAnimation();
 
 		if (currentAnimation == nullptr || animatorComponent.controller == nullptr || playAnimation == false) {
 			newData.currentFrameCountX = 0;

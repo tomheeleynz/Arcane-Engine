@@ -16,7 +16,7 @@ namespace Arcane
 		// Setup json object
 		std::filesystem::path savePath(filepath);
 		nlohmann::json jsonObject;
-		
+
 
 		if (m_Scene == nullptr) {
 			jsonObject["name"] = savePath.stem().string();
@@ -32,85 +32,119 @@ namespace Arcane
 			m_Scene->m_Registry.each([&](auto entity) {
 				Entity sceneEntity(entity, m_Scene);
 
-			if (sceneEntity.HasComponent<TagComponent>())
-			{
-				std::string tag = sceneEntity.GetComponent<TagComponent>().tag;
-				entityObject["name"] = tag;
-			}
+				if (sceneEntity.HasComponent<TagComponent>())
+				{
+					std::string tag = sceneEntity.GetComponent<TagComponent>().tag;
+					entityObject["name"] = tag;
+				}
 
-			nlohmann::json componentArray = nlohmann::json::array();
+				nlohmann::json componentArray = nlohmann::json::array();
 
-			if (sceneEntity.HasComponent<TransformComponent>())
-			{
-				nlohmann::json transformObject = nlohmann::json::object();
-				transformObject["name"] = "Transform";
+				if (sceneEntity.HasComponent<TransformComponent>())
+				{
+					nlohmann::json transformObject = nlohmann::json::object();
+					transformObject["name"] = "Transform";
 
-				TransformComponent component = sceneEntity.GetComponent<TransformComponent>();
+					TransformComponent component = sceneEntity.GetComponent<TransformComponent>();
 
-				nlohmann::json position = { component.pos.x, component.pos.y, component.pos.z };
-				nlohmann::json rotation = { component.rotation.x, component.rotation.y, component.rotation.z };
-				nlohmann::json scale = { component.scale.x, component.scale.y, component.scale.z };
+					nlohmann::json position = { component.pos.x, component.pos.y, component.pos.z };
+					nlohmann::json rotation = { component.rotation.x, component.rotation.y, component.rotation.z };
+					nlohmann::json scale = { component.scale.x, component.scale.y, component.scale.z };
 
-				transformObject["position"] = position;
-				transformObject["rotation"] = rotation;
-				transformObject["scale"] = scale;
+					transformObject["position"] = position;
+					transformObject["rotation"] = rotation;
+					transformObject["scale"] = scale;
 
-				componentArray.push_back(transformObject);
-			}
+					componentArray.push_back(transformObject);
+				}
 
-			if (sceneEntity.HasComponent<MeshComponent>())
-			{
-				MeshComponent component = sceneEntity.GetComponent<MeshComponent>();
-				nlohmann::json meshObject = nlohmann::json::object();
+				if (sceneEntity.HasComponent<MeshComponent>())
+				{
+					MeshComponent component = sceneEntity.GetComponent<MeshComponent>();
+					nlohmann::json meshObject = nlohmann::json::object();
 
-				meshObject["name"] = "Mesh";
-				meshObject["AssetID"] = component.mesh->GetID();
+					meshObject["name"] = "Mesh";
+					meshObject["AssetID"] = component.mesh->GetID();
 
-				componentArray.push_back(meshObject);
-			}
+					componentArray.push_back(meshObject);
+				}
 
-			if (sceneEntity.HasComponent<MeshRendererComponent>())
-			{
-				MeshRendererComponent component = sceneEntity.GetComponent<MeshRendererComponent>();
-				nlohmann::json meshRendererObject = nlohmann::json::object();
+				if (sceneEntity.HasComponent<MeshRendererComponent>())
+				{
+					MeshRendererComponent component = sceneEntity.GetComponent<MeshRendererComponent>();
+					nlohmann::json meshRendererObject = nlohmann::json::object();
 
-				meshRendererObject["name"] = "MeshRenderer";
-				meshRendererObject["AssetID"] = component.material->GetID();
+					meshRendererObject["name"] = "MeshRenderer";
+					meshRendererObject["AssetID"] = component.material->GetID();
 
-				// Need to serialize materil
-				Arcane::MaterialSerializer serialize(component.material);
-				serialize.Serialize(component.material->GetPath().string());
+					// Need to serialize materil
+					Arcane::MaterialSerializer serialize(component.material);
+					serialize.Serialize(component.material->GetPath().string());
 
-				componentArray.push_back(meshRendererObject);
-			}
+					componentArray.push_back(meshRendererObject);
+				}
 
-			if (sceneEntity.HasComponent<LightComponent>())
-			{
-				LightComponent& component = sceneEntity.GetComponent<LightComponent>();
-				nlohmann::json lightObject = nlohmann::json::object();
-				lightObject["name"] = "Light";
-				lightObject["type"] = component.type;
-				lightObject["color"] = { component.color.x, component.color.y, component.color.z };
-				componentArray.push_back(lightObject);
-			}
+				if (sceneEntity.HasComponent<LightComponent>())
+				{
+					LightComponent& component = sceneEntity.GetComponent<LightComponent>();
+					nlohmann::json lightObject = nlohmann::json::object();
+					lightObject["name"] = "Light";
+					lightObject["type"] = component.type;
+					lightObject["color"] = { component.color.x, component.color.y, component.color.z };
+					componentArray.push_back(lightObject);
+				}
 
-			if (sceneEntity.HasComponent<RigidBodyComponent>())
-			{
-				RigidBodyComponent& rigidBodyComponent = sceneEntity.GetComponent<RigidBodyComponent>();
-				nlohmann::json rigidBodyObject = nlohmann::json::object();
-				rigidBodyObject["name"] = "RigidBody";
-				rigidBodyObject["gravityScale"] = rigidBodyComponent.gravityScale;
-				rigidBodyObject["mass"] = rigidBodyComponent.mass;
-				componentArray.push_back(rigidBodyObject);
-			}
+				if (sceneEntity.HasComponent<RigidBodyComponent>())
+				{
+					RigidBodyComponent& rigidBodyComponent = sceneEntity.GetComponent<RigidBodyComponent>();
+					nlohmann::json rigidBodyObject = nlohmann::json::object();
+					rigidBodyObject["name"] = "RigidBody";
+					rigidBodyObject["gravityScale"] = rigidBodyComponent.gravityScale;
+					rigidBodyObject["mass"] = rigidBodyComponent.mass;
+					componentArray.push_back(rigidBodyObject);
+				}
 
-			entityObject["Components"] = componentArray;
-			entityArray.push_back(entityObject);
-				});
+				if (sceneEntity.HasComponent<SpriteRendererComponent>())
+				{
+					SpriteRendererComponent& spriteRendererComponent = sceneEntity.GetComponent<SpriteRendererComponent>();
+					nlohmann::json spriteRendererObject = nlohmann::json::object();
+
+					spriteRendererObject["name"] = "SpriteRenderer";
+					if (spriteRendererComponent.sprite == nullptr)
+						spriteRendererObject["sprite"] = -1;
+					else
+						spriteRendererObject["sprite"] = spriteRendererComponent.sprite->GetID();
+
+					spriteRendererObject["color"] = {
+						spriteRendererComponent.color.x,
+						spriteRendererComponent.color.y,
+						spriteRendererComponent.color.z
+					};
+
+					componentArray.push_back(spriteRendererObject);
+				}
+
+				if (sceneEntity.HasComponent<Animator>())
+				{
+					Animator& animator = sceneEntity.GetComponent<Animator>();
+					nlohmann::json animatorObject = nlohmann::json::object();
+					animatorObject["name"] = "Animator";
+
+					if (animator.controller == nullptr)
+						animatorObject["controller"] = -1;
+					else
+						animatorObject["controller"] = animator.controller->GetID();
+
+					componentArray.push_back(animatorObject);
+				}
+
+				entityObject["Components"] = componentArray;
+				entityArray.push_back(entityObject);
+			});
 
 			jsonObject["Entities"] = entityArray;
 		}
-		
+
 
 		// Save json objet to file
 		std::ofstream o(savePath.string());

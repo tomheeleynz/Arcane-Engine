@@ -87,6 +87,34 @@ namespace Arcane
 					rigidBodyComponent.body->SetGravityScale(gravityScale);
 					newEntity->AddComponent<RigidBodyComponent>(rigidBodyComponent);
 				}
+				else if (name == "SpriteRenderer")
+				{
+					SpriteRendererComponent spriteRendererComponent;
+
+					spriteRendererComponent.color = {
+						element["color"][0],
+						element["color"][1],
+						element["color"][2]
+					};
+
+					if (element["sprite"] == -1)
+						spriteRendererComponent.sprite = nullptr;
+					else
+						spriteRendererComponent.sprite = static_cast<Texture*>(Application::Get().GetAssetDatabase().GetAsset(element["sprite"]));
+
+					newEntity->AddComponent<SpriteRendererComponent>(spriteRendererComponent);
+				}
+				else if (name == "Animator")
+				{
+					Animator animator;
+
+					if (element["controller"] == -1)
+						animator.controller = nullptr;
+					else
+						animator.controller = static_cast<AnimationController*>(Application::Get().GetAssetDatabase().GetAsset(element["controller"]));
+
+					newEntity->AddComponent<Animator>(animator);
+				}
 			}
 		}
 	

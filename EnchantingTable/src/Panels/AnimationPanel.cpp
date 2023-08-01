@@ -47,10 +47,12 @@ void AnimationPanel::OnImGuiRender()
 							AnimationSequencer::KeyFrameItem prevItem = m_AnimationSequencer.keyFrameItems[key - 1];
 							newItem.frameStart = prevItem.frameEnd;
 							newItem.frameEnd = newItem.frameStart + keyFrame2D->GetKeyFrameLength();
+							newItem.keyframe = keyFrame2D;
 						}
 						else {
 							newItem.frameStart = 0;
 							newItem.frameEnd = keyFrame2D->GetKeyFrameLength();
+							newItem.keyframe = keyFrame2D;
 						}
 
 						m_AnimationSequencer.keyFrameItems.push_back(newItem);
@@ -59,7 +61,8 @@ void AnimationPanel::OnImGuiRender()
 				int currentFrame = 0;
 				int selectedEntry = -1;
 				bool expanded = true;
-				ImSequencer::Sequencer(&m_AnimationSequencer, &currentFrame, &expanded, &selectedEntry, 0, ImSequencer::SEQUENCER_EDIT_STARTEND | ImSequencer::SEQUENCER_ADD | ImSequencer::SEQUENCER_DEL | ImSequencer::SEQUENCER_COPYPASTE | ImSequencer::SEQUENCER_CHANGE_FRAME);
+				int firstFrame = 0;
+				ImSequencer::Sequencer(&m_AnimationSequencer, &currentFrame, &expanded, &selectedEntry, &firstFrame, ImSequencer::SEQUENCER_EDIT_STARTEND | ImSequencer::SEQUENCER_ADD | ImSequencer::SEQUENCER_DEL | ImSequencer::SEQUENCER_COPYPASTE | ImSequencer::SEQUENCER_CHANGE_FRAME);
 
 				if (ImGui::Button("Save"))
 				{
