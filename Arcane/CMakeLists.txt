@@ -31,7 +31,7 @@ if (WIN32 OR (UNIX AND NOT APPLE))
 	set(SHADERC_RELEASE_LIB "${SHADERC_PARENT_DIR}/shaderc_combined.lib")
 	
 	# Set Libraries
-	set(LIBS glfw imgui ${Vulkan_LIBRARIES} assimp SPIRV-REFLECT glad ${OPENGL_LIBRARIES} spirv-cross-glsl)
+	set(LIBS ArcaneScript glfw imgui ${Vulkan_LIBRARIES} assimp SPIRV-REFLECT glad ${OPENGL_LIBRARIES} spirv-cross-glsl)
 
 	# Set Vulkan engine files
 	file(GLOB VULKAN_FILES "src/Arcane/Platform/Vulkan/*.h" "src/Arcane/Platform/Vulkan/*.cpp")
@@ -56,7 +56,7 @@ if (APPLE)
 	message(STATUS "Compiling for apple")
 endif()
 
-# Add kinetics library
+# Add Kinetics library
 add_subdirectory("vendor/Kinetics")
 
 # Try Find Lua
