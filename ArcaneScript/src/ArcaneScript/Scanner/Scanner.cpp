@@ -1,17 +1,24 @@
-#include "Scanner.h"
 #include <assert.h>
 #include <iostream>
 #include <map>
+#include <fstream>
+#include <sstream>
+
+#include "Scanner.h"
 
 namespace ArcaneScript
 {
 	std::map<std::string, TokenType> ReservedTypes = {
-		{"var", TokenType::VAR}
+		{"var", TokenType::VAR},
+		{"print", TokenType::PRINT}
 	};
 
 	Scanner::Scanner(std::string source)
 	{
-		m_Source = source;
+		std::ifstream t(source);
+		std::stringstream buffer;
+		buffer << t.rdbuf();
+		m_Source = buffer.str();
 	}
 
 	bool Scanner::IsAtEnd()

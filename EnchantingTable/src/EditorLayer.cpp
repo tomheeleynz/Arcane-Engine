@@ -18,7 +18,7 @@ EditorLayer::EditorLayer()
 
 void EditorLayer::OnAttach()
 {
-	ArcaneScript::Scanner scanner("var x = 2;\n");
+	ArcaneScript::Scanner scanner("C:\\Projects\\Arcane-Engine\\EnchantingTable\\src\\EditorAssets\\Tests\\Test.arcanescript");
 	scanner.ScanTokens();
 
 	m_EditorScene = new Arcane::Scene(true);
