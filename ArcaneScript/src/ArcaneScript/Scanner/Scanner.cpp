@@ -84,7 +84,9 @@ namespace ArcaneScript
 	{
 		while (Peek() != '"' && !IsAtEnd())
 		{
-			if (Peek() != '\n') m_Line++;
+			if (Peek() == '\n') 
+				m_Line++;
+			
 			Advance();
 		}
 
