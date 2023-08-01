@@ -10,12 +10,17 @@
 #include "EditorLayer.h"
 #include "Panels/PanelStructs.h"
 
+#include "ArcaneScript/Scanner/Scanner.h"
+
 EditorLayer::EditorLayer()
 {
 }
 
 void EditorLayer::OnAttach()
 {
+	ArcaneScript::Scanner scanner("var x = 2;\n");
+	scanner.ScanTokens();
+
 	m_EditorScene = new Arcane::Scene(true);
 	m_ActiveScene = m_EditorScene;
 
