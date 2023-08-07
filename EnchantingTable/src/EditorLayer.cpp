@@ -10,20 +10,12 @@
 #include "EditorLayer.h"
 #include "Panels/PanelStructs.h"
 
-#include "ArcaneScript/Scanner/Scanner.h"
-#include "ArcaneScript/Parser/Parser.h"
-
 EditorLayer::EditorLayer()
 {
 }
 
 void EditorLayer::OnAttach()
-{
-	Arcane::AssetPack newPack("C:\\Projects\\Arcane-Engine\\EnchantingTable\\src\\EditorAssets\\Tests\\Test.arcanepack");
-	
-	newPack.Serialize();
-	newPack.Deserialize();
-	
+{	
 	m_EditorScene = new Arcane::Scene(true);
 	m_ActiveScene = m_EditorScene;
 
