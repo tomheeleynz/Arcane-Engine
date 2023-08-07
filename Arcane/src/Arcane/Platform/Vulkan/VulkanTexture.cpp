@@ -399,6 +399,18 @@ namespace Arcane
 		m_RGBAValue = value;
 	}
 
+	TextureRuntimeData VulkanTexture::GetRuntimeData()
+	{
+		int width, height, channels = 0;
+		stbi_uc* pixels = stbi_load(GetPath().string().c_str(), &width, &height, &channels, STBI_rgb_alpha);
+
+		TextureRuntimeData newData;
+		newData.data = pixels;
+		newData.size = width * height * 4;
+
+		return newData;
+	}
+
 	VkCommandBuffer VulkanTexture::BeginSingleTimeCommands()
 	{
 		Application& app = Application::Get();

@@ -23,6 +23,8 @@ namespace Arcane
 		void SetRGBAValue(glm::vec4 value) override;
 
 		uint32_t GetTextureID() { return m_TextureID; }
+
+		TextureRuntimeData GetRuntimeData() { return TextureRuntimeData(); }
 	private:
 		uint32_t m_TextureID;
 		TextureImageDataType m_TextureDataType;

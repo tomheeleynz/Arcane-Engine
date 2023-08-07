@@ -21,6 +21,8 @@ namespace Arcane
 		
 		Asset* GetAsset(uint64_t id);
 		Asset* GetDefaultAsset(std::string assetName);
+
+		std::unordered_map<uint64_t, Asset*> GetAssetMap() { return m_Assets; };
 		
 		bool GenerateDatabase();
 		bool GenerateAsset(std::filesystem::path currentAssetPath, bool dependent);

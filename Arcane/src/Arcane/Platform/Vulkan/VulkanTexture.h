@@ -27,6 +27,8 @@ namespace Arcane
 		TextureSpecs& GetTextureSpecs() { return m_Specs; }
 
 		void SetTextureAmountType(TextureImageAmountType type) { m_Specs.amountType = type; }
+
+		TextureRuntimeData GetRuntimeData();
 	private:
 		VkCommandBuffer BeginSingleTimeCommands();
 		void EndSingleTimeCommands(VkCommandBuffer commandBuffer);

@@ -30,6 +30,12 @@ namespace Arcane {
 		float cellCount;
 	};
 
+	struct TextureRuntimeData
+	{
+		unsigned char* data;
+		uint32_t size;
+	};
+
 	class Texture : public Asset
 	{
 	public:
@@ -49,6 +55,8 @@ namespace Arcane {
 
 		virtual glm::vec4 GetRGBAValue() = 0;
 		virtual void SetRGBAValue(glm::vec4 value) = 0;
+
+		virtual TextureRuntimeData GetRuntimeData() = 0;
 	private:
 		
 	};
