@@ -24,14 +24,6 @@ namespace Arcane
 		// Set Scene Context
 		static void SetSceneContext(Scene* scene);
 		static Scene* GetSceneContext();
-
-		// Functions that require access to the scene context
-		static int GetComponent(lua_State* L);
-		static int HasComponent(lua_State* L);
-		static int SetComponent(lua_State* L);
-
-		// Set transform specifically
-		static int SetTransform(lua_State* L);
 	private:
 		ScriptingEngine();
 		static ScriptingEngine* s_Instance;

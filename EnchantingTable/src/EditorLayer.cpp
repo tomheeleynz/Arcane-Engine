@@ -295,8 +295,7 @@ void EditorLayer::OnScenePlay()
 
 	//m_ActiveScene->SetSceneRenderer(m_SceneRenderer);
 
-	//m_ActiveScene->OnRuntimeStart();
-	//
+	m_ActiveScene->OnRuntimeStart();
 	//m_ScenePanel->SetContext(m_ActiveScene);
 }
 

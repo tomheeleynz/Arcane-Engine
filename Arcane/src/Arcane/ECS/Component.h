@@ -77,6 +77,8 @@ namespace Arcane
 	{
 		glm::vec3 color = {1.0f, 1.0f, 1.0f};
 		Texture* sprite = nullptr;
+		bool flipX = false;
+		bool flipY = false;
 	};
 
 	struct RigidBodyComponent

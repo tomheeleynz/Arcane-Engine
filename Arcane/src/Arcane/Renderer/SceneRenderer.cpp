@@ -617,7 +617,20 @@ namespace Arcane
 
 		for (int i = 0; i < quadSize; i++) {
 			QuadVertex v;
-			v.position = translation * rotation * scale * s_Data.quadBase[i];
+
+			glm::vec4 quadVertex = s_Data.quadBase[i];
+			if (spriteRendererComponent.flipX == true)
+			{
+				quadVertex.x *= -1;
+			}
+
+			if (spriteRendererComponent.flipY == true)
+			{
+				quadVertex.y *= -1;
+			}
+
+
+			v.position = translation * rotation * scale * quadVertex;
 			v.color = spriteRendererComponent.color;
 			v.texCoord = textureCoords[i];
 			v.texId = textureId;
@@ -643,10 +656,21 @@ namespace Arcane
 		};
 
 		std::vector<AnimatedQuadVertex> vertices;
-		
 		for (int i = 0; i < quadSize; i++) {
 			AnimatedQuadVertex v;
-			v.position = translation * rotation * scale * s_Data.quadBase[i];
+
+			glm::vec4 quadVertex = s_Data.quadBase[i];
+			if (spriteRendererComponent.flipX == true)
+			{
+				quadVertex.x *= -1;
+			}
+
+			if (spriteRendererComponent.flipY == true)
+			{
+				quadVertex.y *= -1;
+			}
+
+			v.position = translation * rotation * scale * quadVertex;
 			v.color = spriteRendererComponent.color;
 			v.texCoord = textureCoords[i];
 			vertices.push_back(v);

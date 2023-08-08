@@ -1,7 +1,7 @@
 #include "Script.h"
 #include "Arcane/Scene/Scene.h"
 #include "Arcane/ECS/Entity.h"
-
+#include "ScriptGlue.h"
 namespace Arcane
 {
 	static void PrintStack(lua_State* L)
@@ -40,52 +40,10 @@ namespace Arcane
 		std::cout << str;
 	} 
 
-	static int l_Entity_Index(lua_State* L)
-	{
-		const char* index = lua_tostring(L, -1);
-		lua_getfield(L, -2, "EntityId");
-
-		Entity entity = *(Entity*)lua_touserdata(L, -1);
-
-		if (strcmp(index, "translation") == 0)
-		{
-			glm::vec3* newValue = (glm::vec3*)lua_newuserdata(L, sizeof(glm::vec3));
-			
-			TransformComponent& transformComponent = entity.GetComponent<TransformComponent>();
-			newValue->x = transformComponent.pos.x;
-			newValue->y = transformComponent.pos.y;
-			newValue->z = transformComponent.pos.z;
-			
-			luaL_getmetatable(L, "Vector3Metatable");
-			lua_setmetatable(L, -2);
-
-			return 1;
-		}
-
-		return 1;
-	}
-
-	static int l_Entity_NewIndex(lua_State* L)
-	{
-		glm::vec3* vec3 = (glm::vec3*)lua_touserdata(L, -1);
-		const char* index = lua_tostring(L, -2);
-		
-		lua_getfield(L, -3, "EntityId");
-		Entity entity = *(Entity*)lua_touserdata(L, -1);
-
-		if (strcmp(index, "translation") == 0)
-		{
-			entity.GetComponent<TransformComponent>().pos.x = vec3->x;
-			entity.GetComponent<TransformComponent>().pos.y = vec3->y;
-			entity.GetComponent<TransformComponent>().pos.z = vec3->z;
-		}
-
-		return 0;
-	}
-
 	Script::Script(std::string name)
 	{
 		lua_settop(ScriptingEngine::GetLuaState(), 0);
+
 		// Places the entity table on the lua stack
 		luaL_dofile(ScriptingEngine::GetLuaState(), name.c_str());
 
@@ -98,14 +56,14 @@ namespace Arcane
 	void Script::OnStart()
 	{
 		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_StartIndex);
-		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_EntityIdIndex);
+		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_ObjectIndex);
 		lua_pcall(ScriptingEngine::GetLuaState(), 1, 0, 0);
 	}
 
 	void Script::OnUpdate(float deltaTime)
 	{		
 		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_UpdateIndex);
-		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_EntityIdIndex);
+		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_ObjectIndex);
 		lua_pushnumber(ScriptingEngine::GetLuaState(), deltaTime);
 		lua_pcall(ScriptingEngine::GetLuaState(), 2, 0, 0);
 	}
@@ -113,88 +71,54 @@ namespace Arcane
 	void Script::SetEntity(Entity& entity)
 	{
 		lua_State* L = ScriptingEngine::GetLuaState();
-		lua_newtable(L);
-		int entityTableIdx = lua_gettop(L);
 		PrintStack(L);
 
-		Entity* entityPtr = (Entity*)lua_newuserdata(L, sizeof(Entity));
-		*entityPtr = entity;
+		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_ObjectIndex);
+		PrintStack(L);
+
+		Entity* entityUserData = (Entity*)lua_newuserdata(L, sizeof(Entity));
+		*entityUserData = entity;
 		PrintStack(L);
 
 		lua_setfield(L, -2, "EntityId");
 		PrintStack(L);
 
-		lua_pushcfunction(L, ScriptingEngine::GetComponent);
+		luaL_setmetatable(L, "EntityMetatable");
+		PrintStack(L);
+
+		// Get Start and Update Methods
+		lua_getfield(L, -1, "OnStart");
+		m_StartIndex = luaL_ref(L, LUA_REGISTRYINDEX);
+		PrintStack(L);
+
+		lua_getfield(L, -1, "OnUpdate");
+		m_UpdateIndex = luaL_ref(L, LUA_REGISTRYINDEX);
+		PrintStack(L);
+
+		// Set Entity Specific Methods
+		lua_pushcfunction(L, ScriptGlue::GetComponent);
 		PrintStack(L);
 
 		lua_setfield(L, -2, "GetComponent");
 		PrintStack(L);
 
-		lua_pushcfunction(L, ScriptingEngine::HasComponent);
+		lua_pushcfunction(L, ScriptGlue::SetComponent);
 		PrintStack(L);
 
-		lua_setfield(L, -2, "HasComponent");
+		lua_setfield(L, -2, "SetComponent");
 		PrintStack(L);
-
-		lua_pushcfunction(L, ScriptingEngine::SetTransform);
-		PrintStack(L);
-
-		lua_setfield(L, -2, "SetTranslation");
-		PrintStack(L);
-
-		lua_rawgeti(L, LUA_REGISTRYINDEX, m_ObjectIndex); 
-		PrintStack(L);
-
-		// Copy Across Properties
-		lua_getfield(L, -1, "Properties");
-		PrintStack(L);
-
-		lua_setfield(L, -3, "Properties");
-		PrintStack(L);
-
-		// Add Extra Metamethods like index and newindex to entity (at this point script table is at the top (-1))
-		lua_pushstring(L, "__newindex");
-		PrintStack(L);
-		lua_pushcfunction(L, l_Entity_NewIndex);
-		PrintStack(L);
-		lua_settable (L, -3);
-		PrintStack(L);
-
-		lua_pushstring(L, "__index");
-		PrintStack(L);
-		lua_pushcfunction(L, l_Entity_Index);
-		PrintStack(L);
-		lua_settable(L, -3);
-
-
-		// Set Metatable
-		lua_setmetatable(L, -2);
-		PrintStack(L);
-
-		// Get OnStart and Update metamethods
-		luaL_getmetafield(L, -1, "OnStart");
-		PrintStack(L);
-		m_StartIndex = luaL_ref(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX);
-		PrintStack(L);
-
-		luaL_getmetafield(L, -1, "OnUpdate");
-		PrintStack(L);
-		m_UpdateIndex = luaL_ref(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX);
-		PrintStack(L);
-
-		m_EntityIdIndex = luaL_ref(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX);
 
 		lua_settop(L, 0);
-		LoadProperties();
+		ReadProperties();
 	}
 
-	void Script::LoadScriptProperites()
+	void Script::WriteProperties()
 	{
 		// Clear lua stack
 		lua_settop(ScriptingEngine::GetLuaState(), 0);
 
 		// need to push object onto stack
-		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_EntityIdIndex);
+		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_ObjectIndex);
 
 		// Get properties
 		lua_pushstring(ScriptingEngine::GetLuaState(), "Properties");
@@ -254,11 +178,11 @@ namespace Arcane
 		}
 	}
 
-	void Script::LoadProperties()
+	void Script::ReadProperties()
 	{
 		lua_State* L = ScriptingEngine::GetLuaState();
 		PrintStack(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, m_EntityIdIndex);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, m_ObjectIndex);
 		PrintStack(L);
 
 		lua_getfield(L, -1, "Properties");

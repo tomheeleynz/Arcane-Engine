@@ -4,6 +4,7 @@
 #include "Arcane/ECS/Component.h"
 #include "Arcane/Core/InputManager.h"
 #include "Script.h"
+#include "Arcane/ECS/Entity.h"
 
 
 namespace Arcane
@@ -44,6 +45,9 @@ namespace Arcane
 		std::cout << str;
 	}
 
+	///////////////////////////////////////////////////////////
+	//// Global Functions
+	///////////////////////////////////////////////////////////
 	static int l_InputManager_GetKeyReleased(lua_State* L) {
 		// Get Key Code
 		int keyCode = lua_tonumber(L, 1);
@@ -69,12 +73,95 @@ namespace Arcane
 		return 1;
 	}
 
+	/////////////////////////////////////////////////////////////////////
+	//// Creation of Structures Functions
+	/////////////////////////////////////////////////////////////////////
+	static int l_Vector3_Create(lua_State* L)
+	{
+		glm::vec3* newVec3 = (glm::vec3*)lua_newuserdata(L, sizeof(glm::vec3));
+		newVec3->x = 1;
+		newVec3->y = 0;
+		newVec3->z = 0;
+		luaL_getmetatable(L, "Vector3Metatable");
+		lua_setmetatable(L, -2);
+		return 1;
+	}
+
+	static int l_Vector2_Create(lua_State* L)
+	{
+		glm::vec2* newVec2 = (glm::vec2*)lua_newuserdata(L, sizeof(glm::vec2));
+		newVec2->x = 2;
+		newVec2->y = 0;
+		luaL_getmetatable(L, "Vector2Metatable");
+		lua_setmetatable(L, -2);
+		return 1;
+	}
+
+	static int l_SpriteRendererCreate(lua_State* L)
+	{
+		PrintStack(L);
+		SpriteRendererComponent* spriteRenderer = (SpriteRendererComponent*)lua_newuserdata(L, sizeof(SpriteRendererComponent));
+		spriteRenderer->color = { 1.0f, 1.0f, 1.0f };
+		spriteRenderer->sprite = nullptr;
+		spriteRenderer->flipX = false;
+		spriteRenderer->flipY = false;
+		PrintStack(L);
+
+		luaL_getmetatable(L, "SpriteRendererComponentMetatable");
+		PrintStack(L);
+		lua_setmetatable(L, -2);
+		return 1;
+	}
+
+	/////////////////////////////////////////////////////////////////////
+	//// ECS Interfacing
+	/////////////////////////////////////////////////////////////////////
+	int ScriptGlue::GetComponent(lua_State* L)
+	{
+		lua_getfield(L, -2, "EntityId");
+		Entity* entity = (Entity*)lua_touserdata(L, -1);
+		const char* componentType = lua_tostring(L, -2);
+
+		if (strcmp(componentType, "Transform") == 0)
+		{
+			// This is now on top of stack
+			TransformComponent* newTransformComponent = (TransformComponent*)lua_newuserdata(L, sizeof(TransformComponent));
+			luaL_setmetatable(L, "TransformComponentMetatable");
+			*newTransformComponent = entity->GetComponent<TransformComponent>();
+
+			return 1;
+		}
+
+		if (strcmp(componentType, "SpriteRenderer") == 0)
+		{
+			SpriteRendererComponent* newSpriteRendererComponent = (SpriteRendererComponent*)lua_newuserdata(L, sizeof(SpriteRendererComponent));
+			luaL_setmetatable(L, "SpriteRendererComponentMetatable");
+			*newSpriteRendererComponent = entity->GetComponent<SpriteRendererComponent>();
+			return 1;
+		}
+
+		return 1;
+	}
+
+	int ScriptGlue::SetComponent(lua_State* L)
+	{
+		lua_getfield(L, -3, "EntityId");
+		Entity* entity = (Entity*)lua_touserdata(L, -1);
+		const char* componentType = lua_tostring(L, -3);
+		PrintStack(L);
+
+		if (strcmp(componentType, "SpriteRenderer") == 0)
+		{
+			SpriteRendererComponent* spriteRendererComponent = (SpriteRendererComponent*)lua_touserdata(L, -2);
+			entity->GetComponent<SpriteRendererComponent>() = *spriteRendererComponent;
+		}
+
+		return 1;
+
+	}
 
 	void ScriptGlue::RegisterTables(lua_State* L)
 	{
-		CreateVec2Table(L);
-		CreateVec3Table(L);
-		CreateTransformComponentTable(L);
 	}
 
 	void ScriptGlue::RegisterFunctions(lua_State* L)
@@ -85,6 +172,18 @@ namespace Arcane
 
 		lua_pushcfunction(L, l_InputManager_GetKeyPressed);
 		lua_setglobal(L, "GetKeyPressed");
+
+		// Structure Components
+		lua_pushcfunction(L, l_Vector3_Create);
+		lua_setglobal(L, "Vector3");
+
+		lua_pushcfunction(L, l_Vector2_Create);
+		lua_setglobal(L, "Vector2");
+
+		lua_pushcfunction(L, l_SpriteRendererCreate);
+		lua_setglobal(L, "SpriteRenderer");
+
+		// ECS Functions
 	}
 
 	void ScriptGlue::RegisterMetatables(lua_State* L)
@@ -92,6 +191,8 @@ namespace Arcane
 		CreateVec2Metatable(L);
 		CreateVec3Metatable(L);
 		CreateTransformComponentMetatable(L);
+		CreateSpriteRendererComponentMetatable(L);
+		CreateEntityMetatable(L);
 	}
 
 	void ScriptGlue::CreateVec2Metatable(lua_State* L)
@@ -237,21 +338,35 @@ namespace Arcane
 		lua_settable(L, -3);
 	}
 
+	void ScriptGlue::CreateEntityMetatable(lua_State* L)
+	{
+		luaL_newmetatable(L, "EntityMetatable");
+
+		auto EntityIndex = [](lua_State* L) -> int {
+			lua_getfield(L, -2, "EntityId");
+			Entity* entity = (Entity*)lua_touserdata(L, -1);
+			return 1;
+		};
+
+		lua_pushcfunction(L, EntityIndex);
+		lua_setfield(L, -2, "__index");
+	}
+
 	void ScriptGlue::CreateTransformComponentMetatable(lua_State* L)
 	{
 		luaL_newmetatable(L, "TransformComponentMetatable");
 
 		auto TransformComponentIndex = [](lua_State* L) -> int {
-			TransformComponent** transformComponentPtr = (TransformComponent**)lua_touserdata(L, -2);
-			TransformComponent* transformComponent = *transformComponentPtr;
+			PrintStack(L);
+			TransformComponent* transformComponentPtr = (TransformComponent*)lua_touserdata(L, -2);
 			const char* index = lua_tostring(L, -1);
 
 			if (strcmp(index, "translation") == 0) {
 				// Create Transform Vector
 				glm::vec3* translation = (glm::vec3*)lua_newuserdata(L, sizeof(glm::vec3));
-				translation->x = transformComponent->pos.x;
-				translation->y = transformComponent->pos.y;
-				translation->z = transformComponent->pos.z;
+				translation->x = transformComponentPtr->pos.x;
+				translation->y = transformComponentPtr->pos.y;
+				translation->z = transformComponentPtr->pos.z;
 
 				luaL_getmetatable(L, "Vector3Metatable");
 				lua_setmetatable(L, -2);
@@ -270,66 +385,48 @@ namespace Arcane
 		lua_settable(L, -3);
 	}
 
-	void ScriptGlue::CreateTransformComponentTable(lua_State* L)
+	void ScriptGlue::CreateSpriteRendererComponentMetatable(lua_State* L)
 	{
-		lua_newtable(L);
-		int transformComponentTable = lua_gettop(L);
-		lua_pushvalue(L, transformComponentTable);
-		lua_setglobal(L, "TransformComponent");
+		luaL_newmetatable(L, "SpriteRendererComponentMetatable");
 
-		auto CreateTransformComponent = [](lua_State* L) -> int {
-			void* ptrToTransformComponent = lua_newuserdata(L, sizeof(TransformComponent));
-			new (ptrToTransformComponent) TransformComponent();
+		auto SpriteRendererComponentIndex = [](lua_State* L) -> int {
+			SpriteRendererComponent* spriteRendererComponent = (SpriteRendererComponent*)lua_touserdata(L, -2);
+			const char* index = lua_tostring(L, -1);
 
-			luaL_getmetatable(L, "TransformComponentMetatable");
-			lua_setmetatable(L, -2);
-			
+			if (strcmp(index, "color") == 0)
+			{
+				glm::vec3* color = (glm::vec3*)lua_newuserdata(L, sizeof(glm::vec3));
+				color->x = spriteRendererComponent->color.r;
+				color->y = spriteRendererComponent->color.g;
+				color->z = spriteRendererComponent->color.b;
+				
+				luaL_getmetatable(L, "Vector3Metatable");
+				lua_setmetatable(L, -2);
+				return 1;
+			}
 			return 1;
 		};
 
-		lua_pushcfunction(L, CreateTransformComponent);
-		lua_setfield(L, -2, "new");
-	}
+		auto SpriteRendererComponentNewIndex = [](lua_State* L) -> int {
+			const char* componentType = lua_tostring(L, -2);
 
-	void ScriptGlue::CreateVec2Table(lua_State* L)
-	{
-		lua_newtable(L);
-		int vec2TableIdx = lua_gettop(L);
-		lua_pushvalue(L, vec2TableIdx);
-		lua_setglobal(L, "Vector2");
+			if (strcmp(componentType, "color") == 0)
+			{
+				SpriteRendererComponent* spriteRendererComponent = (SpriteRendererComponent*)lua_touserdata(L, -3);
+				glm::vec3* colorVec = (glm::vec3*)lua_touserdata(L, -1);
 
-		// Functions
-		auto CreateVector2 = [](lua_State* L) -> int {
-			void* ptrToVec2 = lua_newuserdata(L, sizeof(glm::vec2));
-			new (ptrToVec2) glm::vec2();
-			luaL_getmetatable(L, "Vector2Metatable");
-			lua_setmetatable(L, -2);
-			return 1;
+				spriteRendererComponent->color = *colorVec;
+			}
+			return 0;
 		};
 
-		lua_pushcfunction(L, CreateVector2);
-		lua_setfield(L, -2, "new");
+		lua_pushstring(L, "__index");
+		lua_pushcfunction(L, SpriteRendererComponentIndex);
+		lua_settable(L, -3);
+
+		lua_pushstring(L, "__newindex");
+		lua_pushcfunction(L, SpriteRendererComponentNewIndex);
+		lua_settable(L, -3);
 	}
-
-	void ScriptGlue::CreateVec3Table(lua_State* L)
-	{
-		lua_newtable(L);
-		int vec3TableIdx = lua_gettop(L);
-		lua_pushvalue(L, vec3TableIdx);
-		lua_setglobal(L, "Vector3");
-
-		// Functions
-		auto CreateVector3 = [](lua_State* L) -> int {
-			void* ptrToVec3 = lua_newuserdata(L, sizeof(glm::vec3));
-			new (ptrToVec3) glm::vec3();
-			luaL_getmetatable(L, "Vector3Metatable");
-			lua_setmetatable(L, -2);
-			return 1;
-		};
-
-		lua_pushcfunction(L, CreateVector3);
-		lua_setfield(L, -2, "new");
-	}
-
 
 }

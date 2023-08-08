@@ -67,58 +67,6 @@ namespace Arcane
 		return GetInstance()->GetSceneContextImpl();
 	}
 
-	int ScriptingEngine::GetComponent(lua_State* L)
-	{
-		std::string componentType = lua_tostring(L, -1);
-		lua_getfield(L, -2, "EntityId");
-		Entity entity = *(Entity*)lua_touserdata(L, -1);
-
-		if (componentType == "Transform") 
-		{
-			TransformComponent& transformComponent = entity.GetComponent<TransformComponent>();
-			TransformComponent** transformUserData = (TransformComponent**)lua_newuserdata(L, sizeof(TransformComponent));
-			*transformUserData = &transformComponent;
-			luaL_getmetatable(L, "TransformComponentMetatable");
-			lua_setmetatable(L, -2);
-		}
-		return 1;
-	}
-
-	int ScriptingEngine::HasComponent(lua_State* L)
-	{
-		std::string componentType = lua_tostring(L, -1);
-		lua_getfield(L, -2, "EntityId");
-		Entity entity = *(Entity*)lua_touserdata(L, -1);
-
-		bool hasComponent = false;
-		if (componentType == "Transform")
-		{
-			hasComponent = entity.HasComponent<TransformComponent>();
-		}
-
-		if (componentType == "Mesh")
-		{
-			hasComponent = entity.HasComponent<MeshComponent>();
-		}
-
-		lua_pushboolean(L, hasComponent);
-		return 1;
-	}
-
-	int ScriptingEngine::SetComponent(lua_State* L)
-	{
-		return 0;
-	}
-
-	int ScriptingEngine::SetTransform(lua_State* L)
-	{
-		glm::vec3* newTranslation = (glm::vec3*)lua_touserdata(L, -1);
-		lua_getfield(L, -2, "EntityId");
-		Entity entity = *(Entity*)lua_touserdata(L, -1);
-		entity.GetComponent<TransformComponent>().pos = *newTranslation;
-		return 0;
-	}
-
 	ScriptingEngine* ScriptingEngine::GetInstance()
 	{
 		if (!s_Instance)

@@ -254,7 +254,7 @@ namespace Arcane
 					Script* script = scriptComponent.script;
 		
 					if (scriptComponent.updateProperties == true) {
-						script->LoadScriptProperites();
+						script->WriteProperties();
 						scriptComponent.updateProperties = false;
 						m_Registry.emplace_or_replace<ScriptComponent>(entity, scriptComponent);
 					}

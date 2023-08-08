@@ -42,10 +42,10 @@ namespace Arcane
 		std::unordered_map<std::string, ScriptProperty> GetProperties() { return m_Properties; }
 		void SetPropertyValue(std::string key, std::any newValue) { m_Properties[key].value = newValue; }
 
-		void LoadScriptProperites();
+		void WriteProperties();
 		void SetEntity(Entity& entity);
 	private:
-		void LoadProperties();
+		void ReadProperties();
 	private:
 		lua_State* m_LuaState;
 		std::unordered_map<std::string, ScriptProperty> m_Properties;

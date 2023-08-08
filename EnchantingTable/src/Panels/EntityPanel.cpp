@@ -236,7 +236,6 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 
 		if (component.script != nullptr) {
 			ImGui::Text("Properties");
-			ImGui::Text(component.updateProperties == true ? "Update" : "No Update");
 
 			for (auto const& [key, val] : component.script->GetProperties()) {
 				std::string type = val.type;
@@ -387,6 +386,9 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 			}
 			ImGui::EndDragDropTarget();
 		}
+
+		ImGui::Checkbox("Flip X", &component.flipX);
+		ImGui::Checkbox("Flip Y", &component.flipY);
 	});
 
 	DrawComponent<RigidBodyComponent>("Rigid Body", entity, [this](auto& component, auto& entity) {
