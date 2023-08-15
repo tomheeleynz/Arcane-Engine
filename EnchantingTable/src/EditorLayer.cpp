@@ -168,6 +168,14 @@ void EditorLayer::OnImGuiRender()
 			ImGui::EndMenu();
 		}
 
+		if (ImGui::BeginMenu("Build"))
+		{
+			if (ImGui::MenuItem("Build Asset Pack"))
+				BuildAssetPack();
+
+			ImGui::EndMenu();
+		}
+
 		if (ImGui::BeginMenu("Tools"))
 		{
 			if (ImGui::MenuItem("Sprite Editor"))
@@ -310,4 +318,14 @@ void EditorLayer::OnSceneStop()
 	//m_RuntimeScene = nullptr;
 	//
 	//m_ScenePanel->SetContext(m_ActiveScene);
+}
+
+void EditorLayer::BuildAssetPack()
+{
+	std::string filename = Arcane::FileDialog::SaveFile();
+	
+	if (!filename.empty()) {
+		Arcane::AssetPack newAssetPack(filename);
+		newAssetPack.Serialize();
+	}
 }

@@ -41,6 +41,9 @@ private:
 	void OnScenePlay();
 	void OnSceneStop();
 
+	// Build Functions
+	void BuildAssetPack();
+
 private:
 	// Viewport Window
 	ImTextureID m_Viewport;
