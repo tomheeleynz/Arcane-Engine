@@ -206,8 +206,9 @@ namespace Arcane
 
 				if (cameraComponent.isPrimary) {
 					if (cameraComponent.type == CameraType::Orthographic) {
-						if (cameraComponent.orthoCamera == nullptr)
+						if (cameraComponent.orthoCamera == nullptr) {
 							cameraComponent.orthoCamera = new OrthoCamera(m_SceneRenderer->GetSceneSize().x, m_SceneRenderer->GetSceneSize().y);
+						}
 
 						cameraComponent.orthoCamera->SetViewData(newData);
 						camera = cameraComponent.orthoCamera;

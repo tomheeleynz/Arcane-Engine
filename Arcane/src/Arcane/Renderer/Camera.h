@@ -39,6 +39,9 @@ namespace Arcane
 		glm::mat4 m_Projection;
 		glm::vec2 m_Size;
 		ViewData m_ViewData;
+
+		uint32_t m_Width;
+		uint32_t m_Height;
 	};
 
 
@@ -48,8 +51,16 @@ namespace Arcane
 		OrthoCamera(uint32_t width, uint32_t height);
 
 		virtual void OnResize(uint32_t width, uint32_t height);
-	private:
 
+		void SetNearPlane(float nearPlane);
+		void SetFarPlane(float farPlane);
+
+		float GetNearPlane() { return m_NearPlane; }
+		float GetFarPlane() { return m_FarPlane; }
+	private:
+		float m_NearPlane = 0.1f;
+		float m_FarPlane = 1000.0f;
+		float m_Rotation = 0.0f;
 	};
 
 	class PerspectiveCamera : public Camera

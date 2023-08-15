@@ -6,6 +6,5 @@ OrthographicController::OrthographicController()
 }
 
 void OrthographicController::OnUpdate()
-{
-
+{	
 }

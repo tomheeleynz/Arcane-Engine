@@ -11,6 +11,7 @@
 #include "Arcane/Assets/AssetDatabase.h"
 #include "Arcane/Project/ProjectDeserializer.h"
 
+
 namespace Arcane 
 {
 	struct ApplicationSpecifications
@@ -18,9 +19,13 @@ namespace Arcane
 		std::string Name;
 		uint32_t WindowWidth;
 		uint32_t WindowHeight;
+		
 		bool PushImguiLayer = false;
+		bool RuntimeLayer = false;
+
 		const char* ProjectFilePath;
 		const char* EditorAssetPath;
+		const char* RuntimePath;
 	};
 
 	class Application

@@ -256,6 +256,106 @@ namespace Arcane
 		m_TextureDataType = TextureImageDataType::RGBA;
 	}
 
+	VulkanTexture::VulkanTexture(char* data, uint32_t size, uint32_t width, uint32_t height)
+	{
+		Application& app = Application::Get();
+		VkDevice logicalDevice = static_cast<VulkanContext*>(app.GetWindow().GetContext())->GetDevice().GetLogicalDevice();
+
+		VkBuffer stagingBuffer;
+		VkDeviceMemory stagingBufferMemory;
+
+		VkBufferCreateInfo bufferInfo{};
+		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		bufferInfo.size = size;
+		bufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+		if (vkCreateBuffer(logicalDevice, &bufferInfo, nullptr, &stagingBuffer) != VK_SUCCESS) {
+			printf("Texture Staging Buffer Not Created\n");
+		}
+		else {
+			printf("Texture Buffer Created\n");
+		}
+
+		VkMemoryRequirements stagingMemRequirements;
+		vkGetBufferMemoryRequirements(logicalDevice, stagingBuffer, &stagingMemRequirements);
+
+		VkMemoryAllocateInfo stagingAllocInfo{};
+		stagingAllocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		stagingAllocInfo.allocationSize = stagingMemRequirements.size;
+		stagingAllocInfo.memoryTypeIndex = FindMemoryType(stagingMemRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+		if (vkAllocateMemory(logicalDevice, &stagingAllocInfo, nullptr, &stagingBufferMemory) != VK_SUCCESS) {
+			printf("Failed to allocated vertex buffer memory\n");
+		}
+		else {
+			printf("Allocated vertex buffer memory\n");
+		}
+
+		void* pixels;
+		vkMapMemory(logicalDevice, stagingBufferMemory, 0, size, 0, &pixels);
+		memcpy(pixels, data, size);
+		vkUnmapMemory(logicalDevice, stagingBufferMemory);
+
+		// Creating Image Info
+		VkImageCreateInfo imageInfo{};
+		imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+		imageInfo.imageType = VK_IMAGE_TYPE_2D;
+		imageInfo.extent.width = static_cast<uint32_t>(width);
+		imageInfo.extent.height = static_cast<uint32_t>(height);
+		imageInfo.extent.depth = 1;
+		imageInfo.mipLevels = 1;
+		imageInfo.arrayLayers = 1;
+		imageInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
+		imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+		imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+		imageInfo.flags = 0;
+
+		if (vkCreateImage(logicalDevice, &imageInfo, nullptr, &m_TextureImage) != VK_SUCCESS) {
+			printf("Texture Image Not Created\n");
+		}
+		else {
+			printf("Texture Image Created\n");
+		}
+
+		VkMemoryRequirements memRequirements;
+		vkGetImageMemoryRequirements(logicalDevice, m_TextureImage, &memRequirements);
+
+		VkMemoryAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		allocInfo.allocationSize = memRequirements.size;
+		allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+		if (vkAllocateMemory(logicalDevice, &allocInfo, nullptr, &m_TextureImageMemory) != VK_SUCCESS) {
+			printf("Texture Image Memory Not Allocated");
+		}
+
+		vkBindImageMemory(logicalDevice, m_TextureImage, m_TextureImageMemory, 0);
+		vkBindBufferMemory(logicalDevice, stagingBuffer, stagingBufferMemory, 0);
+
+		TransitionImageLayout(m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+		CopyBufferToImage(stagingBuffer, m_TextureImage, static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+
+		TransitionImageLayout(m_TextureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+		// Create Texture Image View
+		CreateTextureImageView();
+
+		// Create Texture Sampler
+		CreateTextureSampler();
+
+		// Set Up image Descriptor Info
+		m_ImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		m_ImageInfo.imageView = m_TextureImageView;
+		m_ImageInfo.sampler = m_TextureSampler;
+
+		m_TextureDataType = TextureImageDataType::SAMPLER;
+	}
+
 	void VulkanTexture::UpdateTexture(float r, float g, float b, float a)
 	{
 		Application& app = Application::Get();
@@ -409,6 +509,47 @@ namespace Arcane
 		newData.size = width * height * 4;
 
 		return newData;
+	}
+
+	void VulkanTexture::PackAsset(std::ofstream& o)
+	{
+		int width, height, channels = 0;
+		stbi_uc* pixels = stbi_load(GetPath().string().c_str(), &width, &height, &channels, STBI_rgb_alpha);
+
+		// Texture Metadata
+		nlohmann::json textureData;
+		textureData["width"] = width;
+		textureData["height"] = height;
+
+		// JSON String
+		std::string jsonString = textureData.dump();
+		uint32_t jsonLength = jsonString.size();
+
+		// Binary Blob
+		std::vector<char> blob;
+		blob.resize(width * height * 4);
+		memcpy(blob.data(), pixels, width * height * 4);
+		uint32_t blobLength = blob.size();
+
+		// Total Size of this asset
+		uint32_t totalLength = blobLength + jsonLength + sizeof(uint64_t);
+
+		// Type
+		int type = (int)GetAssetType();
+		
+		uint64_t id = GetID();
+		o.write((const char*)&type, sizeof(int));
+		o.write((const char*)&id, sizeof(uint64_t));
+		o.write((const char*)&totalLength, sizeof(uint32_t));
+		o.write((const char*)&jsonLength, sizeof(uint32_t));
+		o.write((const char*)&blobLength, sizeof(uint32_t));
+		o.write((const char*)jsonString.data(), jsonLength);
+		o.write((const char*)blob.data(), blobLength);
+	}
+
+	std::pair<uint64_t, Asset*> VulkanTexture::UnpackAsset(std::ofstream& o)
+	{
+		return std::pair<uint64_t, Asset*>();
 	}
 
 	VkCommandBuffer VulkanTexture::BeginSingleTimeCommands()

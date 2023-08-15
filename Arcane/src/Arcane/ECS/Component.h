@@ -38,9 +38,9 @@ namespace Arcane
 	struct CameraComponent
 	{
 		bool isPrimary = false;
-		OrthoCamera* orthoCamera;
-		PerspectiveCamera* perspectiveCamera;
-		CameraType type = CameraType::Perspective;
+		OrthoCamera* orthoCamera = nullptr;
+		PerspectiveCamera* perspectiveCamera = nullptr;
+		CameraType type = CameraType::Orthographic;
 	};
 
 	struct TransformComponent

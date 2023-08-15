@@ -58,6 +58,17 @@ namespace Arcane
 					componentArray.push_back(transformObject);
 				}
 
+				if (sceneEntity.HasComponent<CameraComponent>())
+				{
+					nlohmann::json cameraObject = nlohmann::json::object();
+					cameraObject["name"] = "Camera";
+
+					CameraComponent& cameraComponent = sceneEntity.GetComponent<CameraComponent>();
+					cameraObject["isPrimary"] = cameraComponent.isPrimary;
+					cameraObject["cameraType"] = cameraComponent.type == CameraType::Perspective ? 0 : 1;
+					componentArray.push_back(cameraObject);
+				}
+
 				if (sceneEntity.HasComponent<MeshComponent>())
 				{
 					MeshComponent component = sceneEntity.GetComponent<MeshComponent>();

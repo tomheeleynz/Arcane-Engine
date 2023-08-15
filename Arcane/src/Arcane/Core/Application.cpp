@@ -5,6 +5,7 @@
 #include "Arcane/Renderer/Pipeline.h"
 #include "Arcane/Renderer/RenderPass.h"
 #include "Arcane/Scripting/ScriptingEngine.h"
+#include "Arcane/Scene/SceneManager.h"
 
 
 namespace Arcane {
@@ -36,16 +37,27 @@ namespace Arcane {
 		m_Clock = new CClock();
 
 		// Init Project
-		ProjectDeserializer deserializer(std::filesystem::path(specifications.ProjectFilePath));
-		m_Project = deserializer.Deserialize();
+		if (!specifications.RuntimeLayer) {
+			ProjectDeserializer deserializer(std::filesystem::path(specifications.ProjectFilePath));
+			m_Project = deserializer.Deserialize();
+		}
 
 		// Init Scripting Engine
 		ScriptingEngine::Init();
 
-		// Generate Asset Database on application startup
-		m_AssetDatabase = new AssetDatabase(m_Project->GetWorkingPath().string());
-		bool assetDatabaseGenerated = m_AssetDatabase->GenerateDatabase();
+		// Init Scene Manager
+		SceneManager::Init();
 
+		// Generate Asset Database on application startup
+		std::filesystem::path assetPath;
+
+		if (specifications.RuntimeLayer)
+			assetPath = std::filesystem::path(specifications.RuntimePath);
+		else
+			assetPath = m_Project->GetWorkingPath();
+
+		m_AssetDatabase = new AssetDatabase(assetPath);
+		bool assetDatabaseGenerated = m_AssetDatabase->GenerateDatabase();
 		if (!assetDatabaseGenerated) {
 			std::cout << "Asset Database Not Created\n";
 		}

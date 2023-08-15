@@ -39,6 +39,7 @@
 #include "Arcane/Scene/Scene.h"
 #include "Arcane/Scene/SceneDeserializer.h"
 #include "Arcane/Scene/SceneSerializer.h"
+#include "Arcane/Scene/SceneManager.h"
 
 /////////////////////////////////////////////////////
 ////////// Utils

@@ -13,6 +13,7 @@
 #include "Arcane/Scene/SceneDeserializer.h"
 #include "Arcane/Animation/AnimationSerializer.h"
 #include "Arcane/Animation/AnimationControllerSerializer.h"
+#include "Arcane/Scene/SceneManager.h"
 
 namespace Arcane
 {
@@ -33,7 +34,7 @@ namespace Arcane
 
 	bool AssetDatabase::GenerateDatabase()
 	{
-		GenerateDefaultAssets();
+		// GenerateDefaultAssets();
 		for (auto& dirEntry : std::filesystem::recursive_directory_iterator(m_AssetDirPath)) {
 			if (dirEntry.is_regular_file()) {
 				std::filesystem::path file = dirEntry.path();
@@ -172,6 +173,7 @@ namespace Arcane
 				scene->SetName(name);
 				scene->SetPath(currentAssetPath);
 				m_Assets[assetID] = scene;
+				SceneManager::AddScene(scene);
 			}
 		}
 		else if (currentAssetPath.extension() == ".arcaneanim")
@@ -206,6 +208,11 @@ namespace Arcane
 			}
 		}
 		return true;
+	}
+
+	void AssetDatabase::AddAsset(uint64_t id, Asset* asset)
+	{
+		m_Assets[id] = asset;
 	}
 
 	bool AssetDatabase::CheckMetaInfo(std::filesystem::path currentMetaPath)

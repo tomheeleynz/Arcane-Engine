@@ -19,7 +19,9 @@ void EditorLayer::OnAttach()
 	m_EditorScene = new Arcane::Scene(true);
 	m_ActiveScene = m_EditorScene;
 
-	m_SceneRenderer = new Arcane::SceneRenderer();
+	Arcane::SceneRendererSpecs sceneRendererSpecs;
+	sceneRendererSpecs.RenderToSwapchain = false;
+	m_SceneRenderer = new Arcane::SceneRenderer(sceneRendererSpecs);
 	
 	m_ActiveScene->SetSceneRenderer(m_SceneRenderer);
 

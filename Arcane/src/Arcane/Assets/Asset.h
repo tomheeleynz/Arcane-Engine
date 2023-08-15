@@ -2,6 +2,9 @@
 
 #include <string>
 #include <filesystem>
+#include <fstream>
+#include <nlohmann/json.hpp>
+#include <map>
 
 #include "Arcane/Core/UUID.h"
 
@@ -35,7 +38,11 @@ namespace Arcane
 
 		std::filesystem::path GetPath() { return m_Path; }
 		void SetPath(std::filesystem::path path) { m_Path = path; }
-	private:
+
+		// Virtual Methods
+		virtual void PackAsset(std::ofstream& o) {}
+		virtual std::pair<uint64_t, Asset*> UnpackAsset(std::ofstream& o) { return std::pair<uint64_t, Asset*>(); };
+	private: 
 		Core::UUID m_UUID;
 		AssetType m_Type;
 		std::string m_Name;

@@ -16,10 +16,15 @@
 
 namespace Arcane
 {
+	struct SceneRendererSpecs
+	{
+		bool RenderToSwapchain = false;
+	};
+
 	class SceneRenderer
 	{
 	public:
-		SceneRenderer();
+		SceneRenderer(SceneRendererSpecs specs);
 
 		Framebuffer* GetFinalRenderFramebuffer();
 
@@ -47,6 +52,7 @@ namespace Arcane
 		void CompositeRenderPass();
 		void GeometryPass();
 		glm::vec2 m_SceneSize;
+		SceneRendererSpecs m_Specs;
 
 		bool m_RenderGrid = true;
 	};

@@ -24,4 +24,13 @@ namespace Arcane {
 			return nullptr;
 		}
 	}
+
+	Texture* Texture::Create(char* data, uint32_t size, uint32_t width, uint32_t height)
+	{
+		switch (RendererAPI::Current())
+		{
+		case RendererAPIType::Vulkan: return new VulkanTexture(data, size, width, height);
+		default: return nullptr;
+		}
+	}
 }

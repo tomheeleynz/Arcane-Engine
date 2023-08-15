@@ -52,6 +52,7 @@ namespace Arcane {
 
 		static Texture* Create(std::string fileName);
 		static Texture* Create(float r, float g, float b, float a);
+		static Texture* Create(char* data, uint32_t size, uint32_t width, uint32_t height);
 
 		virtual glm::vec4 GetRGBAValue() = 0;
 		virtual void SetRGBAValue(glm::vec4 value) = 0;

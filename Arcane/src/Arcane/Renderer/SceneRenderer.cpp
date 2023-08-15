@@ -150,8 +150,10 @@ namespace Arcane
 
 	static SceneRendererData s_Data;
 
-	SceneRenderer::SceneRenderer()
+	SceneRenderer::SceneRenderer(SceneRendererSpecs specs)
 	{
+		m_Specs = specs;
+
 		///////////////////////////////////////////////////////////////
 		//// Global Render Data
 		///////////////////////////////////////////////////////////////
@@ -279,7 +281,12 @@ namespace Arcane
 		s_Data.CompositeFramebuffer = Framebuffer::Create(compositeFramebufferSpecs);
 
 		RenderPassSpecs compositeSpecs;
-		compositeSpecs.SwapchainFramebuffer = false;
+
+		if (specs.RenderToSwapchain)
+			compositeSpecs.SwapchainFramebuffer = true;
+		else
+			compositeSpecs.SwapchainFramebuffer = false;
+
 		compositeSpecs.TargetFramebuffer = s_Data.CompositeFramebuffer;
 		s_Data.CompositeRenderPass = RenderPass::Create(compositeSpecs);
 

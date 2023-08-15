@@ -2,6 +2,15 @@
 
 #include <Arcane.h>
 #include <imgui.h>
+#include <vector>
+
+struct TextureSpriteRect
+{
+	float x;
+	float y;
+	float width;
+	float height;
+};
 
 class SpriteEditor
 {
@@ -15,4 +24,5 @@ private:
 
 private:
 	void ApplyMetaInfo();
+	std::vector<TextureSpriteRect> m_TextureSpriteRects;
 };

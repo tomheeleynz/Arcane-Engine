@@ -120,7 +120,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 	DrawComponent<CameraComponent>("Camera", entity, [](auto& component, auto& entity) {
 		ImGui::Checkbox("Is Primary:", &component.isPrimary);
 		const char* items[] = { "Orthographic", "Perspective" };
-		int chosenID = 0;
+		int chosenID = component.type == CameraType::Orthographic ? 0 : 1;
 
 		// Display Combo box
 		const char* combo_label = items[chosenID];
@@ -131,16 +131,8 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 			{
 				const bool is_selected = (chosenID == n);
 
-				if (ImGui::Selectable(items[n], is_selected)) {
+				if (ImGui::Selectable(items[n], is_selected))
 					chosenID = n;
-
-					if (chosenID == 0) {
-						component.type = CameraType::Orthographic;
-					}
-					else {
-						component.type = CameraType::Perspective;
-					}
-				}
 
 				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
 				if (is_selected)
@@ -148,6 +140,8 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 			}
 			ImGui::EndCombo();
 		}
+
+		component.type = chosenID == 0 ? CameraType::Orthographic : CameraType::Perspective;
 	});
 
 	DrawComponent<MeshComponent>("Mesh", entity, [](auto& component, auto& entity) {

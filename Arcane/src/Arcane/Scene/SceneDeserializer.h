@@ -10,10 +10,15 @@ namespace Arcane
 	class SceneDeserializer
 	{
 	public:
-		SceneDeserializer(std::string filepath);
+		SceneDeserializer() = default;
+		SceneDeserializer(std::string filepath, bool file = true);
 
 		Scene* Deserialize();
+		Scene* Deserialize(nlohmann::json jsonObject);
 	private:
 		std::string m_Filepath;
+		std::string m_JSONString;
+
+		bool m_IsFile = true;
 	};
 }

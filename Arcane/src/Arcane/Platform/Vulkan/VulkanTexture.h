@@ -11,6 +11,7 @@ namespace Arcane
 	public:
 		VulkanTexture(std::string fileName);
 		VulkanTexture(float r, float g, float b, float a);
+		VulkanTexture(char* data, uint32_t size, uint32_t width, uint32_t height);
 
 		virtual void UpdateTexture(float r, float g, float b, float a) override;
 		virtual void UpdateTexture(std::string filename) override;
@@ -29,6 +30,9 @@ namespace Arcane
 		void SetTextureAmountType(TextureImageAmountType type) { m_Specs.amountType = type; }
 
 		TextureRuntimeData GetRuntimeData();
+
+		virtual void PackAsset(std::ofstream& o) override;
+		virtual std::pair<uint64_t, Asset*> UnpackAsset(std::ofstream& o) override;
 	private:
 		VkCommandBuffer BeginSingleTimeCommands();
 		void EndSingleTimeCommands(VkCommandBuffer commandBuffer);

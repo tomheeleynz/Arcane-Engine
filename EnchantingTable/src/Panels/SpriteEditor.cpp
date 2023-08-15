@@ -60,11 +60,23 @@ void SpriteEditor::OnImGuiRender()
 				ImGui::InputFloat("Cell Width", &textureSpecs.cellHeight);
 				ImGui::InputFloat("Cell Height", &textureSpecs.cellWidth);
 
-				// Calc size of the sprites
-				float cellCountX = textureSpecs.width / textureSpecs.cellWidth;
-				float cellCountY = textureSpecs.height / textureSpecs.cellHeight;
-				float cellCount = cellCountX * cellCountY;
-				textureSpecs.cellCount = cellCount;
+				for (int i = 0; i < textureSpecs.width; i+= textureSpecs.cellWidth)
+				{
+					float x = i;
+
+					for (int j = 0; j < textureSpecs.height; j+= textureSpecs.cellHeight)
+					{
+						float y = j;
+						
+						TextureSpriteRect newRect;
+						newRect.x = x;
+						newRect.y = y;
+						newRect.width = textureSpecs.cellWidth;
+						newRect.height = textureSpecs.cellHeight;
+
+						m_TextureSpriteRects.push_back(newRect);
+					}
+				}
 			}
 
 			Arcane::UI::Image(m_Texture, {(float)textureSpecs.width, (float)textureSpecs.width});
