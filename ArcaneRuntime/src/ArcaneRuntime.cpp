@@ -23,8 +23,7 @@ int main(int argc, char* argv[])
 
 	specs.PushImguiLayer = false;
 	specs.RuntimeLayer = true;
-	specs.RuntimePath = "C:\\Projects\\Arcane-Engine\\ArcaneRuntime\\res";
-	specs.EditorAssetPath = "C:\\Projects\\Arcane-Engine\\ArcaneRuntime\\DefaultAssets";
+	specs.RuntimePath = "C:\\Projects\\Arcane-Engine\\ArcaneRuntime\\res\\test.arcanepack";
 
 	ArcaneRuntimeApplication* app = new ArcaneRuntimeApplication(specs);
 	app->Run();

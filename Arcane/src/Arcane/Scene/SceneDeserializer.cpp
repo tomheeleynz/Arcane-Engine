@@ -88,10 +88,10 @@ namespace Arcane
 					light.color = { element["color"][0], element["color"][1], element["color"][2] };
 					newEntity->AddComponent<LightComponent>(light);
 				}
-				else if (name == "RigidBody")
+				else if (name == "RigidBody2D")
 				{
 					Kinetics::BodyDef bodyDef;
-					RigidBodyComponent rigidBodyComponent;
+					RigidBodyComponent2D rigidBodyComponent;
 
 					float gravityScale = element["gravityScale"];
 					float mass = element["mass"];
@@ -103,7 +103,7 @@ namespace Arcane
 
 					rigidBodyComponent.body = newScene->AddDynamicBodyToPhysicsWorld(bodyDef);
 					rigidBodyComponent.body->SetGravityScale(gravityScale);
-					newEntity->AddComponent<RigidBodyComponent>(rigidBodyComponent);
+					newEntity->AddComponent<RigidBodyComponent2D>(rigidBodyComponent);
 				}
 				else if (name == "SpriteRenderer")
 				{
@@ -198,10 +198,10 @@ namespace Arcane
 					light.color = { element["color"][0], element["color"][1], element["color"][2] };
 					newEntity->AddComponent<LightComponent>(light);
 				}
-				else if (name == "RigidBody")
+				else if (name == "RigidBody2D")
 				{
 					Kinetics::BodyDef bodyDef;
-					RigidBodyComponent rigidBodyComponent;
+					RigidBodyComponent2D rigidBodyComponent;
 
 					float gravityScale = element["gravityScale"];
 					float mass = element["mass"];
@@ -212,8 +212,8 @@ namespace Arcane
 					bodyDef.mass = mass;
 
 					rigidBodyComponent.body = newScene->AddDynamicBodyToPhysicsWorld(bodyDef);
-					rigidBodyComponent.body->SetGravityScale(gravityScale);
-					newEntity->AddComponent<RigidBodyComponent>(rigidBodyComponent);
+					
+					newEntity->AddComponent<RigidBodyComponent2D>(rigidBodyComponent);
 				}
 				else if (name == "SpriteRenderer")
 				{

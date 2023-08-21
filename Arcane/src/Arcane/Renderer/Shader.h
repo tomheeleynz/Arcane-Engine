@@ -77,8 +77,10 @@ namespace Arcane
 		virtual uint32_t GetMaterialSize() = 0;
 
 		static ShaderProgramSource ParseShader(std::string shaderFile);
+
 		static Shader* Create(std::string vertexShader, std::string fragmentShader);
 		static Shader* Create(std::string shaderFile);
+		static Shader* Create(uint32_t* vertexByteCode, uint32_t vertexBytesSize, uint32_t* fragmentByteCode, uint32_t fragmentBytesSize);
 	private:
 
 	};
@@ -91,11 +93,16 @@ namespace Arcane
 	public:
 		static Shader* GetShader(std::string shaderName);
 		static ShaderLibrary* GetInstance();
+
+		static void AddShader(std::string name, Shader* shader);
+		static void PackShaderLibrary(std::ofstream& o);
 	private:
 		ShaderLibrary();
 		static ShaderLibrary* s_Instance;
 		Shader* GetShaderImpl(std::string shaderName);
 
+		void AddShaderImpl(std::string name, Shader* shader);
+		void PackShaderLibraryImpl(std::ofstream& o);
 	private:
 		std::map<std::string, Shader*> m_Shaders;
 

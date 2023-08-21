@@ -44,6 +44,8 @@ namespace Arcane
 
 		void WriteProperties();
 		void SetEntity(Entity& entity);
+
+		virtual void PackAsset(std::ofstream& o) override;
 	private:
 		void ReadProperties();
 	private:

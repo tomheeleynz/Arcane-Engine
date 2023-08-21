@@ -17,7 +17,6 @@ namespace Arcane
 		std::filesystem::path savePath(filepath);
 		nlohmann::json jsonObject;
 
-
 		if (m_Scene == nullptr) {
 			jsonObject["name"] = savePath.stem().string();
 		}
@@ -105,14 +104,16 @@ namespace Arcane
 					componentArray.push_back(lightObject);
 				}
 
-				if (sceneEntity.HasComponent<RigidBodyComponent>())
+				if (sceneEntity.HasComponent<RigidBodyComponent2D>())
 				{
-					RigidBodyComponent& rigidBodyComponent = sceneEntity.GetComponent<RigidBodyComponent>();
-					nlohmann::json rigidBodyObject = nlohmann::json::object();
-					rigidBodyObject["name"] = "RigidBody";
-					rigidBodyObject["gravityScale"] = rigidBodyComponent.gravityScale;
-					rigidBodyObject["mass"] = rigidBodyComponent.mass;
-					componentArray.push_back(rigidBodyObject);
+					RigidBodyComponent2D& rigidBodyComponent2D = sceneEntity.GetComponent<RigidBodyComponent2D>();
+					nlohmann::json rigidBodyObject2D = nlohmann::json::object();
+					
+					rigidBodyObject2D["name"] = "RigidBody2D";
+					rigidBodyObject2D["gravityScale"] = rigidBodyComponent2D.gravityScale;
+					rigidBodyObject2D["mass"] = rigidBodyComponent2D.mass;
+					
+					componentArray.push_back(rigidBodyObject2D);
 				}
 
 				if (sceneEntity.HasComponent<SpriteRendererComponent>())

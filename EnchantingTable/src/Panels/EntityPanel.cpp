@@ -385,15 +385,12 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		ImGui::Checkbox("Flip Y", &component.flipY);
 	});
 
-	DrawComponent<RigidBodyComponent>("Rigid Body", entity, [this](auto& component, auto& entity) {
+	DrawComponent<RigidBodyComponent2D>("Rigid Body 2D", entity, [this](auto& component, auto& entity) {
 		ImGui::InputFloat("Gravity", &component.gravityScale);
 		// Set dynamic body gravity scale
 
 		ImGui::InputFloat("Mass", &component.mass);
 		// set mass of component
-	});
-
-	DrawComponent<BoxColliderComponent>("Box Collider", entity, [this](auto& component, auto& entity) {
 	});
 
 	DrawComponent<Animator>("Animator", entity, [this](auto& component, auto& entity) {
@@ -436,8 +433,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		DisplayAddComponentEntry<ScriptComponent>("Script");
 		DisplayAddComponentEntry<CameraComponent>("Camera");
 		DisplayAddComponentEntry<SpriteRendererComponent>("Sprite Renderer");
-		DisplayAddComponentEntry<RigidBodyComponent>("Rigid Body");
-		DisplayAddComponentEntry<BoxColliderComponent>("Box Collider");
+		DisplayAddComponentEntry<RigidBodyComponent2D>("RigidBody2D");
 		DisplayAddComponentEntry<Animator>("Animator");
 		ImGui::EndPopup();
 	}
@@ -495,57 +491,28 @@ void EntityPanel::InitComponent<Arcane::SpriteRendererComponent>()
 }
 
 template <>
-void EntityPanel::InitComponent<Arcane::RigidBodyComponent>()
+void EntityPanel::InitComponent<Arcane::RigidBodyComponent2D>()
 {
-	Arcane::RigidBodyComponent rigidBody;
+	Arcane::RigidBodyComponent2D rigidBody;
 
 	// Body Def 
 	Kinetics::BodyDef bodyDef;
 	bodyDef.mass = 1;
 
-	Kinetics::DynamicBody* newBody = m_Context.GetScene()->AddDynamicBodyToPhysicsWorld(bodyDef);
+	Kinetics::DynamicBody2D* newBody = m_Context.GetScene()->AddDynamicBodyToPhysicsWorld(bodyDef);
 	
 	if (m_Context.HasComponent<Arcane::TransformComponent>()) {
 		newBody->SetPosition({
 			m_Context.GetComponent<Arcane::TransformComponent>().pos.x,
-			m_Context.GetComponent<Arcane::TransformComponent>().pos.y,
-			m_Context.GetComponent<Arcane::TransformComponent>().pos.z
+			m_Context.GetComponent<Arcane::TransformComponent>().pos.y
 		});
-	}
-
-	if (m_Context.HasComponent<Arcane::BoxColliderComponent>()) {
-		newBody->SetShape(m_Context.GetComponent<Arcane::BoxColliderComponent>().shape);
 	}
 
 	rigidBody.body = newBody;
 	rigidBody.gravityScale = 1;
 	rigidBody.mass = bodyDef.mass;
 
-	m_Context.AddComponent<Arcane::RigidBodyComponent>(rigidBody);
-}
-
-template<>
-void EntityPanel::InitComponent<Arcane::BoxColliderComponent>()
-{
-	Arcane::BoxColliderComponent collider;
-
-	collider.shape = new Kinetics::Shape({ Kinetics::ShapeType::BOX });
-
-	// Need to set bouding box when creating a box collider 
-	if (m_Context.HasComponent<Arcane::MeshComponent>()) {
-		Arcane::BoundingBox& generatedBox = m_Context.GetComponent<Arcane::MeshComponent>().mesh->GetBoundingBox();
-		
-		Kinetics::Vec3 min = { generatedBox.bbMin.x, generatedBox.bbMin.y, generatedBox.bbMin.z };
-		Kinetics::Vec3 max = { generatedBox.bbMax.x, generatedBox.bbMax.y, generatedBox.bbMax.z };
-
-		collider.shape->SetBoundingBoxDimensions(min, max);
-	}
-
-
-	if (m_Context.HasComponent<Arcane::RigidBodyComponent>())
-		m_Context.GetComponent<Arcane::RigidBodyComponent>().body->SetShape(collider.shape);
-
-	m_Context.AddComponent<Arcane::BoxColliderComponent>(collider);
+	m_Context.AddComponent<Arcane::RigidBodyComponent2D>(rigidBody);
 }
 
 template <>

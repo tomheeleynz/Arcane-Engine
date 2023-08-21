@@ -325,7 +325,8 @@ void EditorLayer::BuildAssetPack()
 	std::string filename = Arcane::FileDialog::SaveFile();
 	
 	if (!filename.empty()) {
-		Arcane::AssetPack newAssetPack(filename);
-		newAssetPack.Serialize();
+		Arcane::AssetDatabase& database = Arcane::Application::Get().GetAssetDatabase();
+		Arcane::AssetPack newAssetPack(&database);
+		newAssetPack.Serialize(filename);
 	}
 }

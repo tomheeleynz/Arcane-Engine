@@ -237,4 +237,31 @@ namespace Arcane
 			lua_pop(ScriptingEngine::GetLuaState(), 1);
 		}
 	}
+
+	void Script::PackAsset(std::ofstream& o) 
+	{
+		// Get Lua state
+		lua_State* L = ScriptingEngine::GetLuaState();
+		
+		// Get Byte Code
+		char* byteCode = 0L;
+		size_t bytecodeLen = 0;
+		LuaByteCode bd{&bytecodeLen, &byteCode};
+		luaL_loadfile(L, GetPath().string().c_str());
+		int compResult = lua_dump(L, ScriptGlue::ScriptWriter, &bd, 0);
+
+		// Serialize to binary
+		int type = (int)GetAssetType();
+		uint64_t id = GetID();
+		uint32_t byteCodeLength = *bd.len;
+		char* byteCodePtr = *bd.data;
+
+		uint32_t totalLength = sizeof(int) + sizeof(size_t) + sizeof(uint64_t) + *bd.len;
+
+		o.write((const char*)&type, sizeof(int));
+		o.write((const char*)&id, sizeof(uint64_t));
+		o.write((const char*)&totalLength, sizeof(uint32_t));
+		o.write((const char*)&bytecodeLen, sizeof(uint32_t));
+		o.write((const char*)byteCodePtr, byteCodeLength);
+	}
 }

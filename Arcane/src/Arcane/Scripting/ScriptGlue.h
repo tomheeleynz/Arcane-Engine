@@ -9,6 +9,12 @@ extern "C"
 
 namespace Arcane
 {
+	struct LuaByteCode
+	{
+		size_t* len;
+		char** data;
+	};
+
 	class ScriptGlue
 	{
 	public:
@@ -21,6 +27,11 @@ namespace Arcane
 		//////////////////////////////////////////////////////////
 		static int GetComponent(lua_State* L);
 		static int SetComponent(lua_State* L);
+
+		//////////////////////////////////////////////////////////
+		///// Writer Functions
+		//////////////////////////////////////////////////////////
+		static int ScriptWriter(lua_State* L, const void* p, size_t sz, void* ud);
 	private:
 
 		//////////////////////////////////////////////////////////

@@ -15,6 +15,7 @@ namespace Arcane
 	public:
 		VulkanShader(std::string vertexShader, std::string fragmentShader);
 		VulkanShader(std::string shaderFile);
+		VulkanShader(uint32_t* vertexByteCode, uint32_t vertexBytesSize, uint32_t* fragmentByteCode, uint32_t fragmentBytesSize);
 
 		virtual std::vector<ShaderSet> GetShaderSets() { return m_ShaderSets; };
 		virtual uint32_t GetMaterialSize() { return m_MaterialSize; }
@@ -27,6 +28,8 @@ namespace Arcane
 		void FindShaderMembers(SpvReflectBlockVariable& block, ShaderMember& member);
 
 		void Reflect();
+
+		virtual void PackAsset(std::ofstream& o) override;
 	private:
 		void ReflectModule(std::vector<uint32_t> byteCode, VkShaderModule module);
 		std::vector<uint32_t> CompileShader(const std::string& source_name, shaderc_shader_kind kind, const std::string& source, bool optimize = false);
@@ -50,5 +53,6 @@ namespace Arcane
 		// Descriptor Sets of Shader
 		std::vector<DescriptorSet*> m_DescriptorSets;
 		DescriptorSet* m_MaterialDescriptorSet;
+		bool m_ReadFromSPV = false;
 	};
 }

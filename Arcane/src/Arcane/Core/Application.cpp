@@ -6,7 +6,7 @@
 #include "Arcane/Renderer/RenderPass.h"
 #include "Arcane/Scripting/ScriptingEngine.h"
 #include "Arcane/Scene/SceneManager.h"
-
+#include "Arcane/Assets/AssetPack.h"
 
 namespace Arcane {
 	Application* Application::s_Instance = nullptr;
@@ -51,15 +51,18 @@ namespace Arcane {
 		// Generate Asset Database on application startup
 		std::filesystem::path assetPath;
 
-		if (specifications.RuntimeLayer)
-			assetPath = std::filesystem::path(specifications.RuntimePath);
-		else
-			assetPath = m_Project->GetWorkingPath();
-
-		m_AssetDatabase = new AssetDatabase(assetPath);
-		bool assetDatabaseGenerated = m_AssetDatabase->GenerateDatabase();
-		if (!assetDatabaseGenerated) {
-			std::cout << "Asset Database Not Created\n";
+		if (!specifications.RuntimeLayer) {
+			m_AssetDatabase = new AssetDatabase(m_Project->GetWorkingPath());
+			
+			bool assetDatabaseGenerated = m_AssetDatabase->GenerateDatabase();
+			if (!assetDatabaseGenerated) {
+				std::cout << "Asset Database Not Created\n";
+			}
+		}
+		else {
+			m_AssetDatabase = new AssetDatabase();
+			AssetPack assetPack(m_AssetDatabase);
+			assetPack.Deserialize(specifications.RuntimePath);
 		}
 	}
 
@@ -100,16 +103,16 @@ namespace Arcane {
 			float deltaTime = m_Clock->GetDeltaTick() / 1000.0f;
 
 			Renderer::BeginFrame();
+			{
+				for (Layer* layer : m_LayerStack) {
+					layer->OnUpdate(deltaTime);
+				}
 
-			for (Layer* layer : m_LayerStack) {
-				layer->OnUpdate(deltaTime);
+				if (m_ImguiEnabled) {
+					RenderImGui();
+					m_ImGuiLayer->End();
+				}
 			}
-
-			if (m_ImguiEnabled) {
-				RenderImGui();
-				m_ImGuiLayer->End();
-			}
-
 			Renderer::EndFrame();
 
 			m_Window->ProcessEvents();

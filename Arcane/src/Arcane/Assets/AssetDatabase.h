@@ -19,6 +19,7 @@ namespace Arcane
 			std::filesystem::path path;
 		};
 
+		AssetDatabase() = default;
 		AssetDatabase(std::filesystem::path assetDir);
 		
 		Asset* GetAsset(uint64_t id);

@@ -64,6 +64,15 @@ namespace Arcane
 		}
 	}
 
+	Shader* Shader::Create(uint32_t* vertexByteCode, uint32_t vertexBytesSize, uint32_t* fragmentByteCode, uint32_t fragmentBytesSize)
+	{
+		switch (RendererAPI::Current())
+		{
+		case RendererAPIType::Vulkan: return new VulkanShader(vertexByteCode, vertexBytesSize, fragmentByteCode, fragmentBytesSize);
+		default: return nullptr;
+		}
+	}
+
 	/////////////////////////////////////////////////////////////
 	//// Shader Library
 	/////////////////////////////////////////////////////////////
@@ -113,6 +122,25 @@ namespace Arcane
 		return s_Instance;
 	}
 
+	void ShaderLibrary::PackShaderLibrary(std::ofstream& o)
+	{
+		GetInstance()->PackShaderLibraryImpl(o);
+	}
+
+	void ShaderLibrary::PackShaderLibraryImpl(std::ofstream& o)
+	{
+		int shaderCount = m_Shaders.size();
+		o.write((const char*)&shaderCount, sizeof(int));
+
+		for (auto& [name, shader] : m_Shaders)
+		{
+			uint32_t nameSize = name.size();
+			o.write((const char*)&nameSize, sizeof(uint32_t));
+			o.write((const char*)name.data(), nameSize);
+			shader->PackAsset(o);
+		}
+	}
+
 	Shader* ShaderLibrary::GetShader(std::string shaderName)
 	{
 		return GetInstance()->GetShaderImpl(shaderName);
@@ -121,5 +149,15 @@ namespace Arcane
 	Shader* ShaderLibrary::GetShaderImpl(std::string shaderName)
 	{
 		return m_Shaders[shaderName];
+	}
+
+	void ShaderLibrary::AddShader(std::string name, Shader* shader)
+	{
+		GetInstance()->AddShaderImpl(name, shader);
+	}
+
+	void ShaderLibrary::AddShaderImpl(std::string name, Shader* shader)
+	{
+		m_Shaders[name] = shader;
 	}
 }

@@ -8,21 +8,20 @@
 
 namespace Arcane
 {
-	AssetPack::AssetPack(std::filesystem::path path)
+	AssetPack::AssetPack(AssetDatabase* database)
 	{
-		m_Path = path;
+		m_AssetDatabase = database;
 	}
 
-	void AssetPack::Serialize()
+	void AssetPack::Serialize(std::filesystem::path path)
 	{
 		// Serialize ScenesPack
-		std::ofstream o(m_Path, std::ios::out | std::ios::binary);
-		AssetDatabase& database = Application::Get().GetAssetDatabase();
+		std::ofstream o(path, std::ios::out | std::ios::binary);
 
 		nlohmann::json sceneJson;
 		sceneJson["Scenes"] = nlohmann::json::array();
 
-		for (auto& [id, asset] : database.GetAssetMap())
+		for (auto& [id, asset] : m_AssetDatabase->GetAssetMap())
 		{
 			if (asset->GetAssetType() == AssetType::SCENE)
 			{
@@ -40,23 +39,40 @@ namespace Arcane
 		o.write((const char*)&jsonLength, sizeof(uint32_t));
 		o.write(jsonString.data(), jsonLength);
 
-		for (auto& [id, asset] : database.GetAssetMap())
+		int count = 0;
+		for (auto& [id, asset] : m_AssetDatabase->GetAssetMap())
 		{
+			if (asset->GetAssetType() == AssetType::SCRIPT)
+			{
+				asset->PackAsset(o);
+				count += 1;
+			}
+
 			if (asset->GetAssetType() == AssetType::TEXTURE)
 			{
 				asset->PackAsset(o);
-				break;
+				count += 1;
 			}
+
+			if (asset->GetAssetType() == AssetType::SHADER)
+			{
+				asset->PackAsset(o);
+				count += 1;
+			}
+
+			if (count == 3)
+				break;
 		}
 
+		// Pack the shader library for engine wide shaders
+		ShaderLibrary::PackShaderLibrary(o);
 
 		o.close();
 	}
 
-	void AssetPack::Deserialize()
+	void AssetPack::Deserialize(std::filesystem::path path)
 	{
-		std::ifstream i(m_Path, std::ios::out | std::ios::binary);
-		AssetDatabase& database = Application::Get().GetAssetDatabase();
+		std::ifstream i(path, std::ios::out | std::ios::binary);
 
 		uint32_t sceneJsonStringLength = 0;
 		i.read((char*)&sceneJsonStringLength, sizeof(uint32_t));
@@ -83,9 +99,21 @@ namespace Arcane
 			if ((AssetType)type == AssetType::TEXTURE)
 			{
 				std::pair<uint64_t, Asset*> unpackedAsset = UnpackAsset(AssetType::TEXTURE, i);
-				database.AddAsset(unpackedAsset.first, unpackedAsset.second);
+				m_AssetDatabase->AddAsset(unpackedAsset.first, unpackedAsset.second);
 			}
 
+			if ((AssetType)type == AssetType::SCRIPT)
+			{
+				std::pair<uint64_t, Asset*> unpackedAsset = UnpackAsset(AssetType::SCRIPT, i);
+				m_AssetDatabase->AddAsset(unpackedAsset.first, unpackedAsset.second);
+			}
+
+
+			if ((AssetType)type == AssetType::SHADER)
+			{
+				std::pair<uint64_t, Asset*> unpackedAsset = UnpackAsset(AssetType::SHADER, i);
+				m_AssetDatabase->AddAsset(unpackedAsset.first, unpackedAsset.second);
+			}
 		}
 
 
@@ -103,6 +131,24 @@ namespace Arcane
 
 			newAsset.first = id;
 			newAsset.second = UnpackTexture(i);
+		}
+
+
+		if (type == AssetType::SCRIPT)
+		{
+			uint64_t id = 0;
+			i.read((char*)&id, sizeof(uint64_t));
+
+			newAsset.first = id;
+			newAsset.second = UnpackScript(i);
+		}
+
+		if (type == AssetType::SHADER)
+		{
+			uint64_t id = 0;
+			i.read((char*)&id, sizeof(uint64_t));
+			newAsset.first = id;
+			newAsset.second = UnpackShader(i);
 		}
 
 		return newAsset;
@@ -132,5 +178,44 @@ namespace Arcane
 		i.read((char*)blob.data(), blobLength);
 
 		return Texture::Create(blob.data(), blob.size(), textureMetadata["width"], textureMetadata["height"]);
+	}
+
+	Asset* AssetPack::UnpackScript(std::ifstream& i)
+	{
+		uint32_t totalLength = 0;
+		i.read((char*)&totalLength, sizeof(uint32_t));
+
+		uint32_t byteCodeLength = 0;
+		i.read((char*)&byteCodeLength, sizeof(uint32_t));
+
+		std::vector<char> byteCode;
+		byteCode.resize(byteCodeLength);
+		i.read((char*)byteCode.data(), byteCodeLength);
+
+		return nullptr;
+	}
+
+	Asset* AssetPack::UnpackShader(std::ifstream& i)
+	{
+		uint32_t totalLength = 0;
+		i.read((char*)&totalLength, sizeof(uint32_t));
+		
+		// Get Vertex Bytes
+		uint32_t vertexBytesSize = 0;
+		i.read((char*)&vertexBytesSize, sizeof(uint32_t));
+
+		std::vector<uint32_t> vertexBytes;
+		vertexBytes.resize(vertexBytesSize);
+		i.read((char*)vertexBytes.data(), vertexBytesSize * sizeof(uint32_t));
+
+		// Get Fragment Bytes
+		uint32_t fragmentBytesSize = 0;
+		i.read((char*)&fragmentBytesSize, sizeof(uint32_t));
+
+		std::vector<uint32_t> fragmentBytes;
+		fragmentBytes.resize(fragmentBytesSize);
+		i.read((char*)fragmentBytes.data(), fragmentBytesSize * sizeof(uint32_t));
+
+		return Shader::Create(vertexBytes.data(), vertexBytesSize, fragmentBytes.data(), fragmentBytesSize);
 	}
 }

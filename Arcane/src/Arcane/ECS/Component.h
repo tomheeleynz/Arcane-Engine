@@ -81,17 +81,11 @@ namespace Arcane
 		bool flipY = false;
 	};
 
-	struct RigidBodyComponent
+	struct RigidBodyComponent2D
 	{
-		Kinetics::DynamicBody* body;
+		Kinetics::DynamicBody2D* body;
 		float mass;
 		float gravityScale;
-	};
-
-	struct BoxColliderComponent
-	{
-		Kinetics::Shape* shape;
-		glm::vec3 center;
 	};
 
 	///////////////////////

@@ -37,12 +37,6 @@ namespace Arcane
 	}
 
 	static void AddPhysicsObjectsToScene(entt::registry& src, Scene* scene) {
-		auto view = src.view<RigidBodyComponent>();
-
-		for (auto& e : view) {
-			auto& rigidBody = view.get<RigidBodyComponent>(e);
-			scene->CopyDynamicBodyToPhysicsWorld(rigidBody.body);
-		}
 	}
 
 	Scene* Scene::Copy(Scene* other)
@@ -69,8 +63,6 @@ namespace Arcane
 		CopyComponent<MeshRendererComponent>(dstSceneRegistery, srcSceneRegistery, enttMap);
 		CopyComponent<LightComponent>(dstSceneRegistery, srcSceneRegistery, enttMap);
 		CopyComponent<SpriteRendererComponent>(dstSceneRegistery, srcSceneRegistery, enttMap);
-		CopyComponent<BoxColliderComponent>(dstSceneRegistery, srcSceneRegistery, enttMap);
-		CopyComponent<RigidBodyComponent>(dstSceneRegistery, srcSceneRegistery, enttMap);
 		CopyComponent<ScriptComponent>(dstSceneRegistery, srcSceneRegistery, enttMap);
 
 		AddPhysicsObjectsToScene(dstSceneRegistery, newScene);
@@ -265,13 +257,14 @@ namespace Arcane
 			}
 		}
 
-		// Set the mass and gravity scale of the rigid bodies
+		// Update Gravity Scale
 		{
-			auto view = m_Registry.view<RigidBodyComponent>();
+			auto view = m_Registry.view<RigidBodyComponent2D>();
 
-			for (auto& entity : view) {
-				auto& rigidBodyComponent = view.get<RigidBodyComponent>(entity);
-				rigidBodyComponent.body->SetGravityScale(rigidBodyComponent.gravityScale);
+			for (auto& entity : view)
+			{
+				auto& rigidBody2D = m_Registry.get<RigidBodyComponent2D>(entity);
+				rigidBody2D.body->SetGravityScale(rigidBody2D.gravityScale);
 			}
 		}
 
@@ -289,10 +282,18 @@ namespace Arcane
 
 				Entity entityHandle = Entity(entity, this);
 
-				if (entityHandle.HasComponent<Animator>())
-					m_SceneRenderer->SubmitAnimatedQuad(transformComponent, spriteRendererComponent, entityHandle.GetComponent<Animator>(), true);
-				else
-					m_SceneRenderer->SubmitQuad(transformComponent, spriteRendererComponent);
+				if (entityHandle.HasComponent<RigidBodyComponent2D>()) {
+					transformComponent.pos = {
+						entityHandle.GetComponent<RigidBodyComponent2D>().body->GetPosition().x,
+						entityHandle.GetComponent<RigidBodyComponent2D>().body->GetPosition().y,
+						0.0f
+					};
+
+					if (entityHandle.HasComponent<Animator>())
+						m_SceneRenderer->SubmitAnimatedQuad(transformComponent, spriteRendererComponent, entityHandle.GetComponent<Animator>(), true);
+					else
+						m_SceneRenderer->SubmitQuad(transformComponent, spriteRendererComponent);
+				}
 			}
 		}
 
@@ -306,14 +307,6 @@ namespace Arcane
 				auto& meshRenderer = view.get<MeshRendererComponent>(entity);
 
 				Entity entityHandle = Entity(entity, this);
-
-				if (entityHandle.HasComponent<RigidBodyComponent>()) {
-					transform.pos = {
-						entityHandle.GetComponent<RigidBodyComponent>().body->GetPosition().x,
-						entityHandle.GetComponent<RigidBodyComponent>().body->GetPosition().y,
-						entityHandle.GetComponent<RigidBodyComponent>().body->GetPosition().z,
-					};
-				}
 
 				if (mesh.mesh != nullptr && meshRenderer.material != nullptr && meshRenderer.material->GetShader() != nullptr)
 					m_SceneRenderer->SubmitMesh(mesh.mesh, transform, meshRenderer.material);
@@ -342,10 +335,9 @@ namespace Arcane
 		m_SceneRenderer->SetCamera(sceneCamera);
 	}
 
-	Kinetics::DynamicBody* Scene::AddDynamicBodyToPhysicsWorld(Kinetics::BodyDef bodyDef)
+	Kinetics::DynamicBody2D* Scene::AddDynamicBodyToPhysicsWorld(Kinetics::BodyDef bodyDef)
 	{
-		Kinetics::DynamicBody* newBody = m_PhysicsWorld->CreateDynamicBody(bodyDef);
-		return newBody;
+		return m_PhysicsWorld->CreateDynamicBody2D(bodyDef);
 	}
 
 	void Scene::CopyDynamicBodyToPhysicsWorld(Kinetics::DynamicBody* body)

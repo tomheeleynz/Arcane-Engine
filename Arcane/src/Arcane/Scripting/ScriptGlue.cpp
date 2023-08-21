@@ -6,7 +6,6 @@
 #include "Script.h"
 #include "Arcane/ECS/Entity.h"
 
-
 namespace Arcane
 {
 	static void PrintStack(lua_State* L)
@@ -158,6 +157,25 @@ namespace Arcane
 
 		return 1;
 
+	}
+
+	int ScriptGlue::ScriptWriter(lua_State* L, const void* p, size_t sz, void* ud)
+	{
+		LuaByteCode* bd = (LuaByteCode*)ud;
+		char* newData = (char*)realloc(*(bd->data), (*(bd->len)) + sz);
+
+		if (newData)
+		{
+			memcpy(newData + (*(bd->len)), p, sz);
+			*(bd->data) = newData;
+			*(bd->len) += sz;
+		}
+		else {
+			free(newData);
+			return 1;
+		}
+
+		return 0;
 	}
 
 	void ScriptGlue::RegisterTables(lua_State* L)
