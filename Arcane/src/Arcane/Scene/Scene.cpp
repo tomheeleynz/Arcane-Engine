@@ -2,7 +2,7 @@
 #include "Scene.h"
 #include "Arcane/ECS/Entity.h"
 #include "Arcane/Core/Application.h"
-
+#include "Arcane/Physics/PhysicsCollisionListener.h"
 namespace Arcane
 {
 	Scene::Scene(bool newScene)
@@ -21,6 +21,7 @@ namespace Arcane
 		}
 
 		m_PhysicsWorld = new Kinetics::World(-9.8f);
+		m_PhysicsWorld->SetContactListener(new PhysicsCollisionListener());
 	}
 
 	template<typename Component>
@@ -264,7 +265,26 @@ namespace Arcane
 			for (auto& entity : view)
 			{
 				auto& rigidBody2D = m_Registry.get<RigidBodyComponent2D>(entity);
+				auto& transformComponent = m_Registry.get<TransformComponent>(entity);
+
 				rigidBody2D.body->SetGravityScale(rigidBody2D.gravityScale);
+
+				if (rigidBody2D.body->GetShape() != nullptr)
+				{
+					Kinetics::Vec3 max = {
+						transformComponent.pos.x + (transformComponent.scale.x / 2.0f),
+						transformComponent.pos.y + (transformComponent.scale.y / 2.0f),
+						0.0f
+					};
+
+					Kinetics::Vec3 min = {
+						transformComponent.pos.x - (transformComponent.scale.x / 2.0f),
+						transformComponent.pos.y - (transformComponent.scale.y / 2.0f),
+						0.0f
+					};
+
+					rigidBody2D.body->GetShape()->SetBoundingBoxDimensions(min, max);
+				}
 			}
 		}
 

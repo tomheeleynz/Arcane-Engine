@@ -95,6 +95,16 @@ namespace Arcane
 		m_UpdateIndex = luaL_ref(L, LUA_REGISTRYINDEX);
 		PrintStack(L);
 
+		lua_getfield(L, -1, "OnContact");
+
+		PrintStack(L);
+		if (lua_isfunction(L, -1))
+		{
+			m_CollisionIndex = luaL_ref(L, LUA_REGISTRYINDEX);
+		}
+
+		PrintStack(L);
+
 		// Set Entity Specific Methods
 		lua_pushcfunction(L, ScriptGlue::GetComponent);
 		PrintStack(L);
@@ -176,6 +186,12 @@ namespace Arcane
 
 			lua_pop(ScriptingEngine::GetLuaState(), 2);
 		}
+	}
+
+	void Script::OnContact()
+	{
+		lua_rawgeti(ScriptingEngine::GetLuaState(), LUA_REGISTRYINDEX, m_CollisionIndex);
+		PrintStack(ScriptingEngine::GetLuaState());
 	}
 
 	void Script::ReadProperties()

@@ -38,6 +38,7 @@ namespace Arcane
 
 		void OnStart();
 		void OnUpdate(float deltaTime);
+		void OnContact();
 
 		std::unordered_map<std::string, ScriptProperty> GetProperties() { return m_Properties; }
 		void SetPropertyValue(std::string key, std::any newValue) { m_Properties[key].value = newValue; }
@@ -54,6 +55,8 @@ namespace Arcane
 
 		int m_StartIndex = 0;
 		int m_UpdateIndex = 0;
+		int m_CollisionIndex = 0;
+
 		int m_ObjectIndex = 0;
 		int m_EntityIdIndex = 0;
 	};

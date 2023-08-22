@@ -45,9 +45,9 @@ namespace Arcane
 
 	struct TransformComponent
 	{
-		glm::vec3 pos = {0.0f, 0.0f, 0.0f};
+		glm::vec3 pos = { 0.0f, 0.0f, 0.0f };
 		glm::vec3 rotation = { 0.0, 0.0, 0.0 };
-		glm::vec3 scale = {1.0f, 1.0f, 1.0f };
+		glm::vec3 scale = { 1.0f, 1.0f, 1.0f };
 	};
 
 	struct MeshComponent
@@ -75,7 +75,7 @@ namespace Arcane
 
 	struct SpriteRendererComponent
 	{
-		glm::vec3 color = {1.0f, 1.0f, 1.0f};
+		glm::vec3 color = { 1.0f, 1.0f, 1.0f };
 		Texture* sprite = nullptr;
 		bool flipX = false;
 		bool flipY = false;
@@ -86,6 +86,11 @@ namespace Arcane
 		Kinetics::DynamicBody2D* body;
 		float mass;
 		float gravityScale;
+	};
+
+	struct BoxCollider2D
+	{
+		Kinetics::AABB boundingBox;
 	};
 
 	///////////////////////

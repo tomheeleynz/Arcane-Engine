@@ -393,6 +393,9 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		// set mass of component
 	});
 
+	DrawComponent<BoxCollider2D>("BoxCollider2D", entity, [this](auto& component, auto& entity) {
+	});
+
 	DrawComponent<Animator>("Animator", entity, [this](auto& component, auto& entity) {
 		static char buf1[64] = "";
 		ImGui::InputText("Controller", buf1, 64);
@@ -434,6 +437,7 @@ void EntityPanel::DrawComponents(Arcane::Entity& entity)
 		DisplayAddComponentEntry<CameraComponent>("Camera");
 		DisplayAddComponentEntry<SpriteRendererComponent>("Sprite Renderer");
 		DisplayAddComponentEntry<RigidBodyComponent2D>("RigidBody2D");
+		DisplayAddComponentEntry<BoxCollider2D>("BoxCollider2D");
 		DisplayAddComponentEntry<Animator>("Animator");
 		ImGui::EndPopup();
 	}
@@ -500,6 +504,7 @@ void EntityPanel::InitComponent<Arcane::RigidBodyComponent2D>()
 	bodyDef.mass = 1;
 
 	Kinetics::DynamicBody2D* newBody = m_Context.GetScene()->AddDynamicBodyToPhysicsWorld(bodyDef);
+	newBody->SetUserData(&m_Context);
 	
 	if (m_Context.HasComponent<Arcane::TransformComponent>()) {
 		newBody->SetPosition({
@@ -513,6 +518,37 @@ void EntityPanel::InitComponent<Arcane::RigidBodyComponent2D>()
 	rigidBody.mass = bodyDef.mass;
 
 	m_Context.AddComponent<Arcane::RigidBodyComponent2D>(rigidBody);
+}
+
+template<>
+void EntityPanel::InitComponent<Arcane::BoxCollider2D>()
+{
+	Arcane::BoxCollider2D boxCollider2D;
+
+	if (m_Context.HasComponent<Arcane::RigidBodyComponent2D>())
+	{
+		// Calculate Max and Min
+		Arcane::TransformComponent& transformComponent = m_Context.GetComponent<Arcane::TransformComponent>();
+		Arcane::RigidBodyComponent2D& rigidBody2D = m_Context.GetComponent<Arcane::RigidBodyComponent2D>();
+
+		Kinetics::Vec3 max = {
+			transformComponent.pos.x + (transformComponent.scale.x / 2.0f),
+			transformComponent.pos.y + (transformComponent.scale.y / 2.0f),
+			0.0f
+		};
+
+		Kinetics::Vec3 min = {
+			transformComponent.pos.x - (transformComponent.scale.x / 2.0f),
+			transformComponent.pos.y - (transformComponent.scale.y / 2.0f),
+			0.0f
+		};
+
+		Kinetics::Shape* newShape = new Kinetics::Shape(Kinetics::ShapeType::BOX);
+		newShape->SetBoundingBoxDimensions(min, max);
+		rigidBody2D.body->SetShape(newShape);
+
+		m_Context.AddComponent<Arcane::BoxCollider2D>(boxCollider2D);
+	} 
 }
 
 template <>
